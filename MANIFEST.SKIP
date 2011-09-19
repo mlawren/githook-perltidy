@@ -1,0 +1,11 @@
+MANIFEST.bak
+build-stamp
+install-stamp
+pm_to_blib
+^blib
+\.swp$
+\.bak$
+\.git
+Makefile$
+Makefile.old
+^App-githook-perltidy

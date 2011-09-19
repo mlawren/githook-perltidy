@@ -1,0 +1,22 @@
+use inc::Module::Install;
+
+name 'githook-perltidy';
+abstract 'Run perltidy during Git commits';
+author 'Mark Lawrence <nomad@null.net>';
+license 'gpl3';
+perl_version '5.006';
+version '0.01';
+
+requires 'File::Slurp'           => 0;
+requires 'File::Basename'        => 0;
+requires 'File::Spec::Functions' => 0;
+requires 'Carp'                  => 0;
+
+build_requires 'Test::More' => 0;
+
+install_script 'bin/githook-perltidy';
+
+repository 'git://github.com/mlawren/githook-perltidy.git';
+
+WriteAll;
+

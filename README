@@ -1,0 +1,75 @@
+NAME
+    githook-perltidy - Run perltidy before Git commits
+
+SYNOPSIS
+    In your $GIT_DIR/hooks/pre-commit file:
+
+        #!/bin/sh
+        githook-perltidy pre-commit
+
+    In your $GIT_DIR/hooks/post-commit file:
+
+        #!/bin/sh
+        githook-perltidy post-commit disttest
+
+DESCRIPTION
+    githook-perltidy is a script that can be invoked by Git hooks during a
+    "git commit". It runs perltidy and podtidy on any Perl and POD files
+    that are being committed. There are two modes this script runs in, as
+    determed by the first argument:
+
+    pre-commit [MAKE ARGS]
+        Puts a backup of your index and working tree into a Git stash. Runs
+        perltidy and podtidy on any Perl or POD files in the Git index. If
+        any MAKE ARGS are given they will be passed to a make call. This way
+        you can ensure that your code passes a "make test" or "make
+        disttest" check before each commit.
+
+        Failure of any of the above commands will result in a hard reset and
+        the saved stash popped (I.e. re-applied and deleted). The commit
+        will be stopped.
+
+        On success the index is updated with the tidied files and the commit
+        is allowed to proceed. In the event that your index was an
+        interactive or patched version of your working tree, the stash will
+        be kept for the post-commit hook. Otherwise it will be dropped.
+
+    post-commit
+        In the event that your index was an interactive or patched version
+        of your working tree, the post-commit command will pop the stash
+        saved by the pre-commit command. This will attempt to merge back the
+        changes to your working tree that were not in the index. Note that
+        perltidy and podtidy may have introduced conflicts with your
+        existing modifications which you will have to manually fix.
+
+    Additionally githook-perltidy takes a convenience "install" argument
+    that writes the pre-commit and post-commit files in $GIT_DIR/hooks/ as
+    shown in the SYNOPSIS.
+
+        $ githook-perltidy install
+        githook-perltidy: .git/hooks/pre-commit
+        githook-perltidy: .git/hooks/post-commit
+
+    You should run this in the top-level directory of your repository. This
+    command will fail if the hooks directory isn't found or if either of the
+    hook files already exist.
+
+SUPPORT
+    This tool is managed via github:
+
+        https://github.com/mlawren/githook-perltidy/
+
+SEE ALSO
+    githooks(5), perltidy(1), podtidy(1)
+
+AUTHOR
+    Mark Lawrence <nomad@null.net>
+
+COPYRIGHT AND LICENSE
+    Copyright 2011 Mark Lawrence <nomad@null.net>
+
+    This program is free software; you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by the
+    Free Software Foundation; either version 3 of the License, or (at your
+    option) any later version.
+

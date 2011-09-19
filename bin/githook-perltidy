@@ -183,9 +183,17 @@ In your $GIT_DIR/hooks/post-commit file:
 =head1 DESCRIPTION
 
 B<githook-perltidy> is a script that can be invoked by Git hooks during
-a "git commit". It runs L<perltidy> and L<podtidy> on any Perl and POD
-files that are being committed. There are two modes this script runs
-in, as determed by the first argument:
+a "git commit". It runs L<perltidy> and L<podtidy> on Perl and POD
+files (and optionally runs L<make> targets ) ensuring that your
+project's code is always cleanly committed.
+
+This script is is efficient: it only modifies Perl and POD files that
+are being committed and not every file in your repository. It is also
+intended to be safe: the index and working tree are stashed away
+beforehand, and restored in the event of failure.
+
+There are two modes this script runs in as determed by the first
+argument:
 
 =over 4
 

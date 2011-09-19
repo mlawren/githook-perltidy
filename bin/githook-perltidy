@@ -24,6 +24,21 @@ sub doit {
     system("@_") == 0 or croak "@_ failed: $?";
 }
 
+sub get_perltidyrc {
+    my $rc;
+    if ( $ENV{GIT_DIR} ) {
+        $rc = catfile( $ENV{GIT_DIR}, '..', '.perltidyrc' );
+    }
+    else {
+        $rc = '.perltidyrc';
+    }
+
+    if ( system("git ls-files --error-unmatch $rc > /dev/null 2>&1") != 0 ) {
+        die "$self: You have no .perltidyrc in your repository.\n";
+    }
+    return $rc;
+}
+
 my $stashed = 0;
 my $success = 0;
 my $partial = 0;
@@ -31,9 +46,7 @@ my $command = shift @ARGV || usage();
 
 if ( $command eq 'install' ) {
 
-    if ( !system('git ls-files .perltidyrc > /dev/null 2>&1') ) {
-        die "$self: You have no .perltidyrc in your repository.\n";
-    }
+    get_perltidyrc();
 
     my $hooks_dir = catdir( '.git', 'hooks' );
     if ( !-d $hooks_dir ) {
@@ -61,9 +74,7 @@ if ( $command eq 'install' ) {
 }
 elsif ( $command eq 'pre-commit' ) {
 
-    if ( !system('git ls-files .perltidyrc > /dev/null 2>&1') ) {
-        die "$self: You have no .perltidyrc in your repository.\n";
-    }
+    my $rc = get_perltidyrc();
 
     open( my $fh, '-|', 'git status --porcelain' ) || die "open: $!";
 
@@ -101,7 +112,7 @@ elsif ( $command eq 'pre-commit' ) {
         unlink $file . '~';
 
         unless ( $file =~ m/\.pod$/i ) {
-            doit( qw/perltidy -nst -b -bext=.bak/, $file );
+            doit( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
             unlink $file . '.bak';
         }
     }
@@ -209,10 +220,10 @@ the first argument:
 
 =item install [MAKE ARGS]
 
-Can be run from the command-line in the top-level directory of
-your repository. It writes F<pre-commit> and F<post-commit> hooks in
-F<$GIT_DIR/hooks/>. Any MAKE ARGS given will be added to the
-pre-commit hook:
+Can be run from the command-line in the top-level directory of your
+repository. It writes F<pre-commit> and F<post-commit> hooks in
+F<$GIT_DIR/hooks/>. Any MAKE ARGS given will be added to the pre-commit
+hook:
 
 $GIT_DIR/hooks/pre-commit:
 
@@ -251,13 +262,13 @@ repository.
 
 =item post-commit
 
-Should be called from a Git post-commit hook.
-In the event that your index was an interactive or patched version of
-your working tree, the post-commit command will pop the stash saved by
-the pre-commit command. This will attempt to merge back the changes to
-your working tree that were not in the index. Note that L<perltidy> and
-L<podtidy> may have introduced conflicts with your existing
-modifications which you will have to manually fix.
+Should be called from a Git post-commit hook. In the event that your
+index was an interactive or patched version of your working tree, the
+post-commit command will pop the stash saved by the pre-commit command.
+This will attempt to merge back the changes to your working tree that
+were not in the index. Note that L<perltidy> and L<podtidy> may have
+introduced conflicts with your existing modifications which you will
+have to manually fix.
 
 =back
 

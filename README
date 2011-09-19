@@ -1,6 +1,9 @@
 NAME
     githook-perltidy - Run perltidy before Git commits
 
+VERSION
+    0.01.
+
 SYNOPSIS
     Make sure everyone uses the same .perltidyrc across your project:
 
@@ -17,7 +20,7 @@ SYNOPSIS
 DESCRIPTION
     githook-perltidy is a script that can be invoked by Git hooks during a
     "git commit". It runs perltidy and podtidy on Perl and POD files (and
-    optionally runs make targets ) ensuring that your project's code is
+    optionally runs make targets) ensuring that your project's code is
     always cleanly committed.
 
     This script is is efficient: it only modifies Perl and POD files that

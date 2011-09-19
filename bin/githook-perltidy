@@ -187,6 +187,10 @@ __END__
 
 githook-perltidy - Run perltidy before Git commits
 
+=head1 VERSION
+
+0.01.
+
 =head1 SYNOPSIS
 
 Make sure everyone uses the same .perltidyrc across your project:

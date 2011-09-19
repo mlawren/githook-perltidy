@@ -31,6 +31,10 @@ my $command = shift @ARGV || usage();
 
 if ( $command eq 'install' ) {
 
+    if ( !system('git ls-files .perltidyrc > /dev/null 2>&1') ) {
+        die "$self: You have no .perltidyrc in your repository.\n";
+    }
+
     my $hooks_dir = catdir( '.git', 'hooks' );
     if ( !-d $hooks_dir ) {
         die "Directory not found: $hooks_dir\n";
@@ -46,7 +50,7 @@ if ( $command eq 'install' ) {
         die "File/link exists: $post_file\n";
     }
 
-    write_file( $pre_file, "#!/bin/sh\n$self pre-commit\n" );
+    write_file( $pre_file, "#!/bin/sh\n$self pre-commit @ARGV\n" );
     chmod 0755, $pre_file || warn "chmod: $!";
     print "$self: $pre_file\n";
 
@@ -56,6 +60,10 @@ if ( $command eq 'install' ) {
 
 }
 elsif ( $command eq 'pre-commit' ) {
+
+    if ( !system('git ls-files .perltidyrc > /dev/null 2>&1') ) {
+        die "$self: You have no .perltidyrc in your repository.\n";
+    }
 
     open( my $fh, '-|', 'git status --porcelain' ) || die "open: $!";
 
@@ -170,15 +178,17 @@ githook-perltidy - Run perltidy before Git commits
 
 =head1 SYNOPSIS
 
-In your $GIT_DIR/hooks/pre-commit file:
+Make sure everyone uses the same .perltidyrc across your project:
 
-    #!/bin/sh
-    githook-perltidy pre-commit disttest
+    $ git add .perltidyrc
+    $ git commit
 
-In your $GIT_DIR/hooks/post-commit file:
+Install the pre-commit and post-commit hooks, forcing "make disttest"
+to be run after perltidy:
 
-    #!/bin/sh
-    githook-perltidy post-commit
+    $ githook-perltidy install disttest
+    githook-perltidy: .git/hooks/pre-commit
+    githook-perltidy: .git/hooks/post-commit
 
 =head1 DESCRIPTION
 
@@ -192,18 +202,40 @@ are being committed and not every file in your repository. It is also
 intended to be safe: the index and working tree are stashed away
 beforehand, and restored in the event of failure.
 
-There are two modes this script runs in as determed by the first
-argument:
+There are three types of action this script will take as determed by
+the first argument:
 
 =over 4
 
+=item install [MAKE ARGS]
+
+Can be run from the command-line in the top-level directory of
+your repository. It writes F<pre-commit> and F<post-commit> hooks in
+F<$GIT_DIR/hooks/>. Any MAKE ARGS given will be added to the
+pre-commit hook:
+
+$GIT_DIR/hooks/pre-commit:
+
+    #!/bin/sh
+    githook-perltidy pre-commit MAKE ARGS
+
+$GIT_DIR/hooks/post-commit:
+
+    #!/bin/sh
+    githook-perltidy post-commit
+
+This command will fail if there is no .perltidyrc file in the
+repository, if the hooks directory isn't found, or if either of the
+hook files already exist.
+
 =item pre-commit [MAKE ARGS]
 
-Puts a backup of your index and working tree into a Git stash. Runs
-L<perltidy> and L<podtidy> on any Perl or POD files in the Git index.
-If any MAKE ARGS are given they will be passed to a L<make> call. This
-way you can ensure that your code passes a C<make test> or C<make
-disttest> check before each commit.
+Should be called from a Git pre-commit hook.  Puts a backup of your
+index and working tree into a Git stash. Runs L<perltidy> and
+L<podtidy> on any Perl or POD files in the Git index.  If any MAKE ARGS
+are given they will be passed to a L<make> call. This way you can
+ensure that your code passes a C<make test> or C<make disttest> check
+before each commit.
 
 Failure of any of the above commands will result in a hard reset and
 the saved stash popped (I.e. re-applied and deleted). The commit will
@@ -214,8 +246,12 @@ allowed to proceed.  In the event that your index was an interactive or
 patched version of your working tree, the stash will be kept for the
 post-commit hook. Otherwise it will be dropped.
 
+This command will fail if there is no .perltidyrc file in the
+repository.
+
 =item post-commit
 
+Should be called from a Git post-commit hook.
 In the event that your index was an interactive or patched version of
 your working tree, the post-commit command will pop the stash saved by
 the pre-commit command. This will attempt to merge back the changes to
@@ -224,18 +260,6 @@ L<podtidy> may have introduced conflicts with your existing
 modifications which you will have to manually fix.
 
 =back
-
-Additionally B<githook-perltidy> takes a convenience "install" argument
-that writes the F<pre-commit> and F<post-commit> files in
-F<$GIT_DIR/hooks/> as shown in the SYNOPSIS.
-
-    $ githook-perltidy install
-    githook-perltidy: .git/hooks/pre-commit
-    githook-perltidy: .git/hooks/post-commit
-
-You should run this in the top-level directory of your repository. This
-command will fail if the hooks directory isn't found or if either of
-the hook files already exist.
 
 =head1 SUPPORT
 

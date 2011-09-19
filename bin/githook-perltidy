@@ -205,7 +205,7 @@ to be run after perltidy:
 
 B<githook-perltidy> is a script that can be invoked by Git hooks during
 a "git commit". It runs L<perltidy> and L<podtidy> on Perl and POD
-files (and optionally runs L<make> targets ) ensuring that your
+files (and optionally runs L<make> targets) ensuring that your
 project's code is always cleanly committed.
 
 This script is is efficient: it only modifies Perl and POD files that
@@ -271,6 +271,17 @@ introduced conflicts with your existing modifications which you will
 have to manually fix.
 
 =back
+
+There are two ways in which B<githook-perltidy> behaviour may affect
+your existing workflow. Firstly if you are accustomed to commiting
+changes to files which are still open in your editor, your editor may
+complain that the underlying file has changed on disk. Possibily your
+editor doesn't even detect the change and your next write will not be
+'tidy'.
+
+Secondly, aborting a commit with an empty commit message or via a later
+command in the pre-commit hook will still result in changed (tidied)
+files on disk and in the index.
 
 =head1 SUPPORT
 

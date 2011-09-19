@@ -77,6 +77,16 @@ DESCRIPTION
         have introduced conflicts with your existing modifications which you
         will have to manually fix.
 
+    There are two ways in which githook-perltidy behaviour may affect your
+    existing workflow. Firstly if you are accustomed to commiting changes to
+    files which are still open in your editor, your editor may complain that
+    the underlying file has changed on disk. Possibily your editor doesn't
+    even detect the change and your next write will not be 'tidy'.
+
+    Secondly, aborting a commit with an empty commit message or via a later
+    command in the pre-commit hook will still result in changed (tidied)
+    files on disk and in the index.
+
 SUPPORT
     This tool is managed via github:
 

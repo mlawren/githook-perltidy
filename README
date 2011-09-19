@@ -5,12 +5,12 @@ SYNOPSIS
     In your $GIT_DIR/hooks/pre-commit file:
 
         #!/bin/sh
-        githook-perltidy pre-commit
+        githook-perltidy pre-commit disttest
 
     In your $GIT_DIR/hooks/post-commit file:
 
         #!/bin/sh
-        githook-perltidy post-commit disttest
+        githook-perltidy post-commit
 
 DESCRIPTION
     githook-perltidy is a script that can be invoked by Git hooks during a
@@ -57,7 +57,7 @@ DESCRIPTION
 SUPPORT
     This tool is managed via github:
 
-        https://github.com/mlawren/githook-perltidy/
+        https://github.com/mlawren/githook-perltidy
 
 SEE ALSO
     githooks(5), perltidy(1), podtidy(1)

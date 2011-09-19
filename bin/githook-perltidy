@@ -13,7 +13,7 @@ sub usage {
     die "usage: $self COMMAND
 
 Valid values for COMMAND include:
-    install                   Install pre-commit and post-commit hooks
+    install [MAKE ARGS]       Install pre-commit and post-commit hooks
     pre-commit [MAKE ARGS]    Run perltidy, podtidy and (optionally) tests
     post-commit               Merge non-indexed changes after commit
 ";
@@ -186,6 +186,10 @@ __END__
 =head1 NAME
 
 githook-perltidy - Run perltidy before Git commits
+
+=head1 VERSION
+
+0.01.
 
 =head1 SYNOPSIS
 

@@ -14,5 +14,6 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml
 README
+t/githook-perltidy.t
 xt/pod-coverage.t
 xt/pod.t

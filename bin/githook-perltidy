@@ -181,7 +181,7 @@ END {
             }
         }
         elsif ($stashed) {
-            print STDERR "$self: pre-commit FAIL! Restoring...\n";
+            print STDERR "\n$self: pre-commit FAIL! Restoring...\n";
             doit(qw/git reset --hard/);
             doit(qw/git stash pop --quiet --index/);
         }

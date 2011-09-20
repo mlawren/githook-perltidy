@@ -121,7 +121,17 @@ elsif ( $command eq 'pre-commit' ) {
         }
     }
 
-    if (@ARGV) {
+    my @MAKE_ARGS = @ARGV;
+    if ( exists $ENV{PERLTIDY_MAKE} ) {
+        if ( $ENV{PERLTIDY_MAKE} eq '' ) {
+            @MAKE_ARGS = ();
+        }
+        else {
+            @MAKE_ARGS = split ' ', $ENV{PERLTIDY_MAKE};
+        }
+    }
+
+    if (@MAKE_ARGS) {
 
         # Stop the git that is calling this pre-commit script from
         # interfering with any possible git calls in Makefile.PL or any
@@ -138,7 +148,7 @@ elsif ( $command eq 'pre-commit' ) {
             run(qw/perl Build.PL/) unless -f 'Makefile';
         }
 
-        run( qw/make/, @ARGV );
+        run( qw/make/, $ENV{PERLTIDY_MAKE} ? $ENV{PERLTIDY_MAKE} : @ARGV );
     }
 
     run( qw/git add /, @perlfiles );
@@ -206,12 +216,14 @@ Make sure everyone uses the same .perltidyrc across your project:
     $ git add .perltidyrc
     $ git commit
 
-Install the pre-commit and post-commit hooks, forcing "make disttest"
-to be run after perltidy:
+Install the pre-commit and post-commit hooks, forcing a C<make
+disttest> to be run after perltidy:
 
     $ githook-perltidy install disttest
-    githook-perltidy: .git/hooks/pre-commit
-    githook-perltidy: .git/hooks/post-commit
+
+Run different L<make> arguments before commit:
+
+    $ PERLTIDY_MAKE="test clean" git commit
 
 =head1 DESCRIPTION
 
@@ -256,9 +268,11 @@ hook files already exist.
 Should be called from a Git pre-commit hook.  Puts a backup of your
 index and working tree into a Git stash. Runs L<perltidy> and
 L<podtidy> on any Perl or POD files in the Git index.  If any MAKE ARGS
-are given they will be passed to a L<make> call. This way you can
+are given they will be passed to a L<make> call.  This way you can
 ensure that your code passes a C<make test> or C<make disttest> check
-before each commit.
+before each commit.  If the PERLTIDY_MAKE environment variable exists
+it will I<override> any arguments. Setting PERLTIDY_MAKE="" will skip
+the make call entirely.
 
 Failure of any of the above commands will result in a hard reset and
 the saved stash popped (I.e. re-applied and deleted). The commit will

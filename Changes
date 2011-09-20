@@ -1,3 +1,20 @@
+0.02 (2011-09-20)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Depend on Pod::Tidy and Perl::Tidy to bring in the CLI tools.
+        - Initial tests added.
+
+    Bug Fixes:
+        - IMPORTANT! Actually do what the documentation claims:
+            * Detect perltidy failure
+            * Stop commit on failure
+
 0.01 (2011-09-19)
 
     Initial Release.

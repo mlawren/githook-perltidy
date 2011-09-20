@@ -112,8 +112,12 @@ elsif ( $command eq 'pre-commit' ) {
         unlink $file . '~';
 
         unless ( $file =~ m/\.pod$/i ) {
+            unlink $file . '.ERR';
             doit( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
             unlink $file . '.bak';
+            if ( -e $file . '.ERR' ) {
+                die read_file( $file . '.ERR' );
+            }
         }
     }
 

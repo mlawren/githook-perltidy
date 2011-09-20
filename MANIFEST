@@ -1,4 +1,5 @@
 bin/githook-perltidy
+Changes
 inc/Module/Install.pm
 inc/Module/Install/Base.pm
 inc/Module/Install/Can.pm
@@ -13,5 +14,6 @@ MANIFEST			This list of files
 MANIFEST.SKIP
 META.yml
 README
+t/githook-perltidy.t
 xt/pod-coverage.t
 xt/pod.t

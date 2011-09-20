@@ -160,6 +160,9 @@ else {
 exit 0;
 
 END {
+
+    # Save our exit status as the system calls in doit() will change it
+    my $exit = $?;
     unlink POST_HOOK_FILE;
     if ( defined $command && $command eq 'pre-commit' ) {
         if ($success) {
@@ -174,11 +177,12 @@ END {
             }
         }
         elsif ($stashed) {
+            print STDERR "$self: pre-commit FAIL! Restoring...\n";
             doit(qw/git reset --hard/);
             doit(qw/git stash pop --quiet --index/);
-            die "$self: pre-commit FAIL.\n";
         }
     }
+    $? = $exit;
 }
 
 __END__

@@ -19,7 +19,7 @@ Valid values for COMMAND include:
 ";
 }
 
-sub doit {
+sub run {
     print join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
     system("@_") == 0 or croak "@_ failed: $?";
 }
@@ -101,19 +101,19 @@ elsif ( $command eq 'pre-commit' ) {
 
     exit 0 unless @perlfiles;
 
-    doit( qw/git stash save --quiet --keep-index /,
+    run( qw/git stash save --quiet --keep-index /,
         $self . ' ' . scalar localtime );
     $stashed = 1;
 
-    doit(qw/git checkout-index -a /);
+    run(qw/git checkout-index -a /);
 
     foreach my $file (@perlfiles) {
-        doit( qw/podtidy --inplace --columns 72/, $file );
+        run( qw/podtidy --inplace --columns 72/, $file );
         unlink $file . '~';
 
         unless ( $file =~ m/\.pod$/i ) {
             unlink $file . '.ERR';
-            doit( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
+            run( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
             unlink $file . '.bak';
             if ( -e $file . '.ERR' ) {
                 die read_file( $file . '.ERR' );
@@ -130,18 +130,18 @@ elsif ( $command eq 'pre-commit' ) {
         delete $ENV{$_} for grep( /^GIT_/, keys %ENV );
 
         if ( -e 'Makefile.PL' ) {
-            doit(qw/perl Makefile.PL/) if grep( /^Makefile.PL$/i, @perlfiles );
-            doit(qw/perl Makefile.PL/) unless -f 'Makefile';
+            run(qw/perl Makefile.PL/) if grep( /^Makefile.PL$/i, @perlfiles );
+            run(qw/perl Makefile.PL/) unless -f 'Makefile';
         }
         elsif ( -e 'Build.PL' ) {
-            doit(qw/perl Build.PL/) if grep( /^Build.PL$/i, @perlfiles );
-            doit(qw/perl Build.PL/) unless -f 'Makefile';
+            run(qw/perl Build.PL/) if grep( /^Build.PL$/i, @perlfiles );
+            run(qw/perl Build.PL/) unless -f 'Makefile';
         }
 
-        doit( qw/make/, @ARGV );
+        run( qw/make/, @ARGV );
     }
 
-    doit( qw/git add /, @perlfiles );
+    run( qw/git add /, @perlfiles );
 
     $success = 1;
 
@@ -153,7 +153,7 @@ elsif ( $command eq 'post-commit' ) {
   Re-applying your non-indexed changes on top of the tidy'd code.
   You may need to fix them up (and pop the top stash) before continuing.\n";
 
-        doit(qw/git stash pop --quiet/);
+        run(qw/git stash pop --quiet/);
     }
 
 }
@@ -165,7 +165,7 @@ exit 0;
 
 END {
 
-    # Save our exit status as the system calls in doit() will change it
+    # Save our exit status as the system calls in run() will change it
     my $exit = $?;
     unlink POST_HOOK_FILE;
     if ( defined $command && $command eq 'pre-commit' ) {
@@ -177,13 +177,13 @@ END {
                 write_file( POST_HOOK_FILE, $$ );
             }
             else {
-                doit(qw/git stash drop -q/);
+                run(qw/git stash drop -q/);
             }
         }
         elsif ($stashed) {
             print STDERR "\n$self: pre-commit FAIL! Restoring...\n";
-            doit(qw/git reset --hard/);
-            doit(qw/git stash pop --quiet --index/);
+            run(qw/git reset --hard/);
+            run(qw/git stash pop --quiet --index/);
         }
     }
     $? = $exit;

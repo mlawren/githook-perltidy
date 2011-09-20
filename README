@@ -10,12 +10,14 @@ SYNOPSIS
         $ git add .perltidyrc
         $ git commit
 
-    Install the pre-commit and post-commit hooks, forcing "make disttest" to
-    be run after perltidy:
+    Install the pre-commit and post-commit hooks, forcing a "make disttest"
+    to be run after perltidy:
 
         $ githook-perltidy install disttest
-        githook-perltidy: .git/hooks/pre-commit
-        githook-perltidy: .git/hooks/post-commit
+
+    Run different make arguments before commit:
+
+        $ PERLTIDY_MAKE="test clean" git commit
 
 DESCRIPTION
     githook-perltidy is a script that can be invoked by Git hooks during a
@@ -57,7 +59,9 @@ DESCRIPTION
         on any Perl or POD files in the Git index. If any MAKE ARGS are
         given they will be passed to a make call. This way you can ensure
         that your code passes a "make test" or "make disttest" check before
-        each commit.
+        each commit. If the PERLTIDY_MAKE environment variable exists it
+        will *override* any arguments. Setting PERLTIDY_MAKE="" will skip
+        the make call entirely.
 
         Failure of any of the above commands will result in a hard reset and
         the saved stash popped (I.e. re-applied and deleted). The commit

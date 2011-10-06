@@ -4,7 +4,7 @@ use warnings;
 use Carp qw/croak/;
 use File::Slurp;
 use File::Basename;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile catdir updir/;
 use constant POST_HOOK_FILE => '.githook-perltidy';
 
 my $self = basename($0);
@@ -27,7 +27,7 @@ sub run {
 sub get_perltidyrc {
     my $rc;
     if ( $ENV{GIT_DIR} ) {
-        $rc = catfile( $ENV{GIT_DIR}, '..', '.perltidyrc' );
+        $rc = catfile( $ENV{GIT_DIR}, updir(), '.perltidyrc' );
     }
     else {
         $rc = '.perltidyrc';

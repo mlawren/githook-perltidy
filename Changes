@@ -1,3 +1,18 @@
+0.03 (2011-10-14)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - PERLTIDY_MAKE environment variable support.
+        - Small portability fixes.
+
+    Bug Fixes:
+        - IMPORTANT! Properly detect a partial dirty tree.
+
 0.02 (2011-09-20)
 
     API Changes:

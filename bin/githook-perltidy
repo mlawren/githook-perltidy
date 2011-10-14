@@ -4,7 +4,7 @@ use warnings;
 use Carp qw/croak/;
 use File::Slurp;
 use File::Basename;
-use File::Spec::Functions qw/catfile catdir/;
+use File::Spec::Functions qw/catfile catdir updir/;
 use constant POST_HOOK_FILE => '.githook-perltidy';
 
 my $self = basename($0);
@@ -19,7 +19,7 @@ Valid values for COMMAND include:
 ";
 }
 
-sub doit {
+sub run {
     print join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
     system("@_") == 0 or croak "@_ failed: $?";
 }
@@ -27,7 +27,7 @@ sub doit {
 sub get_perltidyrc {
     my $rc;
     if ( $ENV{GIT_DIR} ) {
-        $rc = catfile( $ENV{GIT_DIR}, '..', '.perltidyrc' );
+        $rc = catfile( $ENV{GIT_DIR}, updir(), '.perltidyrc' );
     }
     else {
         $rc = '.perltidyrc';
@@ -84,6 +84,7 @@ elsif ( $command eq 'pre-commit' ) {
         next unless $line =~ m/^(.)(.) (.*)/;
 
         my ( $index, $wtree, $file ) = ( $1, $2, $3 );
+        $partial++ if $wtree eq 'M';
         next unless ( $index eq 'A' or $index eq 'M' );
 
         if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
@@ -94,26 +95,24 @@ elsif ( $command eq 'pre-commit' ) {
             next unless $possible =~ m/^#!.*perl\W/;
         }
 
-        $partial++ if ( $index eq 'M' and $wtree eq 'M' );
-
         push( @perlfiles, $file );
     }
 
     exit 0 unless @perlfiles;
 
-    doit( qw/git stash save --quiet --keep-index /,
+    run( qw/git stash save --quiet --keep-index /,
         $self . ' ' . scalar localtime );
     $stashed = 1;
 
-    doit(qw/git checkout-index -a /);
+    run(qw/git checkout-index -a /);
 
     foreach my $file (@perlfiles) {
-        doit( qw/podtidy --inplace --columns 72/, $file );
+        run( qw/podtidy --inplace --columns 72/, $file );
         unlink $file . '~';
 
         unless ( $file =~ m/\.pod$/i ) {
             unlink $file . '.ERR';
-            doit( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
+            run( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
             unlink $file . '.bak';
             if ( -e $file . '.ERR' ) {
                 die read_file( $file . '.ERR' );
@@ -121,7 +120,17 @@ elsif ( $command eq 'pre-commit' ) {
         }
     }
 
-    if (@ARGV) {
+    my @MAKE_ARGS = @ARGV;
+    if ( exists $ENV{PERLTIDY_MAKE} ) {
+        if ( $ENV{PERLTIDY_MAKE} eq '' ) {
+            @MAKE_ARGS = ();
+        }
+        else {
+            @MAKE_ARGS = split ' ', $ENV{PERLTIDY_MAKE};
+        }
+    }
+
+    if (@MAKE_ARGS) {
 
         # Stop the git that is calling this pre-commit script from
         # interfering with any possible git calls in Makefile.PL or any
@@ -130,18 +139,18 @@ elsif ( $command eq 'pre-commit' ) {
         delete $ENV{$_} for grep( /^GIT_/, keys %ENV );
 
         if ( -e 'Makefile.PL' ) {
-            doit(qw/perl Makefile.PL/) if grep( /^Makefile.PL$/i, @perlfiles );
-            doit(qw/perl Makefile.PL/) unless -f 'Makefile';
+            run(qw/perl Makefile.PL/) if grep( /^Makefile.PL$/i, @perlfiles );
+            run(qw/perl Makefile.PL/) unless -f 'Makefile';
         }
         elsif ( -e 'Build.PL' ) {
-            doit(qw/perl Build.PL/) if grep( /^Build.PL$/i, @perlfiles );
-            doit(qw/perl Build.PL/) unless -f 'Makefile';
+            run(qw/perl Build.PL/) if grep( /^Build.PL$/i, @perlfiles );
+            run(qw/perl Build.PL/) unless -f 'Makefile';
         }
 
-        doit( qw/make/, @ARGV );
+        run( qw/make/, $ENV{PERLTIDY_MAKE} ? $ENV{PERLTIDY_MAKE} : @ARGV );
     }
 
-    doit( qw/git add /, @perlfiles );
+    run( qw/git add /, @perlfiles );
 
     $success = 1;
 
@@ -153,7 +162,7 @@ elsif ( $command eq 'post-commit' ) {
   Re-applying your non-indexed changes on top of the tidy'd code.
   You may need to fix them up (and pop the top stash) before continuing.\n";
 
-        doit(qw/git stash pop --quiet/);
+        run(qw/git stash pop --quiet/);
     }
 
 }
@@ -165,7 +174,7 @@ exit 0;
 
 END {
 
-    # Save our exit status as the system calls in doit() will change it
+    # Save our exit status as the system calls in run() will change it
     my $exit = $?;
     unlink POST_HOOK_FILE;
     if ( defined $command && $command eq 'pre-commit' ) {
@@ -177,13 +186,13 @@ END {
                 write_file( POST_HOOK_FILE, $$ );
             }
             else {
-                doit(qw/git stash drop -q/);
+                run(qw/git stash drop -q/);
             }
         }
         elsif ($stashed) {
             print STDERR "\n$self: pre-commit FAIL! Restoring...\n";
-            doit(qw/git reset --hard/);
-            doit(qw/git stash pop --quiet --index/);
+            run(qw/git reset --hard/);
+            run(qw/git stash pop --quiet --index/);
         }
     }
     $? = $exit;
@@ -197,7 +206,7 @@ githook-perltidy - Run perltidy before Git commits
 
 =head1 VERSION
 
-0.02.
+0.03.
 
 =head1 SYNOPSIS
 
@@ -206,12 +215,14 @@ Make sure everyone uses the same .perltidyrc across your project:
     $ git add .perltidyrc
     $ git commit
 
-Install the pre-commit and post-commit hooks, forcing "make disttest"
-to be run after perltidy:
+Install the pre-commit and post-commit hooks, forcing a C<make
+disttest> to be run after perltidy:
 
     $ githook-perltidy install disttest
-    githook-perltidy: .git/hooks/pre-commit
-    githook-perltidy: .git/hooks/post-commit
+
+Run different L<make> arguments before commit:
+
+    $ PERLTIDY_MAKE="test clean" git commit
 
 =head1 DESCRIPTION
 
@@ -256,9 +267,11 @@ hook files already exist.
 Should be called from a Git pre-commit hook.  Puts a backup of your
 index and working tree into a Git stash. Runs L<perltidy> and
 L<podtidy> on any Perl or POD files in the Git index.  If any MAKE ARGS
-are given they will be passed to a L<make> call. This way you can
+are given they will be passed to a L<make> call.  This way you can
 ensure that your code passes a C<make test> or C<make disttest> check
-before each commit.
+before each commit.  If the PERLTIDY_MAKE environment variable exists
+it will I<override> any arguments. Setting PERLTIDY_MAKE="" will skip
+the make call entirely.
 
 Failure of any of the above commands will result in a hard reset and
 the saved stash popped (I.e. re-applied and deleted). The commit will

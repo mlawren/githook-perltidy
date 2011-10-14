@@ -11,7 +11,8 @@ use FindBin;
 use Test::Fatal;
 use Sys::Cmd qw/run/;
 
-plan skip_all => 'No Git' unless eval { run(qw/git --version/) };
+plan skip_all => 'No Git'  unless eval { run(qw/git --version/) };
+plan skip_all => 'No Make' unless eval { run(qw/make --version/) };
 
 $ENV{PATH} = "$FindBin::Bin/../bin:$ENV{PATH}";
 
@@ -82,21 +83,51 @@ like exception { run( qw/git commit -m/, 'bad syntax' ) },
 
 is read_file('bad.pl'), $bad_syntax, 'working tree restored';
 like run(qw/git status --porcelain/), qr/^A\s+bad.pl$/sm, 'index status';
+unlink 'bad.pl';
 run(qw/git checkout-index bad.pl/);
 is read_file('bad.pl'), $bad_syntax, 'index contents';
+run(qw/git reset/);
 
 # "make" arguments
 
 unlink $pre;
 unlink $post;
 
-like run(qw/githook-perltidy install make args/),
+write_file(
+    'Makefile.PL', "
+use ExtUtils::MakeMaker;
+
+WriteMakefile(
+   NAME            => 'Your::Module',
+);
+"
+);
+
+like run(qw/githook-perltidy install test/),
   qr/pre-commit.*post-commit/s, 'install make args output';
 
-is read_file($pre), "#!/bin/sh\ngithook-perltidy pre-commit make args\n",
+is read_file($pre), "#!/bin/sh\ngithook-perltidy pre-commit test\n",
   'pre content make args ';
 is read_file($post), "#!/bin/sh\ngithook-perltidy post-commit\n",
   'post content make args';
+
+run(qw/git add Makefile.PL/);
+like run( qw/git commit -m/, 'add Makefile.PL' ),
+  qr/add Makefile.PL/sm,
+  'make run';
+ok -e 'Makefile', 'perl Makefile.PL';
+
+unlink 'Makefile';
+run(qw/git reset HEAD^/);
+run(qw/git add Makefile.PL/);
+like run(
+    qw/git commit -m/,
+    { env => { PERLTIDY_MAKE => '' } },
+    'add Makefile.PL'
+  ),
+  qr/add Makefile.PL/sm,
+  'no make run';
+ok !-e 'Makefile', 'no perl Makefile.PL';
 
 done_testing();
 

@@ -84,6 +84,7 @@ elsif ( $command eq 'pre-commit' ) {
         next unless $line =~ m/^(.)(.) (.*)/;
 
         my ( $index, $wtree, $file ) = ( $1, $2, $3 );
+        $partial++ if $wtree eq 'M';
         next unless ( $index eq 'A' or $index eq 'M' );
 
         if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
@@ -93,8 +94,6 @@ elsif ( $command eq 'pre-commit' ) {
             #        warn $possible;
             next unless $possible =~ m/^#!.*perl\W/;
         }
-
-        $partial++ if ( $index eq 'M' and $wtree eq 'M' );
 
         push( @perlfiles, $file );
     }

@@ -10,3 +10,4 @@ Makefile$
 Makefile.old
 ^App-githook-perltidy
 \.perltidyrc$
+xt/

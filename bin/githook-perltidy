@@ -39,9 +39,11 @@ sub get_perltidyrc {
     return $rc;
 }
 
-my $stashed = 0;
-my $success = 0;
-my $partial = 0;
+my $stashed   = 0;
+my $success   = 0;
+my $partial   = 0;
+my @perlfiles = ();
+
 my $command = shift @ARGV || usage();
 
 if ( $command eq 'install' ) {
@@ -78,7 +80,6 @@ elsif ( $command eq 'pre-commit' ) {
 
     open( my $fh, '-|', 'git status --porcelain' ) || die "open: $!";
 
-    my @perlfiles;
     while ( my $line = <$fh> ) {
         chomp $line;
         next unless $line =~ m/^(.)(.) (.*)/;
@@ -159,9 +160,38 @@ elsif ( $command eq 'post-commit' ) {
 
     if ( -e POST_HOOK_FILE ) {
         print "$self post-commit:
-  Re-applying your non-indexed changes on top of the tidy'd code.
-  You may need to fix them up (and pop the top stash) before continuing.\n";
+ Tidying and re-applying your non-indexed changes on top of the tidy'd code.\n";
 
+        my $rc = get_perltidyrc();
+        @perlfiles = map { chomp; $_ } read_file(POST_HOOK_FILE);
+
+        my $branch = qx/git branch --contains HEAD/;
+        chomp $branch;
+
+        if ( $branch !~ s/^\*\s+(.*)$/$1/ ) {
+            run(qw/git stash pop --quiet/);
+            die "Could not determine current branch!\n";
+        }
+
+        run( qw/git checkout -q/, $branch . '^' );
+        run(qw/git stash pop --quiet/);
+
+        foreach my $file (@perlfiles) {
+            run( qw/podtidy --inplace --columns 72/, $file );
+            unlink $file . '~';
+
+            unless ( $file =~ m/\.pod$/i ) {
+                unlink $file . '.ERR';
+                run( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
+                unlink $file . '.bak';
+                if ( -e $file . '.ERR' ) {
+                    die read_file( $file . '.ERR' );
+                }
+            }
+        }
+
+        run(qw/git stash save --quiet/);
+        run( qw/git checkout -q/, $branch );
         run(qw/git stash pop --quiet/);
     }
 
@@ -183,7 +213,7 @@ END {
                 print "$self: Writing '"
                   . POST_HOOK_FILE
                   . "' for post-commit hook\n";
-                write_file( POST_HOOK_FILE, $$ );
+                write_file( POST_HOOK_FILE, join( "\n", @perlfiles ) );
             }
             else {
                 run(qw/git stash drop -q/);

@@ -6,6 +6,7 @@ author 'Mark Lawrence <nomad@null.net>';
 license 'gpl3';
 perl_version '5.006';
 version '0.03';
+readme_from 'bin/githook-perltidy';
 
 requires 'File::Slurp'           => 0;
 requires 'File::Basename'        => 0;

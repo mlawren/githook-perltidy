@@ -232,7 +232,7 @@ __END__
 
 =head1 NAME
 
-githook-perltidy - Run perltidy before Git commits
+githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
@@ -245,26 +245,21 @@ Make sure everyone uses the same .perltidyrc across your project:
     $ git add .perltidyrc
     $ git commit
 
-Install the pre-commit and post-commit hooks, forcing a C<make
-disttest> to be run after perltidy:
+Install the pre-commit and post-commit hooks:
 
-    $ githook-perltidy install disttest
-
-Run different L<make> arguments before commit:
-
-    $ PERLTIDY_MAKE="test clean" git commit
+    $ githook-perltidy install
 
 =head1 DESCRIPTION
 
-B<githook-perltidy> is a script that can be invoked by Git hooks during
-a "git commit". It runs L<perltidy> and L<podtidy> on Perl and POD
-files (and optionally runs L<make> targets) ensuring that your
-project's code is always cleanly committed.
+B<githook-perltidy> is a script that can be invoked by Git pre-commit
+and post-commit hooks to run L<perltidy> and L<podtidy> on Perl and POD
+files (and optionally L<make>(1) targets), ensuring that your project's
+code is always cleanly committed.
 
 This script is is efficient: it only modifies Perl and POD files that
-are being committed and not every file in your repository. It is also
-intended to be safe: the index and working tree are stashed away
-beforehand, and restored in the event of failure.
+are being committed and not every file in your repository. It also
+tries its hardest to be safe: the index and working tree are stashed
+away beforehand, and restored in the event of failure.
 
 There are three types of action this script will take as determed by
 the first argument:
@@ -273,20 +268,10 @@ the first argument:
 
 =item install [MAKE ARGS]
 
-Can be run from the command-line in the top-level directory of your
-repository. It writes F<pre-commit> and F<post-commit> hooks in
-F<$GIT_DIR/hooks/>. Any MAKE ARGS given will be added to the pre-commit
-hook:
-
-$GIT_DIR/hooks/pre-commit:
-
-    #!/bin/sh
-    githook-perltidy pre-commit MAKE ARGS
-
-$GIT_DIR/hooks/post-commit:
-
-    #!/bin/sh
-    githook-perltidy post-commit
+Should be run from the command-line in the top-level directory of your
+repository. Writes F<pre-commit> and F<post-commit> files in the
+F<$GIT_DIR/hooks/> directory. Any MAKE ARGS given will be added to the
+C<githook-perltidy pre-commit> call.
 
 This command will fail if there is no .perltidyrc file in the
 repository, if the hooks directory isn't found, or if either of the
@@ -294,19 +279,18 @@ hook files already exist.
 
 =item pre-commit [MAKE ARGS]
 
-Should be called from a Git pre-commit hook.  Puts a backup of your
-index and working tree into a Git stash. Runs L<perltidy> and
-L<podtidy> on any Perl or POD files in the Git index.  If any MAKE ARGS
-are given they will be passed to a L<make> call.  This way you can
-ensure that your code passes a C<make test> or C<make disttest> check
-before each commit.  If the PERLTIDY_MAKE environment variable exists
-it will I<override> any arguments. Setting PERLTIDY_MAKE="" will skip
-the make call entirely.
+Called from a Git pre-commit hook.  Backs up your index and working
+tree into a Git stash. Runs L<perltidy> and L<podtidy> on any Perl or
+POD files in the Git index.
 
-Failure of any of the above commands will result in a hard reset and
-the saved stash popped (I.e. re-applied and deleted). The commit will
-be stopped.
+If any MAKE ARGS are given they will be passed to a L<make> call.  This
+way you can ensure that your code passes a C<make test> or C<make
+disttest> check before each commit.  If the PERLTIDY_MAKE environment
+variable exists it will I<override> any arguments. Setting
+PERLTIDY_MAKE="" will skip the make call entirely.
 
+Failure of any of the above will result in a hard reset and the saved
+stash popped (I.e. re-applied and deleted). The commit will be stopped.
 On success the index is updated with the tidied files and the commit is
 allowed to proceed.  In the event that your index was an interactive or
 patched version of your working tree, the stash will be kept for the
@@ -317,13 +301,26 @@ repository.
 
 =item post-commit
 
-Should be called from a Git post-commit hook. In the event that your
-index was an interactive or patched version of your working tree, the
-post-commit command will pop the stash saved by the pre-commit command.
-This will attempt to merge back the changes to your working tree that
-were not in the index. Note that L<perltidy> and L<podtidy> may have
-introduced conflicts with your existing modifications which you will
-have to manually fix.
+Called from a Git post-commit hook to re-apply stashed (but not
+indexed) changes. In the event that your index was an interactive or
+patched version of your working tree, the post-commit command does the
+following:
+
+=over
+
+=item * checks out the I<previous> commit
+
+=item * pops the stash saved by the pre-commit command
+
+=item * tidies the files that were stashed
+
+=item * saves a new stash with the completely tidied files
+
+=item * checks out the I<latest> commit
+
+=item * pops the stash with the tidied files
+
+=back
 
 =back
 
@@ -354,7 +351,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011 Mark Lawrence <nomad@null.net>
+Copyright 2011-2012 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

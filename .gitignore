@@ -11,3 +11,4 @@ Makefile
 blib/
 inc/
 App-githook-perltidy*
+README

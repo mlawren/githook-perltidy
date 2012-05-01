@@ -1,0 +1,13 @@
+*.swp
+README
+Makefile.old
+pm_to_blib
+MANIFEST
+MANIFEST.bak
+META.yml
+MYMETA.json
+MYMETA.yml
+Makefile
+blib/
+inc/
+App-githook-perltidy*

@@ -1,6 +1,6 @@
 use inc::Module::Install;
 
-name 'githook-perltidy';
+name 'App-githook-perltidy';
 abstract 'Run perltidy during Git commits';
 author 'Mark Lawrence <nomad@null.net>';
 license 'gpl3';

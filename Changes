@@ -1,3 +1,19 @@
+0.04 (2012-05-01)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Handle partially indexed files better on post-commit
+        - Distribution name change to App-githook-perltidy.
+        - First release to CPAN (mostly for the tester reports)
+
+    Bug Fixes:
+        - None.
+
 0.03 (2011-10-14)
 
     API Changes:

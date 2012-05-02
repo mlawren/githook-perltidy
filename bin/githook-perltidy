@@ -44,7 +44,7 @@ my $stashed   = 0;
 my $success   = 0;
 my $partial   = 0;
 my @perlfiles = ();
-my @partial   = ();
+my %partial   = ();
 
 my $command = shift @ARGV || usage();
 
@@ -99,7 +99,7 @@ elsif ( $command eq 'pre-commit' ) {
         }
 
         push( @perlfiles, $file );
-        push( @partial, $file ) if $wtree eq 'M';
+        $partial{$file} = $file . '|' . ( $wtree eq 'M' ? 1 : 0 );
     }
 
     exit 0 unless @perlfiles;
@@ -167,25 +167,27 @@ elsif ( $command eq 'post-commit' ) {
 
     if ( -e POST_HOOK_FILE ) {
         my $rc = get_perltidyrc();
-        @partial = map { chomp; $_ } read_file(POST_HOOK_FILE);
+        @perlfiles = map { chomp; $_ } read_file(POST_HOOK_FILE);
 
-        if (@partial) {
-            print "$self post-commit:\n",
-              "    # tidying and re-applying your non-indexed changes.\n";
+        print "$self post-commit:\n",
+          "    # tidying and re-applying your non-indexed changes.\n";
 
-            my $branch = qx/git branch --contains HEAD/;
-            chomp $branch;
+        my $branch = qx/git branch --contains HEAD/;
+        chomp $branch;
 
-            if ( $branch !~ s/^\*\s+(.*)$/$1/ ) {
-                run(qw/git stash pop --quiet/);
-                die "$self: could not determine current branch!\n";
-            }
-
-            run(qw/git reset/);
-            run( qw/git checkout -q/, $branch . '^' );
+        if ( $branch !~ s/^\*\s+(.*)$/$1/ ) {
             run(qw/git stash pop --quiet/);
+            die "$self: could not determine current branch!\n";
+        }
 
-            foreach my $file (@partial) {
+        run(qw/git reset/);
+        run( qw/git checkout -q/, $branch . '^' );
+        run(qw/git stash pop --quiet/);
+
+        foreach my $try (@perlfiles) {
+            my ( $file, $partial ) = split( /\|/, $try );
+
+            if ($partial) {
                 run( qw/podtidy --inplace --columns 72/, $file );
                 unlink $file . '~';
 
@@ -198,14 +200,13 @@ elsif ( $command eq 'post-commit' ) {
                     }
                 }
             }
+            else {
+                run( qw/git checkout/, $file );
+            }
+        }
 
-            run(qw/git stash save --quiet/);
-            run( qw/git checkout -q/, $branch );
-        }
-        else {
-            print "$self post-commit:\n",
-              "    # re-applying your non-indexed changes.\n";
-        }
+        run(qw/git stash save --quiet/);
+        run( qw/git checkout -q/, $branch );
         run(qw/git stash pop --quiet/);
     }
 
@@ -227,7 +228,7 @@ END {
                 print "    # writing '"
                   . POST_HOOK_FILE
                   . "' for post-commit hook\n";
-                write_file( POST_HOOK_FILE, join( "\n", @partial ) );
+                write_file( POST_HOOK_FILE, join( "\n", values %partial ) );
             }
             else {
                 run(qw/git stash drop -q/);

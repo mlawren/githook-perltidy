@@ -5,6 +5,7 @@ use Carp qw/croak/;
 use File::Slurp;
 use File::Basename;
 use File::Spec::Functions qw/catfile catdir updir/;
+use Time::Piece;
 use constant POST_HOOK_FILE => '.githook-perltidy';
 
 my $self = basename($0);
@@ -20,7 +21,7 @@ Valid values for COMMAND include:
 }
 
 sub run {
-    print join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
+    print '    ' . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
     system("@_") == 0 or croak "@_ failed: $?";
 }
 
@@ -43,6 +44,7 @@ my $stashed   = 0;
 my $success   = 0;
 my $partial   = 0;
 my @perlfiles = ();
+my @partial   = ();
 
 my $command = shift @ARGV || usage();
 
@@ -97,12 +99,17 @@ elsif ( $command eq 'pre-commit' ) {
         }
 
         push( @perlfiles, $file );
+        push( @partial, $file ) if $wtree eq 'M';
     }
 
     exit 0 unless @perlfiles;
 
-    run( qw/git stash save --quiet --keep-index /,
-        $self . ' ' . scalar localtime );
+    print "$self pre-commit:\n    # saving non-indexed changes and tidying\n";
+
+    run(
+        qw/git stash save --quiet --keep-index /,
+        $self . ' ' . localtime->datetime
+    );
     $stashed = 1;
 
     run(qw/git checkout-index -a /);
@@ -159,39 +166,46 @@ elsif ( $command eq 'pre-commit' ) {
 elsif ( $command eq 'post-commit' ) {
 
     if ( -e POST_HOOK_FILE ) {
-        print "$self post-commit:
- Tidying and re-applying your non-indexed changes on top of the tidy'd code.\n";
-
         my $rc = get_perltidyrc();
-        @perlfiles = map { chomp; $_ } read_file(POST_HOOK_FILE);
+        @partial = map { chomp; $_ } read_file(POST_HOOK_FILE);
 
-        my $branch = qx/git branch --contains HEAD/;
-        chomp $branch;
+        if (@partial) {
+            print "$self post-commit:\n",
+              "    # tidying and re-applying your non-indexed changes.\n";
 
-        if ( $branch !~ s/^\*\s+(.*)$/$1/ ) {
+            my $branch = qx/git branch --contains HEAD/;
+            chomp $branch;
+
+            if ( $branch !~ s/^\*\s+(.*)$/$1/ ) {
+                run(qw/git stash pop --quiet/);
+                die "$self: could not determine current branch!\n";
+            }
+
+            run(qw/git reset/);
+            run( qw/git checkout -q/, $branch . '^' );
             run(qw/git stash pop --quiet/);
-            die "Could not determine current branch!\n";
-        }
 
-        run( qw/git checkout -q/, $branch . '^' );
-        run(qw/git stash pop --quiet/);
+            foreach my $file (@partial) {
+                run( qw/podtidy --inplace --columns 72/, $file );
+                unlink $file . '~';
 
-        foreach my $file (@perlfiles) {
-            run( qw/podtidy --inplace --columns 72/, $file );
-            unlink $file . '~';
-
-            unless ( $file =~ m/\.pod$/i ) {
-                unlink $file . '.ERR';
-                run( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
-                unlink $file . '.bak';
-                if ( -e $file . '.ERR' ) {
-                    die read_file( $file . '.ERR' );
+                unless ( $file =~ m/\.pod$/i ) {
+                    unlink $file . '.ERR';
+                    run( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
+                    unlink $file . '.bak';
+                    if ( -e $file . '.ERR' ) {
+                        die read_file( $file . '.ERR' );
+                    }
                 }
             }
-        }
 
-        run(qw/git stash save --quiet/);
-        run( qw/git checkout -q/, $branch );
+            run(qw/git stash save --quiet/);
+            run( qw/git checkout -q/, $branch );
+        }
+        else {
+            print "$self post-commit:\n",
+              "    # re-applying your non-indexed changes.\n";
+        }
         run(qw/git stash pop --quiet/);
     }
 
@@ -210,10 +224,10 @@ END {
     if ( defined $command && $command eq 'pre-commit' ) {
         if ($success) {
             if ($partial) {
-                print "$self: Writing '"
+                print "    # writing '"
                   . POST_HOOK_FILE
                   . "' for post-commit hook\n";
-                write_file( POST_HOOK_FILE, join( "\n", @perlfiles ) );
+                write_file( POST_HOOK_FILE, join( "\n", @partial ) );
             }
             else {
                 run(qw/git stash drop -q/);

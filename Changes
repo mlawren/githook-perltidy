@@ -1,4 +1,4 @@
-0.9.0_01 (2012-05-02)
+0.9.1 (2012-05-03)
 
     API Changes:
         - None.
@@ -7,7 +7,7 @@
         - None.
 
     Enhancements:
-        - Second release to CPAN (mostly for the tester reports)
+        - Second release to CPAN
         - Include dummy App::githook_perltidy module for CPAN indexing
         - Move to a http://semver.org style versioning scheme
 

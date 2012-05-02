@@ -1,5 +1,5 @@
 package App::githook_perltidy;
-our $VERSION = '0.9.0_02';
+our $VERSION = '0.9.1';
 1;
 
 __END__

@@ -1,0 +1,4 @@
+Check Makefile vs Makefile.PL modification times for re-run.
+
+Also tidy up on renames, as they show up only as renames even if the
+file got modified as well.

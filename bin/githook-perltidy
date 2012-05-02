@@ -269,8 +269,8 @@ Install the pre-commit and post-commit hooks:
 
 B<githook-perltidy> is a script that can be invoked by Git pre-commit
 and post-commit hooks to run L<perltidy> and L<podtidy> on Perl and POD
-files (and optionally L<make>(1) targets), ensuring that your project's
-code is always cleanly committed.
+files (and optionally run L<make>(1) targets), ensuring that your
+project's code is always cleanly committed.
 
 This script is is efficient: it only modifies Perl and POD files that
 are being committed and not every file in your repository. It also

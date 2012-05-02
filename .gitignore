@@ -1,5 +1,5 @@
 *.swp
-README
+*.swo
 Makefile.old
 pm_to_blib
 MANIFEST
@@ -11,4 +11,3 @@ Makefile
 blib/
 inc/
 App-githook-perltidy*
-README

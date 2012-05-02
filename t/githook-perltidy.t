@@ -30,7 +30,7 @@ like exception { run(qw/githook-perltidy/) }, qr/^usage: githook-perltidy/,
 
 run(qw/git init/);
 
-write_file( '.perltidyrc', '-i 4' );
+write_file( '.perltidyrc', "-i 4\n-syn\n-w\n" );
 
 like exception { run(qw/githook-perltidy install/) },
   qr/You have no .perltidyrc/, '.perltidyrc check';

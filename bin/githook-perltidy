@@ -5,6 +5,7 @@ use Carp qw/croak/;
 use File::Slurp;
 use File::Basename;
 use File::Spec::Functions qw/catfile catdir updir/;
+use Time::Piece;
 use constant POST_HOOK_FILE => '.githook-perltidy';
 
 my $self = basename($0);
@@ -20,7 +21,7 @@ Valid values for COMMAND include:
 }
 
 sub run {
-    print join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
+    print '    ' . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
     system("@_") == 0 or croak "@_ failed: $?";
 }
 
@@ -43,6 +44,7 @@ my $stashed   = 0;
 my $success   = 0;
 my $partial   = 0;
 my @perlfiles = ();
+my %partial   = ();
 
 my $command = shift @ARGV || usage();
 
@@ -97,12 +99,17 @@ elsif ( $command eq 'pre-commit' ) {
         }
 
         push( @perlfiles, $file );
+        $partial{$file} = $file . '|' . ( $wtree eq 'M' ? 1 : 0 );
     }
 
     exit 0 unless @perlfiles;
 
-    run( qw/git stash save --quiet --keep-index /,
-        $self . ' ' . scalar localtime );
+    print "$self pre-commit:\n    # saving non-indexed changes and tidying\n";
+
+    run(
+        qw/git stash save --quiet --keep-index /,
+        $self . ' ' . localtime->datetime
+    );
     $stashed = 1;
 
     run(qw/git checkout-index -a /);
@@ -159,34 +166,42 @@ elsif ( $command eq 'pre-commit' ) {
 elsif ( $command eq 'post-commit' ) {
 
     if ( -e POST_HOOK_FILE ) {
-        print "$self post-commit:
- Tidying and re-applying your non-indexed changes on top of the tidy'd code.\n";
-
         my $rc = get_perltidyrc();
         @perlfiles = map { chomp; $_ } read_file(POST_HOOK_FILE);
+
+        print "$self post-commit:\n",
+          "    # tidying and re-applying your non-indexed changes.\n";
 
         my $branch = qx/git branch --contains HEAD/;
         chomp $branch;
 
         if ( $branch !~ s/^\*\s+(.*)$/$1/ ) {
             run(qw/git stash pop --quiet/);
-            die "Could not determine current branch!\n";
+            die "$self: could not determine current branch!\n";
         }
 
+        run(qw/git reset/);
         run( qw/git checkout -q/, $branch . '^' );
         run(qw/git stash pop --quiet/);
 
-        foreach my $file (@perlfiles) {
-            run( qw/podtidy --inplace --columns 72/, $file );
-            unlink $file . '~';
+        foreach my $try (@perlfiles) {
+            my ( $file, $partial ) = split( /\|/, $try );
 
-            unless ( $file =~ m/\.pod$/i ) {
-                unlink $file . '.ERR';
-                run( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
-                unlink $file . '.bak';
-                if ( -e $file . '.ERR' ) {
-                    die read_file( $file . '.ERR' );
+            if ($partial) {
+                run( qw/podtidy --inplace --columns 72/, $file );
+                unlink $file . '~';
+
+                unless ( $file =~ m/\.pod$/i ) {
+                    unlink $file . '.ERR';
+                    run( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
+                    unlink $file . '.bak';
+                    if ( -e $file . '.ERR' ) {
+                        die read_file( $file . '.ERR' );
+                    }
                 }
+            }
+            else {
+                run( qw/git checkout/, $file );
             }
         }
 
@@ -210,10 +225,10 @@ END {
     if ( defined $command && $command eq 'pre-commit' ) {
         if ($success) {
             if ($partial) {
-                print "$self: Writing '"
+                print "    # writing '"
                   . POST_HOOK_FILE
                   . "' for post-commit hook\n";
-                write_file( POST_HOOK_FILE, join( "\n", @perlfiles ) );
+                write_file( POST_HOOK_FILE, join( "\n", values %partial ) );
             }
             else {
                 run(qw/git stash drop -q/);
@@ -236,12 +251,13 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
-0.04.
+0.9.1.
 
 =head1 SYNOPSIS
 
-Make sure everyone uses the same .perltidyrc across your project:
+Make sure everyone uses the same perltidy options across your project:
 
+    $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
     $ git add .perltidyrc
     $ git commit
 
@@ -253,8 +269,8 @@ Install the pre-commit and post-commit hooks:
 
 B<githook-perltidy> is a script that can be invoked by Git pre-commit
 and post-commit hooks to run L<perltidy> and L<podtidy> on Perl and POD
-files (and optionally L<make>(1) targets), ensuring that your project's
-code is always cleanly committed.
+files (and optionally run L<make>(1) targets), ensuring that your
+project's code is always cleanly committed.
 
 This script is is efficient: it only modifies Perl and POD files that
 are being committed and not every file in your repository. It also
@@ -336,6 +352,11 @@ editor doesn't even detect the change and your next write will not be
 Secondly, aborting a commit with an empty commit message or via a later
 command in the pre-commit hook will still result in changed (tidied)
 files on disk and in the index.
+
+=head1 FILES
+
+The temporary file F<.githook-perltidy> is used to communicate between
+the pre-commit and post-commit calls.
 
 =head1 SUPPORT
 

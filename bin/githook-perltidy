@@ -353,6 +353,11 @@ Secondly, aborting a commit with an empty commit message or via a later
 command in the pre-commit hook will still result in changed (tidied)
 files on disk and in the index.
 
+=head1 FILES
+
+The temporary file F<.githook-perltidy> is used to communicate between
+the pre-commit and post-commit calls.
+
 =head1 SUPPORT
 
 This tool is managed via github:

@@ -254,8 +254,9 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 SYNOPSIS
 
-Make sure everyone uses the same F<.perltidyrc> across your project:
+Make sure everyone uses the same .perltidyrc across your project:
 
+    $ perltidy -w -dop > .perltidyrc
     $ git add .perltidyrc
     $ git commit
 

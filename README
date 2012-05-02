@@ -18,8 +18,8 @@ SYNOPSIS
 DESCRIPTION
     githook-perltidy is a script that can be invoked by Git pre-commit and
     post-commit hooks to run perltidy and podtidy on Perl and POD files (and
-    optionally make(1) targets), ensuring that your project's code is always
-    cleanly committed.
+    optionally run make(1) targets), ensuring that your project's code is
+    always cleanly committed.
 
     This script is is efficient: it only modifies Perl and POD files that
     are being committed and not every file in your repository. It also tries

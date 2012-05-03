@@ -19,7 +19,6 @@ requires 'Time::Piece'           => 0;
 test_requires 'Test::More'            => 0;
 test_requires 'File::Temp'            => 0;
 test_requires 'File::Spec::Functions' => 0;
-test_requires 'File::Slurp'           => 0;
 test_requires 'Cwd'                   => 0;
 test_requires 'FindBin'               => 0;
 test_requires 'Test::Fatal'           => 0;

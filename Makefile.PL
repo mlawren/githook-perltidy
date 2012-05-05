@@ -5,7 +5,7 @@ abstract 'Run perltidy during Git commits';
 author 'Mark Lawrence <nomad@null.net>';
 license 'gpl3';
 perl_version '5.006';
-version '0.9.1';
+version '0.9.2';
 readme_from 'bin/githook-perltidy';
 
 requires 'File::Slurp'           => 0;
@@ -19,7 +19,6 @@ requires 'Time::Piece'           => 0;
 test_requires 'Test::More'            => 0;
 test_requires 'File::Temp'            => 0;
 test_requires 'File::Spec::Functions' => 0;
-test_requires 'File::Slurp'           => 0;
 test_requires 'Cwd'                   => 0;
 test_requires 'FindBin'               => 0;
 test_requires 'Test::Fatal'           => 0;

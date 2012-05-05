@@ -1,4 +1,3 @@
-#!/usr/bin/perl
 use strict;
 use warnings;
 use Test::More;
@@ -48,19 +47,19 @@ is read_file($pre), "#!/bin/sh\ngithook-perltidy pre-commit \n", 'pre content';
 is read_file($post), "#!/bin/sh\ngithook-perltidy post-commit\n",
   'post content';
 
-my $no_indent = '#!/usr/bin/perl
+my $no_indent = '#!/usr/bin/env perl
 if (1) {
 print "dent\n";
 }
 ';
 
-my $with_indent = '#!/usr/bin/perl
+my $with_indent = '#!/usr/bin/env perl
 if (1) {
     print "dent\n";
 }
 ';
 
-my $bad_syntax = '#!/usr/bin/perl
+my $bad_syntax = '#!/usr/bin/env perl
 if (1) {
 not really perl;
 ';

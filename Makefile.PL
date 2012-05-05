@@ -1,11 +1,10 @@
 use inc::Module::Install;
 
 name 'App-githook-perltidy';
-abstract 'Run perltidy during Git commits';
-author 'Mark Lawrence <nomad@null.net>';
+all_from 'lib/App/githook_perltidy.pm';
+abstract 'run perltidy and podtidy before Git commits';
 license 'gpl3';
 perl_version '5.006';
-version '0.9.2';
 readme_from 'bin/githook-perltidy';
 
 requires 'File::Slurp'           => 0;

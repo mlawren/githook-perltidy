@@ -1,3 +1,17 @@
+0.9.3 (2012-05-05)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Attempt to make tests a little more portable
+
+    Bug Fixes:
+        - None.
+
 0.9.2 (2012-05-05)
 
     API Changes:

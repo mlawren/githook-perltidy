@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.9.1.
+    0.9.2.
 
 SYNOPSIS
     Make sure everyone uses the same perltidy options across your project:

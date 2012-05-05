@@ -13,7 +13,7 @@ use Sys::Cmd qw/run/;
 plan skip_all => 'No Git'  unless eval { run(qw/git --version/) };
 plan skip_all => 'No Make' unless eval { run(qw/make --version/) };
 
-$ENV{PATH} = "$FindBin::Bin/../bin:$ENV{PATH}";
+$ENV{PATH} = "$FindBin::Bin/../blib/script:$ENV{PATH}";
 
 my $cwd = getcwd;
 my $dir = tempdir( CLEANUP => 1 );
@@ -47,19 +47,19 @@ is read_file($pre), "#!/bin/sh\ngithook-perltidy pre-commit \n", 'pre content';
 is read_file($post), "#!/bin/sh\ngithook-perltidy post-commit\n",
   'post content';
 
-my $no_indent = '#!/usr/bin/env perl
+my $no_indent = '#!' . $^X . '
 if (1) {
 print "dent\n";
 }
 ';
 
-my $with_indent = '#!/usr/bin/env perl
+my $with_indent = '#!' . $^X . '
 if (1) {
     print "dent\n";
 }
 ';
 
-my $bad_syntax = '#!/usr/bin/env perl
+my $bad_syntax = '#!' . $^X . '
 if (1) {
 not really perl;
 ';

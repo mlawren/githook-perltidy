@@ -40,6 +40,33 @@ sub get_perltidyrc {
     return $rc;
 }
 
+sub get_podtidy_opts {
+    my $rc;
+    if ( $ENV{GIT_DIR} ) {
+        $rc = catfile( $ENV{GIT_DIR}, updir(), '.podtidy-opts' );
+    }
+    else {
+        $rc = '.podtidy-opts';
+    }
+
+    if ( -e $rc
+        && system("git ls-files --error-unmatch $rc > /dev/null 2>&1") != 0 )
+    {
+        die "$self: .podtidy-opts is not in your repository.\n";
+    }
+
+    my @podtidy_opts = (qw/--columns 72/);
+
+    if ( -e $rc ) {
+        foreach my $line ( read_file($rc) ) {
+            chomp $line;
+            push( @podtidy_opts, split / /, $line );
+        }
+    }
+
+    return @podtidy_opts;
+}
+
 my $stashed   = 0;
 my $success   = 0;
 my $partial   = 0;
@@ -115,7 +142,7 @@ elsif ( $command eq 'pre-commit' ) {
     run(qw/git checkout-index -a /);
 
     foreach my $file (@perlfiles) {
-        run( qw/podtidy --inplace --columns 72/, $file );
+        run( qw/podtidy --inplace/, get_podtidy_opts, $file );
         unlink $file . '~';
 
         unless ( $file =~ m/\.pod$/i ) {
@@ -188,7 +215,7 @@ elsif ( $command eq 'post-commit' ) {
             my ( $file, $partial ) = split( /\|/, $try );
 
             if ($partial) {
-                run( qw/podtidy --inplace --columns 72/, $file );
+                run( qw/podtidy --inplace/, get_podtidy_opts(), $file );
                 unlink $file . '~';
 
                 unless ( $file =~ m/\.pod$/i ) {
@@ -255,10 +282,11 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 SYNOPSIS
 
-Make sure everyone uses the same perltidy options across your project:
+Make sure everyone uses the same tidy options across your project:
 
     $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
-    $ git add .perltidyrc
+    $ echo '--columns 72' > .podtidy-opts
+    $ git add .perltidyrc .podtidy-opts
     $ git commit
 
 Install the pre-commit and post-commit hooks:
@@ -297,7 +325,9 @@ hook files already exist.
 
 Called from a Git pre-commit hook.  Backs up your index and working
 tree into a Git stash. Runs L<perltidy> and L<podtidy> on any Perl or
-POD files in the Git index.
+POD files in the Git index, using the F<.perltidyrc> and
+F<.podtidy-opts> files respectively. POD will be tidied to 72 columns
+if not otherwise specified with C<--columns> in F<.podtidy-opts>.
 
 If any MAKE ARGS are given they will be passed to a L<make> call.  This
 way you can ensure that your code passes a C<make test> or C<make
@@ -355,8 +385,22 @@ files on disk and in the index.
 
 =head1 FILES
 
-The temporary file F<.githook-perltidy> is used to communicate between
-the pre-commit and post-commit calls.
+=over
+
+=item F<.perltidyrc>
+
+Perltidy command options file.
+
+=item F<.podtidy-opts>
+
+Podtidy command options file. This is githook-perltidy specific.
+
+=item F<.githook-perltidy>
+
+A temporary file used to communicate between the pre-commit and
+post-commit calls.
+
+=back
 
 =head1 SUPPORT
 

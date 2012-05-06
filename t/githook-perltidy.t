@@ -66,6 +66,7 @@ not really perl;
 
 write_file( 'file', $no_indent );
 run(qw/git add file/);
+
 run( qw/git commit -m/, 'add file' );
 is read_file('file'), $with_indent, 'detect no-extension';
 
@@ -86,6 +87,47 @@ unlink 'bad.pl';
 run(qw/git checkout-index bad.pl/);
 is read_file('bad.pl'), $bad_syntax, 'index contents';
 run(qw/git reset/);
+
+# .podtidy-opts
+
+write_file( '.podtidy-opts', "--columns 10\n" );
+
+my $long_pod = "
+=head1 title
+
+This is a rather long line, well at least longer than 10 characters
+";
+
+write_file( 'x.pod', $long_pod );
+run(qw/git add x.pod/);
+
+like exception { run( qw/git commit -m/, 'add .podtidy-opts' ) },
+  qr/.podtidy-opts is not in your repository/, '.podtidy-opts check';
+
+run(qw/git reset/);
+
+run(qw/git add .podtidy-opts/);
+run( qw/git commit -m/, 'add .podtidy-opts' );
+
+run(qw/git add x.pod/);
+run( qw/git commit -m/, 'add x.pod' );
+
+my $short_pod = "
+=head1 title
+
+This is a
+rather
+long
+line,
+well at
+least
+longer
+than 10
+characters
+
+";
+
+is scalar read_file('x.pod'), $short_pod, 'podtidy';
 
 # "make" arguments
 

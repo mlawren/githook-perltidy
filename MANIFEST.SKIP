@@ -10,4 +10,5 @@ Makefile$
 Makefile.old
 ^App-githook-perltidy
 \.perltidyrc$
+\.podtidy-opts$
 xt/

@@ -3,8 +3,4 @@ Check Makefile vs Makefile.PL modification times for re-run.
 Also tidy up on renames, as they show up only as renames even if the
 file got modified as well.
 
-Convert to Perl::Tidy::perltidy instead of calling out to perltidy(1).
-
-Probably do the same for Pod::Tidy.
-
 * Detect modified .perltidyrc or .podtidy-opts files and error out

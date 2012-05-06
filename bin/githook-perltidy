@@ -5,6 +5,7 @@ use Carp qw/croak/;
 use File::Slurp;
 use File::Basename;
 use File::Spec::Functions qw/catfile catdir updir/;
+use Perl::Tidy;
 use Pod::Tidy;
 use Time::Piece;
 use constant POST_HOOK_FILE => '.githook-perltidy';
@@ -158,7 +159,11 @@ elsif ( $command eq 'pre-commit' ) {
 
         unless ( $file =~ m/\.pod$/i ) {
             unlink $file . '.ERR';
-            run( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
+
+            Perl::Tidy::perltidy(
+                argv => [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, $file ],
+            );
+
             unlink $file . '.bak';
             if ( -e $file . '.ERR' ) {
                 die read_file( $file . '.ERR' );
@@ -239,7 +244,11 @@ elsif ( $command eq 'post-commit' ) {
 
                 unless ( $file =~ m/\.pod$/i ) {
                     unlink $file . '.ERR';
-                    run( "perltidy --profile=$rc -nst -b -bext=.bak", $file );
+
+                    Perl::Tidy::perltidy( argv =>
+                          [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, $file ],
+                    );
+
                     unlink $file . '.bak';
                     if ( -e $file . '.ERR' ) {
                         die read_file( $file . '.ERR' );

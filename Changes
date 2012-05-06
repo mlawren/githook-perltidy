@@ -8,6 +8,7 @@
 
     Enhancements:
         - Use Pod::Tidy directly instead of calling out to podtidy(1)
+        - Use Perl::Tidy directly instead of calling out to perltidy(1)
 
     Bug Fixes:
         - None.

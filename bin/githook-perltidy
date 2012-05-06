@@ -306,7 +306,7 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
-0.10.0.
+0.10.1.
 
 =head1 SYNOPSIS
 

@@ -12,7 +12,7 @@ requires 'File::Basename'        => 0;
 requires 'File::Spec::Functions' => 0;
 requires 'Carp'                  => 0;
 requires 'Perl::Tidy'            => 0;    # to get perltidy
-requires 'Pod::Tidy'             => 0;    # to get podtidy
+requires 'Pod::Tidy'             => 0;
 requires 'Time::Piece'           => 0;
 
 test_requires 'Test::More'            => 0;

@@ -5,6 +5,7 @@ use Carp qw/croak/;
 use File::Slurp;
 use File::Basename;
 use File::Spec::Functions qw/catfile catdir updir/;
+use Pod::Tidy;
 use Time::Piece;
 use constant POST_HOOK_FILE => '.githook-perltidy';
 
@@ -55,16 +56,18 @@ sub get_podtidy_opts {
         die "$self: .podtidy-opts is not in your repository.\n";
     }
 
-    my @podtidy_opts = (qw/--columns 72/);
+    my %opts;
 
     if ( -e $rc ) {
         foreach my $line ( read_file($rc) ) {
             chomp $line;
-            push( @podtidy_opts, split / /, $line );
+            $line =~ s/^--//;
+            my ( $opt, $arg ) = split / /, $line;
+            $opts{$opt} = $arg;
         }
     }
 
-    return @podtidy_opts;
+    return %opts;
 }
 
 my $stashed   = 0;
@@ -142,7 +145,15 @@ elsif ( $command eq 'pre-commit' ) {
     run(qw/git checkout-index -a /);
 
     foreach my $file (@perlfiles) {
-        run( qw/podtidy --inplace/, get_podtidy_opts, $file );
+        Pod::Tidy::tidy_files(
+            files     => [$file],
+            recursive => 0,
+            verbose   => 0,
+            inplace   => 1,
+            nobackup  => 1,
+            columns   => 72,
+            get_podtidy_opts(),
+        );
         unlink $file . '~';
 
         unless ( $file =~ m/\.pod$/i ) {
@@ -215,7 +226,15 @@ elsif ( $command eq 'post-commit' ) {
             my ( $file, $partial ) = split( /\|/, $try );
 
             if ($partial) {
-                run( qw/podtidy --inplace/, get_podtidy_opts(), $file );
+                Pod::Tidy::tidy_files(
+                    files     => [$file],
+                    recursive => 0,
+                    verbose   => 0,
+                    inplace   => 1,
+                    nobackup  => 1,
+                    columns   => 72,
+                    get_podtidy_opts(),
+                );
                 unlink $file . '~';
 
                 unless ( $file =~ m/\.pod$/i ) {

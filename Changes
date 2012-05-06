@@ -1,3 +1,17 @@
+0.10.0 (2012-05-06)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - Support a project-wide ".podtidy-opts" file
+
+    Enhancements:
+        - None.
+
+    Bug Fixes:
+        - None.
+
 0.9.3 (2012-05-05)
 
     API Changes:

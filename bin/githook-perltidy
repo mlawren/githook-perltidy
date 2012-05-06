@@ -146,6 +146,8 @@ elsif ( $command eq 'pre-commit' ) {
     run(qw/git checkout-index -a /);
 
     foreach my $file (@perlfiles) {
+        print "podtidy $file\n";
+
         Pod::Tidy::tidy_files(
             files     => [$file],
             recursive => 0,
@@ -155,11 +157,13 @@ elsif ( $command eq 'pre-commit' ) {
             columns   => 72,
             get_podtidy_opts(),
         );
+
         unlink $file . '~';
 
         unless ( $file =~ m/\.pod$/i ) {
             unlink $file . '.ERR';
 
+            print "perltidy $file\n";
             Perl::Tidy::perltidy(
                 argv => [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, $file ],
             );
@@ -231,6 +235,7 @@ elsif ( $command eq 'post-commit' ) {
             my ( $file, $partial ) = split( /\|/, $try );
 
             if ($partial) {
+                print "podtidy $file\n";
                 Pod::Tidy::tidy_files(
                     files     => [$file],
                     recursive => 0,
@@ -245,6 +250,7 @@ elsif ( $command eq 'post-commit' ) {
                 unless ( $file =~ m/\.pod$/i ) {
                     unlink $file . '.ERR';
 
+                    print "perltidy $file\n";
                     Perl::Tidy::perltidy( argv =>
                           [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, $file ],
                     );

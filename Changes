@@ -1,3 +1,16 @@
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - None.
+
+    Bug Fixes:
+        - Replace lost verbosity with internal *::Tidy calls
+
 0.10.1 (2012-05-06)
 
     API Changes:

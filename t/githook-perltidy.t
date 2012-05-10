@@ -10,8 +10,8 @@ use FindBin;
 use Test::Fatal;
 use Sys::Cmd qw/run/;
 
-plan skip_all => 'No Git'  unless eval { run(qw/git --version/) };
-plan skip_all => 'No Make' unless eval { run(qw/make --version/) };
+plan skip_all => 'No Git'  unless eval { run(qw/git --version/);  1; };
+plan skip_all => 'No Make' unless eval { run(qw/make --version/); 1; };
 
 $ENV{PATH} = "$FindBin::Bin/../blib/script:$ENV{PATH}";
 

@@ -42,6 +42,18 @@ sub get_perltidyrc {
     return $rc;
 }
 
+sub have_podtidy_opts {
+    my $rc;
+    if ( $ENV{GIT_DIR} ) {
+        $rc = catfile( $ENV{GIT_DIR}, updir(), '.podtidy-opts' );
+    }
+    else {
+        $rc = '.podtidy-opts';
+    }
+
+    return -e $rc;
+}
+
 sub get_podtidy_opts {
     my $rc;
     if ( $ENV{GIT_DIR} ) {
@@ -145,18 +157,24 @@ elsif ( $command eq 'pre-commit' ) {
 
     run(qw/git checkout-index -a /);
 
-    foreach my $file (@perlfiles) {
-        print "podtidy $file\n";
+    my $have_podtidy_opts = have_podtidy_opts();
+    warn "Skipping podtidy calls: no .podtidy-opts file"
+      unless $have_podtidy_opts;
 
-        Pod::Tidy::tidy_files(
-            files     => [$file],
-            recursive => 0,
-            verbose   => 0,
-            inplace   => 1,
-            nobackup  => 1,
-            columns   => 72,
-            get_podtidy_opts(),
-        );
+    foreach my $file (@perlfiles) {
+        if ($have_podtidy_opts) {
+            print "podtidy $file\n";
+
+            Pod::Tidy::tidy_files(
+                files     => [$file],
+                recursive => 0,
+                verbose   => 0,
+                inplace   => 1,
+                nobackup  => 1,
+                columns   => 72,
+                get_podtidy_opts(),
+            );
+        }
 
         unlink $file . '~';
 
@@ -231,21 +249,27 @@ elsif ( $command eq 'post-commit' ) {
         run( qw/git checkout -q/, $branch . '^' );
         run(qw/git stash pop --quiet/);
 
+        my $have_podtidy_opts = have_podtidy_opts();
+        warn "Skipping podtidy calls: no .podtidy-opts file"
+          unless $have_podtidy_opts;
+
         foreach my $try (@perlfiles) {
             my ( $file, $partial ) = split( /\|/, $try );
 
             if ($partial) {
-                print "podtidy $file\n";
-                Pod::Tidy::tidy_files(
-                    files     => [$file],
-                    recursive => 0,
-                    verbose   => 0,
-                    inplace   => 1,
-                    nobackup  => 1,
-                    columns   => 72,
-                    get_podtidy_opts(),
-                );
-                unlink $file . '~';
+                if ($have_podtidy_opts) {
+                    print "podtidy $file\n";
+                    Pod::Tidy::tidy_files(
+                        files     => [$file],
+                        recursive => 0,
+                        verbose   => 0,
+                        inplace   => 1,
+                        nobackup  => 1,
+                        columns   => 72,
+                        get_podtidy_opts(),
+                    );
+                    unlink $file . '~';
+                }
 
                 unless ( $file =~ m/\.pod$/i ) {
                     unlink $file . '.ERR';
@@ -358,10 +382,10 @@ hook files already exist.
 =item pre-commit [MAKE ARGS]
 
 Called from a Git pre-commit hook.  Backs up your index and working
-tree into a Git stash. Runs L<perltidy> and L<podtidy> on any Perl or
-POD files in the Git index, using the F<.perltidyrc> and
-F<.podtidy-opts> files respectively. POD will be tidied to 72 columns
-if not otherwise specified with C<--columns> in F<.podtidy-opts>.
+tree into a Git stash. Runs L<perltidy> on any Perl files in the Git
+index using the F<.perltidyrc>. If F<.podtidy-opts> exists then
+L<podtidy> will also be run on any POD files in the Git index,
+otherwise a warning is issued.
 
 If any MAKE ARGS are given they will be passed to a L<make> call.  This
 way you can ensure that your code passes a C<make test> or C<make

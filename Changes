@@ -1,3 +1,4 @@
+0.10.2 (2012-06-27)
 
     API Changes:
         - None.
@@ -6,7 +7,8 @@
         - None.
 
     Enhancements:
-        - None.
+        - Tidying of POD is now optional. Pod::Tidy will only be called
+          if .podtidy-opts exists (and is in the repository)
 
     Bug Fixes:
         - Replace lost verbosity with internal *::Tidy calls

@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.10.1.
+    0.10.2.
 
 SYNOPSIS
     Make sure everyone uses the same tidy options across your project:
@@ -42,10 +42,10 @@ DESCRIPTION
 
     pre-commit [MAKE ARGS]
         Called from a Git pre-commit hook. Backs up your index and working
-        tree into a Git stash. Runs perltidy and podtidy on any Perl or POD
-        files in the Git index, using the .perltidyrc and .podtidy-opts
-        files respectively. POD will be tidied to 72 columns if not
-        otherwise specified with "--columns" in .podtidy-opts.
+        tree into a Git stash. Runs perltidy on any Perl files in the Git
+        index using the .perltidyrc. If .podtidy-opts exists then podtidy
+        will also be run on any POD files in the Git index, otherwise a
+        warning is issued.
 
         If any MAKE ARGS are given they will be passed to a make call. This
         way you can ensure that your code passes a "make test" or "make

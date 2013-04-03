@@ -140,10 +140,10 @@ WriteMakefile(
 "
 );
 
-like run(qw/githook-perltidy install test/),
+like run(qw/githook-perltidy install test ATTRIBUTE=1/),
   qr/pre-commit.*post-commit/s, 'install make args output';
 
-like read_file($pre), qr/pre-commit test/, 'pre content make args ';
+like read_file($pre), qr/pre-commit test ATTRIBUTE=1/, 'pre content make args ';
 ok -e $post, 'post-commit exists';
 
 run(qw/git add Makefile.PL/);

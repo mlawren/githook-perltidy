@@ -13,6 +13,7 @@
     Bug Fixes:
         - Full-path issue:
           https://github.com/mlawren/githook-perltidy/issues/3
+        - Allow multiple 'make' arguments
 
 0.10.2 (2012-06-27)
 

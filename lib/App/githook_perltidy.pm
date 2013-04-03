@@ -17,8 +17,9 @@ subcmd(
 
 arg make_args => (
     isa     => 'Str',
-    comment => 'sdfl',
+    comment => 'arguments to pass to a make call after tidying',
     default => '',
+    greedy  => 1,
 );
 
 subcmd(
@@ -28,7 +29,9 @@ subcmd(
 
 arg make_args => (
     isa     => 'Str',
-    comment => 'sdfl',
+    comment => 'arguments to pass to a make call after tidying',
+    default => '',
+    greedy  => 1,
 );
 
 subcmd(

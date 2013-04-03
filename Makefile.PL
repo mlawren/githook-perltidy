@@ -1,3 +1,10 @@
+BEGIN {
+    unless ( system('git --version') == 0 ) {
+        print STDERR "No git found. Exiting.\n";
+        exit 0;
+    }
+}
+
 use inc::Module::Install;
 
 name 'App-githook-perltidy';

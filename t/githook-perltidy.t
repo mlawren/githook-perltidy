@@ -8,8 +8,7 @@ use FindBin qw/$Bin/;
 use Test::Fatal;
 use Sys::Cmd qw/run/;
 
-plan skip_all => 'No Git'  unless eval { run(qw!git --version!);  1; };
-plan skip_all => 'No Make' unless eval { run(qw!make --version!); 1; };
+plan skip_all => 'No Git' unless eval { run(qw!git --version!); 1; };
 
 my $githook_perltidy = path( $Bin, 'githook-perltidy' );
 my $cwd              = Path::Tiny->cwd;
@@ -133,44 +132,48 @@ characters
 
 is scalar read_file('x.pod'), $short_pod, 'podtidy';
 
-# "make" arguments
+SKIP: {
+    skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };
 
-$pre->remove;
-$post->remove;
+    $pre->remove;
+    $post->remove;
 
-write_file(
-    'Makefile.PL', "
+    write_file(
+        'Makefile.PL', "
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
    NAME            => 'Your::Module',
 );
 "
-);
+    );
 
-like run( $githook_perltidy, qw!install test ATTRIBUTE=1! ),
-  qr/pre-commit.*post-commit/s, 'install make args output';
+    like run( $githook_perltidy, qw!install test ATTRIBUTE=1! ),
+      qr/pre-commit.*post-commit/s, 'install make args output';
 
-like read_file($pre), qr/pre-commit test ATTRIBUTE=1/, 'pre content make args ';
-ok -e $post, 'post-commit exists';
+    like read_file($pre), qr/pre-commit test ATTRIBUTE=1/,
+      'pre content make args ';
 
-run(qw!git add Makefile.PL!);
-like run( qw!git commit -m!, 'add Makefile.PL' ),
-  qr/add Makefile.PL/sm,
-  'make run';
-ok -e 'Makefile', 'perl Makefile.PL';
+    ok -e $post, 'post-commit exists';
 
-unlink 'Makefile';
-run(qw!git reset HEAD^!);
-run(qw!git add Makefile.PL!);
-like run(
-    qw!git commit -m!,
-    { env => { PERLTIDY_MAKE => '' } },
-    'add Makefile.PL'
-  ),
-  qr/add Makefile.PL/sm,
-  'no make run';
-ok !-e 'Makefile', 'no perl Makefile.PL';
+    run(qw!git add Makefile.PL!);
+    like run( qw!git commit -m!, 'add Makefile.PL' ),
+      qr/add Makefile.PL/sm,
+      'make run';
+    ok -e 'Makefile', 'perl Makefile.PL';
+
+    unlink 'Makefile';
+    run(qw!git reset HEAD^!);
+    run(qw!git add Makefile.PL!);
+    like run(
+        qw!git commit -m!,
+        { env => { PERLTIDY_MAKE => '' } },
+        'add Makefile.PL'
+      ),
+      qr/add Makefile.PL/sm,
+      'no make run';
+    ok !-e 'Makefile', 'no perl Makefile.PL';
+}
 
 done_testing();
 

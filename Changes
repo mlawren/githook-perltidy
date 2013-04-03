@@ -1,3 +1,17 @@
+0.11.1 (yyyy-mm-dd)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Use Path::Tiny everywhere instead of File::Spec::Functions
+
+    Bug Fixes:
+        - None.
+
 0.10.2 (2012-06-27)
 
     API Changes:

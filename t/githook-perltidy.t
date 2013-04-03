@@ -2,9 +2,7 @@ use strict;
 use warnings;
 use Test::More;
 use Carp qw/croak/;
-use Cwd qw/getcwd/;
-use File::Temp qw/tempdir/;
-use File::Spec::Functions qw/catfile catdir/;
+use Path::Tiny;
 use File::Slurp;
 use FindBin;
 use Test::Fatal;
@@ -15,14 +13,14 @@ plan skip_all => 'No Make' unless eval { run(qw/make --version/); 1; };
 
 $ENV{PATH} = "$FindBin::Bin/../blib/script:$ENV{PATH}";
 
-my $cwd = getcwd;
-my $dir = tempdir( CLEANUP => 1 );
+my $cwd = Path::Tiny->cwd;
+my $dir = Path::Tiny->tempdir( CLEANUP => 1 );
 
 chdir $dir || die "chdir $dir: $!";
 
-my $hook_dir = catdir( '.git', 'hooks' );
-my $pre  = catfile( $hook_dir, 'pre-commit' );
-my $post = catfile( $hook_dir, 'post-commit' );
+my $hook_dir = path( '.git', 'hooks' );
+my $pre      = $hook_dir->child('pre-commit');
+my $post     = $hook_dir->child('post-commit');
 
 like exception { run(qw/githook-perltidy/) }, qr/^usage: githook-perltidy/,
   'usage';
@@ -37,8 +35,8 @@ like exception { run(qw/githook-perltidy install/) },
 run(qw/git add .perltidyrc/);
 run( qw/git commit -m/, 'add perltidyrc' );
 
-unlink $pre;
-unlink $post;
+$pre->remove;
+$post->remove;
 
 like run(qw/githook-perltidy install/),
   qr/pre-commit.*post-commit/s, 'install output';
@@ -131,8 +129,8 @@ is scalar read_file('x.pod'), $short_pod, 'podtidy';
 
 # "make" arguments
 
-unlink $pre;
-unlink $post;
+$pre->remove;
+$post->remove;
 
 write_file(
     'Makefile.PL', "

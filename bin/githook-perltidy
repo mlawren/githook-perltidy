@@ -2,9 +2,8 @@
 use strict;
 use warnings;
 use Carp qw/croak/;
-use File::Slurp;
 use File::Basename;
-use File::Spec::Functions qw/catfile catdir updir/;
+use Path::Tiny;
 use Perl::Tidy;
 use Pod::Tidy;
 use Time::Piece;
@@ -30,10 +29,10 @@ sub run {
 sub get_perltidyrc {
     my $rc;
     if ( $ENV{GIT_DIR} ) {
-        $rc = catfile( $ENV{GIT_DIR}, updir(), '.perltidyrc' );
+        $rc = path( $ENV{GIT_DIR} )->parent->child('.perltidyrc');
     }
     else {
-        $rc = '.perltidyrc';
+        $rc = path('.perltidyrc');
     }
 
     if ( system("git ls-files --error-unmatch $rc > /dev/null 2>&1") != 0 ) {
@@ -45,7 +44,7 @@ sub get_perltidyrc {
 sub have_podtidy_opts {
     my $rc;
     if ( $ENV{GIT_DIR} ) {
-        $rc = catfile( $ENV{GIT_DIR}, updir(), '.podtidy-opts' );
+        $rc = path( $ENV{GIT_DIR} )->parent->child('.podtidy-opts');
     }
     else {
         $rc = '.podtidy-opts';
@@ -57,7 +56,7 @@ sub have_podtidy_opts {
 sub get_podtidy_opts {
     my $rc;
     if ( $ENV{GIT_DIR} ) {
-        $rc = catfile( $ENV{GIT_DIR}, updir(), '.podtidy-opts' );
+        $rc = path( $ENV{GIT_DIR} )->parent->child('.podtidy-opts');
     }
     else {
         $rc = '.podtidy-opts';
@@ -72,7 +71,7 @@ sub get_podtidy_opts {
     my %opts;
 
     if ( -e $rc ) {
-        foreach my $line ( read_file($rc) ) {
+        foreach my $line ( $rc->lines ) {
             chomp $line;
             $line =~ s/^--//;
             my ( $opt, $arg ) = split / /, $line;
@@ -95,26 +94,26 @@ if ( $command eq 'install' ) {
 
     get_perltidyrc();
 
-    my $hooks_dir = catdir( '.git', 'hooks' );
+    my $hooks_dir = path( '.git', 'hooks' );
     if ( !-d $hooks_dir ) {
         die "Directory not found: $hooks_dir\n";
     }
 
-    my $pre_file = catfile( $hooks_dir, 'pre-commit' );
+    my $pre_file = $hooks_dir->child('pre-commit');
     if ( -e $pre_file or -l $pre_file ) {
         die "File/link exists: $pre_file\n";
     }
 
-    my $post_file = catfile( $hooks_dir, 'post-commit' );
+    my $post_file = $hooks_dir->child('post-commit');
     if ( -e $post_file or -l $post_file ) {
         die "File/link exists: $post_file\n";
     }
 
-    write_file( $pre_file, "#!/bin/sh\n$self pre-commit @ARGV\n" );
+    $pre_file->spew("#!/bin/sh\n$self pre-commit @ARGV\n");
     chmod 0755, $pre_file || warn "chmod: $!";
     print "$self: $pre_file\n";
 
-    write_file( $post_file, "#!/bin/sh\n$self post-commit\n" );
+    $post_file->spew("#!/bin/sh\n$self post-commit\n");
     chmod 0755, $post_file || warn "chmod: $!";
     print "$self: $post_file\n";
 
@@ -188,7 +187,7 @@ elsif ( $command eq 'pre-commit' ) {
 
             unlink $file . '.bak';
             if ( -e $file . '.ERR' ) {
-                die read_file( $file . '.ERR' );
+                die path( $file . '.ERR' )->slurp;
             }
         }
     }
@@ -232,7 +231,7 @@ elsif ( $command eq 'post-commit' ) {
 
     if ( -e POST_HOOK_FILE ) {
         my $rc = get_perltidyrc();
-        @perlfiles = map { chomp; $_ } read_file(POST_HOOK_FILE);
+        @perlfiles = path(POST_HOOK_FILE)->lines( { chomp => 1 } );
 
         print "$self post-commit:\n",
           "    # tidying and re-applying your non-indexed changes.\n";
@@ -281,7 +280,7 @@ elsif ( $command eq 'post-commit' ) {
 
                     unlink $file . '.bak';
                     if ( -e $file . '.ERR' ) {
-                        die read_file( $file . '.ERR' );
+                        die path( $file . '.ERR' )->slurp;
                     }
                 }
             }
@@ -313,7 +312,7 @@ END {
                 print "    # writing '"
                   . POST_HOOK_FILE
                   . "' for post-commit hook\n";
-                write_file( POST_HOOK_FILE, join( "\n", values %partial ) );
+                path(POST_HOOK_FILE)->spew( join( "\n", values %partial ) );
             }
             else {
                 run(qw/git stash drop -q/);
@@ -336,7 +335,7 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
-0.10.2.
+0.11.1.
 
 =head1 SYNOPSIS
 

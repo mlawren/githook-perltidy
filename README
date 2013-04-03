@@ -30,15 +30,15 @@ DESCRIPTION
     There are three types of action this script will take as determed by the
     first argument:
 
-    install [MAKE ARGS]
+    install [--force, -f] [MAKE ARGS]
         Should be run from the command-line in the top-level directory of
         your repository. Writes pre-commit and post-commit files in the
         $GIT_DIR/hooks/ directory. Any MAKE ARGS given will be added to the
         "githook-perltidy pre-commit" call.
 
         This command will fail if there is no .perltidyrc file in the
-        repository, if the hooks directory isn't found, or if either of the
-        hook files already exist.
+        repository or if the hooks directory isn't found. It will also fail
+        if either of the hook files already exist, unless "--force" is used.
 
     pre-commit [MAKE ARGS]
         Called from a Git pre-commit hook. Backs up your index and working

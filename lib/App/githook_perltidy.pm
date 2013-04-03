@@ -1,16 +1,48 @@
 package App::githook_perltidy;
+use strict;
+use OptArgs;
+
 our $VERSION = '0.11.1_1';
+
+arg command => (
+    isa      => 'SubCmd',
+    comment  => 'command to run',
+    required => 1,
+);
+
+subcmd(
+    cmd     => 'install',
+    comment => 'Install pre-commit and post-commit hooks',
+);
+
+arg make_args => (
+    isa     => 'Str',
+    comment => 'sdfl',
+    default => '',
+);
+
+subcmd(
+    cmd     => 'pre-commit',
+    comment => 'Run perltidy, podtidy and (optionally) tests',
+);
+
+arg make_args => (
+    isa     => 'Str',
+    comment => 'sdfl',
+);
+
+subcmd(
+    cmd     => 'post-commit',
+    comment => 'Merge non-indexed changes after commit',
+);
+
 1;
 
 __END__
 
 =head1 NAME
 
-App::githook_perltidy - run perltidy and podtidy before Git commits
-
-=head1 DESCRIPTION
-
-This module exists purely to allow CPAN indexing.
+App::githook_perltidy - dispatch module for githook-perltidy.
 
 =head1 SEE ALSO
 

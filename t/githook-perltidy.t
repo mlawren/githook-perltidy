@@ -22,15 +22,14 @@ my $hook_dir = path( '.git', 'hooks' );
 my $pre      = $hook_dir->child('pre-commit');
 my $post     = $hook_dir->child('post-commit');
 
-like exception { run(qw/githook-perltidy/) }, qr/^usage: githook-perltidy/,
-  'usage';
+like exception { run(qw/githook-perltidy/) }, qr/^usage:/, 'usage';
 
 run(qw/git init/);
 
 write_file( '.perltidyrc', "-i 4\n-syn\n-w\n" );
 
 like exception { run(qw/githook-perltidy install/) },
-  qr/You have no .perltidyrc/, '.perltidyrc check';
+  qr/\.perltidyrc/, '.perltidyrc check';
 
 run(qw/git add .perltidyrc/);
 run( qw/git commit -m/, 'add perltidyrc' );
@@ -41,9 +40,8 @@ $post->remove;
 like run(qw/githook-perltidy install/),
   qr/pre-commit.*post-commit/s, 'install output';
 
-is read_file($pre), "#!/bin/sh\ngithook-perltidy pre-commit \n", 'pre content';
-is read_file($post), "#!/bin/sh\ngithook-perltidy post-commit\n",
-  'post content';
+ok -e $pre,  'pre-commit exists';
+ok -e $post, 'post-commit exists';
 
 my $no_indent = '#!' . $^X . '
 if (1) {
@@ -100,7 +98,7 @@ write_file( 'x.pod', $long_pod );
 run(qw/git add x.pod/);
 
 like exception { run( qw/git commit -m/, 'add .podtidy-opts' ) },
-  qr/.podtidy-opts is not in your repository/, '.podtidy-opts check';
+  qr/.podtidy-opts/, '.podtidy-opts check';
 
 run(qw/git reset/);
 
@@ -145,10 +143,8 @@ WriteMakefile(
 like run(qw/githook-perltidy install test/),
   qr/pre-commit.*post-commit/s, 'install make args output';
 
-is read_file($pre), "#!/bin/sh\ngithook-perltidy pre-commit test\n",
-  'pre content make args ';
-is read_file($post), "#!/bin/sh\ngithook-perltidy post-commit\n",
-  'post content make args';
+like read_file($pre), qr/pre-commit test/, 'pre content make args ';
+ok -e $post, 'post-commit exists';
 
 run(qw/git add Makefile.PL/);
 like run( qw/git commit -m/, 'add Makefile.PL' ),
@@ -175,3 +171,4 @@ END {
     chdir $cwd if $cwd;
     undef $dir;
 }
+

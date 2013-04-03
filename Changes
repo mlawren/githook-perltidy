@@ -8,9 +8,11 @@
 
     Enhancements:
         - Use Path::Tiny everywhere instead of File::Spec::Functions
+        - Convert to OptArgs
 
     Bug Fixes:
-        - None.
+        - Full-path issue:
+          https://github.com/mlawren/githook-perltidy/issues/3
 
 0.10.2 (2012-06-27)
 

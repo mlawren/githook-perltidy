@@ -41,3 +41,4 @@ dispatch(qw/run App::githook_perltidy/);
 };
 
 close FH;
+chmod 0755, 't/githook-perltidy' or warn "chmod: $!";

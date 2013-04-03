@@ -45,7 +45,7 @@ the first argument:
 
 =over 4
 
-=item install [MAKE ARGS]
+=item install [--force, -f] [MAKE ARGS]
 
 Should be run from the command-line in the top-level directory of your
 repository. Writes F<pre-commit> and F<post-commit> files in the
@@ -53,8 +53,8 @@ F<$GIT_DIR/hooks/> directory. Any MAKE ARGS given will be added to the
 C<githook-perltidy pre-commit> call.
 
 This command will fail if there is no .perltidyrc file in the
-repository, if the hooks directory isn't found, or if either of the
-hook files already exist.
+repository or if the hooks directory isn't found. It will also fail if
+either of the hook files already exist, unless C<--force> is used.
 
 =item pre-commit [MAKE ARGS]
 

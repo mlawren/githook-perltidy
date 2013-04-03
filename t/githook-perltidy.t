@@ -42,6 +42,15 @@ like run( $githook_perltidy, qw!install! ),
 ok -e $pre,  'pre-commit exists';
 ok -e $post, 'post-commit exists';
 
+like exception { run( $githook_perltidy, qw!install! ) },
+  qr/exists/, 'existing hook files';
+
+like run( $githook_perltidy, qw!install --force! ),
+  qr/pre-commit \(forced\).*post-commit \(forced\)/s, 'install --force';
+
+like run( $githook_perltidy, qw!install -f! ),
+  qr/pre-commit \(forced\).*post-commit \(forced\)/s, 'install -f';
+
 my $no_indent = '#!' . $^X . '
 if (1) {
 print "dent\n";

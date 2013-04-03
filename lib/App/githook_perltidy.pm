@@ -22,6 +22,12 @@ arg make_args => (
     greedy  => 1,
 );
 
+opt force => (
+    isa     => 'Bool',
+    comment => 'Overwrite existing git commit hooks',
+    alias   => 'f',
+);
+
 subcmd(
     cmd     => 'pre-commit',
     comment => 'Run perltidy, podtidy and (optionally) tests',

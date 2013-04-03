@@ -1,3 +1,4 @@
+.releaserc
 *.swp
 *.swo
 Makefile.old

@@ -5,7 +5,7 @@ use App::githook_perltidy::Util qw/get_perltidyrc/;
 use File::Basename;
 use Path::Tiny;
 
-our $VERSION = '0.11.1_1';
+our $VERSION = '0.11.1_2';
 
 sub run {
     my $opts = shift;

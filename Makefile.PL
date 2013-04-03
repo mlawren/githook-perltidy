@@ -27,3 +27,16 @@ repository 'git://github.com/mlawren/githook-perltidy.git';
 
 WriteAll;
 
+# Create the test script
+open( FH, '>', 't/githook-perltidy' ) or die "open: $!";
+
+print FH qq{#!$^X
+use strict;
+use FindBin qw/\$Bin/;
+use lib "\$Bin/../lib";
+use OptArgs qw/dispatch/;
+
+dispatch(qw/run App::githook_perltidy/);
+};
+
+close FH;

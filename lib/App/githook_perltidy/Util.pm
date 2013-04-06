@@ -12,6 +12,8 @@ use Exporter::Tidy all => [
 ];
 use Path::Tiny;
 
+our $VERSION = '0.11.1';
+
 sub get_perltidyrc {
     my $rc;
     if ( $ENV{GIT_DIR} ) {
@@ -101,7 +103,7 @@ The following functions and symbol are exported on request.
 
 =item get_perltidyrc -> Path::Tiny
 
-Returns the locatino of a C<.perltidyrc> file. Raises an exception when
+Returns the location of a C<.perltidyrc> file. Raises an exception when
 the file is not found or if the file is not committed to the git
 repository.
 

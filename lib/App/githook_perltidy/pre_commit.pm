@@ -8,7 +8,7 @@ use Perl::Tidy;
 use Pod::Tidy;
 use Time::Piece;
 
-our $VERSION = '0.11.1_2';
+our $VERSION = '0.11.1';
 
 my $stashed;
 my $success;

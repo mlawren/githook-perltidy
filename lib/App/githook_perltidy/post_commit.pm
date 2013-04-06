@@ -7,7 +7,7 @@ use Path::Tiny;
 use Perl::Tidy;
 use Pod::Tidy;
 
-our $VERSION = '0.11.1_2';
+our $VERSION = '0.11.1';
 
 sub run {
     my $me = basename($0);

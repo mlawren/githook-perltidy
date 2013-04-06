@@ -1,3 +1,5 @@
+* Check and restore .git/MERGE_HEAD if it exists
+
 * Check that current branch is not (no branch)
 
 * "amend" screws with the reset stuff

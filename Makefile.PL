@@ -17,6 +17,7 @@ readme_from 'bin/githook-perltidy';
 
 requires 'File::Basename' => 0;
 requires 'Carp'           => 0;
+requires 'Exporter::Tidy' => 0;
 requires 'OptArgs'        => 0;
 requires 'Path::Tiny'     => 0;
 requires 'Perl::Tidy'     => 0;

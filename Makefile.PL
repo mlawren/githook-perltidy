@@ -31,6 +31,8 @@ test_requires 'Sys::Cmd'    => 0;
 test_requires 'Test::Fatal' => 0;
 test_requires 'Test::More'  => 0;
 
+tests_recursive 't';
+
 install_script 'bin/githook-perltidy';
 
 repository 'git://github.com/mlawren/githook-perltidy.git';

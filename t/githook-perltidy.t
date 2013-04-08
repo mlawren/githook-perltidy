@@ -23,6 +23,8 @@ my $post     = $hook_dir->child('post-commit');
 like exception { run($githook_perltidy) }, qr/^usage:/, 'usage';
 
 run(qw!git init!);
+run( qw!git config user.email!, 'you@example.com' );
+run( qw!git config user.name!,  'Your Name' );
 
 write_file( '.perltidyrc', "-i 4\n-syn\n-w\n" );
 

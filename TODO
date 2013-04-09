@@ -1,3 +1,6 @@
+* Fix git version problem?
+    http://www.cpantesters.org/cpan/report/31c1071a-9f72-11e2-a3b7-ea8478f8667a
+
 * Check and restore .git/MERGE_HEAD if it exists
 
 * Check that current branch is not (no branch)

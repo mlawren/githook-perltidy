@@ -27,7 +27,10 @@ sub run {
 
     my $rc = get_perltidyrc();
 
-    open( my $fh, '-|', 'git status --porcelain' ) || die "open: $!";
+    # NOTE use the -z flag to get clean filenames with no escaping or quoting
+    # "lines" are separated with NUL, so set input record separator appropriately
+    local $/ = "\0";
+    open( my $fh, '-|', 'git status --porcelain -z' ) || die "open: $!";
 
     while ( my $line = <$fh> ) {
         chomp $line;
@@ -38,6 +41,8 @@ sub run {
         next unless ( $index eq 'A' or $index eq 'M' );
 
         if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
+            # reset line separator to newline when checking first line of file
+            local $/ = "\n";
             open( my $fh2, '<', $file ) || die "open $file: $!";
             my $possible = <$fh2> || next;
 

@@ -19,6 +19,8 @@
         - Full-path issue:
           https://github.com/mlawren/githook-perltidy/issues/3
         - Allow multiple 'make' arguments
+        - Properly handle paths with spaces or other odd characters
+          (thanks to Finn Smith)
 
 0.10.2 (2012-06-27)
 

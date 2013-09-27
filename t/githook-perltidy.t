@@ -71,14 +71,13 @@ not really perl;
 
 write_file( 'file', $no_indent );
 run(qw!git add file!);
-
 run( qw!git commit -m!, 'add file' );
 is read_file('file'), $with_indent, 'detect no-extension';
 
 write_file( 'file.pl', $no_indent );
 run(qw!git add file.pl!);
 run( qw!git commit -m!, 'add file.pl' );
-is read_file('file'), $with_indent, 'detect .pl extension';
+is read_file('file.pl'), $with_indent, 'detect .pl extension';
 
 write_file( 'bad.pl', $bad_syntax );
 run(qw!git add bad.pl!);

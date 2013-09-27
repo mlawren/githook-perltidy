@@ -98,13 +98,16 @@ sub run {
             unlink $file . '.ERR';
 
             print "    perltidy --profile=$rc -nst -b -bext=.bak $file\n";
-            Perl::Tidy::perltidy(
+            my $error = Perl::Tidy::perltidy(
                 argv => [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, $file ],
             );
 
             unlink $file . '.bak';
             if ( -e $file . '.ERR' ) {
                 die path( $file . '.ERR' )->slurp;
+            }
+            elsif ($error) {
+                die "$me pre-commit: An unknown error occurred.";
             }
         }
     }

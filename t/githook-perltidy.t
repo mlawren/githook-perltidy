@@ -15,6 +15,7 @@ my $cwd              = Path::Tiny->cwd;
 my $dir              = Path::Tiny->tempdir( CLEANUP => 1 );
 
 chdir $dir || die "chdir $dir: $!";
+note "Testing $githook_perltidy in $dir";
 
 my $hook_dir = path( '.git', 'hooks' );
 my $pre      = $hook_dir->child('pre-commit');

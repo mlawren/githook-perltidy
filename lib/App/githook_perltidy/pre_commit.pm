@@ -58,7 +58,10 @@ sub run {
         }
     }
 
-    exit 0 unless @perlfiles;
+    if ( !@perlfiles ) {
+        print "$me pre-commit: no changes to tidy\n";
+        exit 0;
+    }
 
     print "$me pre-commit:\n    # saving non-indexed changes and tidying\n";
 
@@ -71,12 +74,12 @@ sub run {
     sys(qw/git checkout-index -a /);
 
     my $have_podtidy_opts = have_podtidy_opts();
-    warn "Skipping podtidy calls: no .podtidy-opts file"
+    print "    Skipping podtidy calls: no .podtidy-opts file\n"
       unless $have_podtidy_opts;
 
     foreach my $file (@perlfiles) {
         if ($have_podtidy_opts) {
-            print "podtidy $file\n";
+            print "    podtidy $file\n";
 
             Pod::Tidy::tidy_files(
                 files     => [$file],
@@ -94,7 +97,7 @@ sub run {
         unless ( $file =~ m/\.pod$/i ) {
             unlink $file . '.ERR';
 
-            print "perltidy $file\n";
+            print "    perltidy --profile=$rc -nst -b -bext=.bak $file\n";
             Perl::Tidy::perltidy(
                 argv => [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, $file ],
             );

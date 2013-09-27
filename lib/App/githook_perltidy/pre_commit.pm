@@ -27,31 +27,35 @@ sub run {
 
     my $rc = get_perltidyrc();
 
-    # NOTE use the -z flag to get clean filenames with no escaping or quoting
-    # "lines" are separated with NUL, so set input record separator appropriately
-    local $/ = "\0";
-    open( my $fh, '-|', 'git status --porcelain -z' ) || die "open: $!";
+    # Use the -z flag to get clean filenames with no escaping or quoting
+    # "lines" are separated with NUL, so set input record separator
+    # appropriately
+    {
+        local $/ = "\0";
+        open( my $fh, '-|', 'git status --porcelain -z' ) || die "open: $!";
 
-    while ( my $line = <$fh> ) {
-        chomp $line;
-        next unless $line =~ m/^(.)(.) (.*)/;
+        while ( my $line = <$fh> ) {
+            chomp $line;
+            next unless $line =~ m/^(.)(.) (.*)/;
 
-        my ( $index, $wtree, $file ) = ( $1, $2, $3 );
-        $partial++ if $wtree eq 'M';
-        next unless ( $index eq 'A' or $index eq 'M' );
+            my ( $index, $wtree, $file ) = ( $1, $2, $3 );
+            $partial++ if $wtree eq 'M';
+            next unless ( $index eq 'A' or $index eq 'M' );
 
-        if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
-            # reset line separator to newline when checking first line of file
-            local $/ = "\n";
-            open( my $fh2, '<', $file ) || die "open $file: $!";
-            my $possible = <$fh2> || next;
+            if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
 
-            #        warn $possible;
-            next unless $possible =~ m/^#!.*perl\W/;
+              # reset line separator to newline when checking first line of file
+                local $/ = "\n";
+                open( my $fh2, '<', $file ) || die "open $file: $!";
+                my $possible = <$fh2> || next;
+
+                #        warn $possible;
+                next unless $possible =~ m/^#!.*perl\W/;
+            }
+
+            push( @perlfiles, $file );
+            $partial{$file} = $file . '|' . ( $wtree eq 'M' ? 1 : 0 );
         }
-
-        push( @perlfiles, $file );
-        $partial{$file} = $file . '|' . ( $wtree eq 'M' ? 1 : 0 );
     }
 
     exit 0 unless @perlfiles;

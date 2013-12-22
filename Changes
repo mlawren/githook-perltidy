@@ -14,6 +14,7 @@
         - Reduce testing noise:
             - Do not build on systems without a git.
             - Do run run make tests on systems without a make.
+        - Detect plenv scripts as Perl
 
     Bug Fixes:
         - Full-path issue:

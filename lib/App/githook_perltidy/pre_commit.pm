@@ -50,7 +50,9 @@ sub run {
                 my $possible = <$fh2> || next;
 
                 #        warn $possible;
-                next unless $possible =~ m/^#!.*perl\W/;
+                next
+                  unless $possible =~ m/^#!.*perl\W/
+                  or $possible =~ m/^#!.*\.plenv\W/;
             }
 
             push( @perlfiles, $file );

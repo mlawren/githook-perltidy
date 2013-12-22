@@ -8,7 +8,7 @@ BEGIN {
 use inc::Module::Install;
 
 name 'App-githook-perltidy';
-version '0.11.1_4';
+version '0.11.1_5';
 all_from 'lib/App/githook_perltidy.pm';
 abstract 'run perltidy and podtidy before Git commits';
 license 'gpl3';

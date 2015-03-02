@@ -8,7 +8,7 @@ use Perl::Tidy;
 use Pod::Tidy;
 use Time::Piece;
 
-our $VERSION = '0.11.1';
+our $VERSION = '0.11.1_6';
 
 my $stashed;
 my $success;
@@ -177,7 +177,7 @@ App::githook_perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.11.1.
+0.11.1_6.
 
 =head1 SEE ALSO
 

@@ -177,7 +177,7 @@ App::githook_perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.11.2 (yyyy-mm-dd)
+0.11.2 (2016-01-20)
 
 =head1 SEE ALSO
 

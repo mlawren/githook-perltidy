@@ -1,0 +1,41 @@
+---
+abstract: 'run perltidy and podtidy before Git commits'
+author:
+  - 'Mark Lawrence <nomad@null.net>'
+build_requires:
+  ExtUtils::MakeMaker: 6.59
+  File::Slurp: 0
+  FindBin: 0
+  Path::Tiny: 0
+  Sys::Cmd: 0
+  Test::Fatal: 0
+  Test::More: 0
+configure_requires:
+  ExtUtils::MakeMaker: 6.59
+distribution_type: module
+dynamic_config: 1
+generated_by: 'Module::Install version 1.14'
+license: gpl3
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.4.html
+  version: 1.4
+name: App-githook-perltidy
+no_index:
+  directory:
+    - inc
+    - t
+    - xt
+requires:
+  Carp: 0
+  Exporter::Tidy: 0
+  File::Basename: 0
+  OptArgs: 0
+  Path::Tiny: 0
+  Perl::Tidy: 0
+  Pod::Tidy: 0
+  Time::Piece: 0
+  perl: 5.6.0
+resources:
+  license: http://opensource.org/licenses/gpl-3.0.html
+  repository: git://github.com/mlawren/githook-perltidy.git
+version: 0.11.2

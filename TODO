@@ -1,0 +1,30 @@
+* Do everything post-commit:
+    - done with a "commit --amend"
+    - much less mucking about with saving state - simpler
+    - doesn't interrupt the flow as much (commit message can be edited
+      stright away)
+    - still have the problem with partial commits? divergence?
+    - Or possibly consider doing with git filters
+
+* "make test" on renames?
+
+* Investigate use of git attribute filters
+
+* Re-add files which are newly added "A" status when doing partial
+commit?
+
+* Fix git version problem?
+    http://www.cpantesters.org/cpan/report/31c1071a-9f72-11e2-a3b7-ea8478f8667a
+
+* Check and restore .git/MERGE_HEAD if it exists
+
+* Check that current branch is not (no branch)
+
+* "amend" screws with the reset stuff
+
+Check Makefile vs Makefile.PL modification times for re-run.
+
+Also tidy up on renames, as they show up only as renames even if the
+file got modified as well.
+
+* Detect modified .perltidyrc or .podtidy-opts files and error out

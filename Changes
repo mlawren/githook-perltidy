@@ -1,0 +1,164 @@
+0.11.2 (2016-01-20)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - Added a "--force" option to install, to overwrite existing
+          git hooks
+
+    Enhancements:
+        - Use Path::Tiny everywhere instead of File::Spec::Functions
+        - Convert to OptArgs
+        - More robust tests
+        - Reduce testing noise:
+            - Do not build on systems without a git.
+            - Do run run make tests on systems without a make.
+        - Detect plenv scripts as Perl
+
+    Bug Fixes:
+        - Full-path issue:
+          https://github.com/mlawren/githook-perltidy/issues/3
+        - Allow multiple 'make' arguments
+        - Properly handle paths with spaces or other odd characters
+          (thanks to Finn Smith)
+
+0.10.2 (2012-06-27)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Tidying of POD is now optional. Pod::Tidy will only be called
+          if .podtidy-opts exists (and is in the repository)
+
+    Bug Fixes:
+        - Replace lost verbosity with internal *::Tidy calls
+
+0.10.1 (2012-05-06)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Use Pod::Tidy directly instead of calling out to podtidy(1)
+        - Use Perl::Tidy directly instead of calling out to perltidy(1)
+
+    Bug Fixes:
+        - None.
+
+0.10.0 (2012-05-06)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - Support a project-wide ".podtidy-opts" file
+
+    Enhancements:
+        - None.
+
+    Bug Fixes:
+        - None.
+
+0.9.3 (2012-05-05)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Attempt to make tests a little more portable
+
+    Bug Fixes:
+        - None.
+
+0.9.2 (2012-05-05)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - None.
+
+    Bug Fixes:
+        - Stop using hard-coded /usr/bin/perl in tests
+
+0.9.1 (2012-05-03)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Second release to CPAN
+        - Include dummy App::githook_perltidy module for CPAN indexing
+        - Move to a http://semver.org style versioning scheme
+
+    Bug Fixes:
+        - _Really_ Handle partially indexed files better on post-commit
+
+0.04 (2012-05-01)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Handle partially indexed files better on post-commit
+        - Distribution name change to App-githook-perltidy.
+        - First release to CPAN (mostly for the tester reports)
+
+    Bug Fixes:
+        - None.
+
+0.03 (2011-10-14)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - PERLTIDY_MAKE environment variable support.
+        - Small portability fixes.
+
+    Bug Fixes:
+        - IMPORTANT! Properly detect a partial dirty tree.
+
+0.02 (2011-09-20)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - Depend on Pod::Tidy and Perl::Tidy to bring in the CLI tools.
+        - Initial tests added.
+
+    Bug Fixes:
+        - IMPORTANT! Actually do what the documentation claims:
+            * Detect perltidy failure
+            * Stop commit on failure
+
+0.01 (2011-09-19)
+
+    Initial Release.

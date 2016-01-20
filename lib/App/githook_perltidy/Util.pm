@@ -84,7 +84,7 @@ App::githook_perltidy::Util - shared utility functions for App::gith...
 
 =head1 VERSION
 
-0.11.1_6.
+0.11.1_6 (yyyy-mm-dd)
 
 =head1 SYNOPSIS
 

@@ -92,7 +92,7 @@ App::githook_perltidy::post_commit - git post-commit hook
 
 =head1 VERSION
 
-0.11.1_6.
+0.11.1_6 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

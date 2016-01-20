@@ -53,6 +53,10 @@ __END__
 
 App::githook_perltidy - dispatch module for githook-perltidy.
 
+=head1 VERSION
+
+0.11.1_6 (yyyy-mm-dd)
+
 =head1 SEE ALSO
 
 L<githook-perltidy>(1)

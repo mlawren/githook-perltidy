@@ -9,6 +9,7 @@ META.yml
 MYMETA.json
 MYMETA.yml
 Makefile
+README
 blib/
 inc/
 App-githook-perltidy*

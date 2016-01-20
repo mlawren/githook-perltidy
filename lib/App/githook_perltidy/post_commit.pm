@@ -7,7 +7,7 @@ use Path::Tiny;
 use Perl::Tidy;
 use Pod::Tidy;
 
-our $VERSION = '0.11.2';
+our $VERSION = '0.11.3_1';
 
 sub run {
     my $me = basename($0);
@@ -92,7 +92,7 @@ App::githook_perltidy::post_commit - git post-commit hook
 
 =head1 VERSION
 
-0.11.2 (yyyy-mm-dd)
+0.11.3_1 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

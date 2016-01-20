@@ -13,7 +13,7 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
-0.11.1_6 (yyyy-mm-dd)
+0.11.2 (yyyy-mm-dd)
 
 =head1 SYNOPSIS
 

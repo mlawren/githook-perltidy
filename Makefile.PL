@@ -11,7 +11,7 @@ name 'App-githook-perltidy';
 version '0.11.3_1';
 all_from 'lib/App/githook_perltidy.pm';
 abstract 'run perltidy and podtidy before Git commits';
-license 'gpl3';
+license 'gpl_3';
 perl_version '5.006';
 readme_from 'bin/githook-perltidy';
 

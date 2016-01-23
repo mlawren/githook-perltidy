@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.10.2.
+    0.11.2 (2016-01-20)
 
 SYNOPSIS
     Make sure everyone uses the same tidy options across your project:
@@ -30,15 +30,15 @@ DESCRIPTION
     There are three types of action this script will take as determed by the
     first argument:
 
-    install [MAKE ARGS]
+    install [--force, -f] [MAKE ARGS]
         Should be run from the command-line in the top-level directory of
         your repository. Writes pre-commit and post-commit files in the
         $GIT_DIR/hooks/ directory. Any MAKE ARGS given will be added to the
         "githook-perltidy pre-commit" call.
 
         This command will fail if there is no .perltidyrc file in the
-        repository, if the hooks directory isn't found, or if either of the
-        hook files already exist.
+        repository or if the hooks directory isn't found. It will also fail
+        if either of the hook files already exist, unless "--force" is used.
 
     pre-commit [MAKE ARGS]
         Called from a Git pre-commit hook. Backs up your index and working
@@ -115,7 +115,7 @@ AUTHOR
     Mark Lawrence <nomad@null.net>
 
 COPYRIGHT AND LICENSE
-    Copyright 2011-2012 Mark Lawrence <nomad@null.net>
+    Copyright 2011-2013 Mark Lawrence <nomad@null.net>
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by the

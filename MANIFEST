@@ -1,0 +1,27 @@
+bin/githook-perltidy
+Changes
+inc/Module/Install.pm
+inc/Module/Install/Base.pm
+inc/Module/Install/Can.pm
+inc/Module/Install/Fetch.pm
+inc/Module/Install/Makefile.pm
+inc/Module/Install/Metadata.pm
+inc/Module/Install/ReadmeFromPod.pm
+inc/Module/Install/Scripts.pm
+inc/Module/Install/Win32.pm
+inc/Module/Install/WriteAll.pm
+lib/App/githook_perltidy.pm
+lib/App/githook_perltidy/install.pm
+lib/App/githook_perltidy/post_commit.pm
+lib/App/githook_perltidy/pre_commit.pm
+lib/App/githook_perltidy/Util.pm
+Makefile.PL
+MANIFEST			This list of files
+META.yml
+README
+t/App/githook_perltidy/install.t
+t/App/githook_perltidy/post_commit.t
+t/App/githook_perltidy/pre_commit.t
+t/App/githook_perltidy/Util.t
+t/githook-perltidy.t
+TODO

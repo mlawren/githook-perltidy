@@ -1,3 +1,28 @@
+0.11.2 (2016-01-20)
+
+    API Changes:
+        - None.
+
+    New Features:
+        - Added a "--force" option to install, to overwrite existing
+          git hooks
+
+    Enhancements:
+        - Use Path::Tiny everywhere instead of File::Spec::Functions
+        - Convert to OptArgs
+        - More robust tests
+        - Reduce testing noise:
+            - Do not build on systems without a git.
+            - Do run run make tests on systems without a make.
+        - Detect plenv scripts as Perl
+
+    Bug Fixes:
+        - Full-path issue:
+          https://github.com/mlawren/githook-perltidy/issues/3
+        - Allow multiple 'make' arguments
+        - Properly handle paths with spaces or other odd characters
+          (thanks to Finn Smith)
+
 0.10.2 (2012-06-27)
 
     API Changes:

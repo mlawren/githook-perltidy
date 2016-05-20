@@ -13,7 +13,7 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
-0.11.2 (2016-01-20)
+0.11.3_1 (2016-05-20)
 
 =head1 SYNOPSIS
 
@@ -31,16 +31,17 @@ Install the pre-commit and post-commit hooks:
 =head1 DESCRIPTION
 
 B<githook-perltidy> is a script that can be invoked by Git pre-commit
-and post-commit hooks to run L<perltidy> and L<podtidy> on Perl and POD
-files (and optionally run L<make>(1) targets), ensuring that your
-project's code is always cleanly committed.
+hook to run L<perltidy> and L<podtidy> on Perl and POD files (and
+optionally run L<make>(1) targets), ensuring that your project's code
+is always cleanly committed.
 
 This script is is efficient: it only modifies Perl and POD files that
 are being committed and not every file in your repository. It also
-tries its hardest to be safe: the index and working tree are stashed
-away beforehand, and restored in the event of failure.
+tries its hardest to be safe: tidying is performed on a separate
+working tree so that your own working files are not left in a bad state
+in the event of failure.
 
-There are three types of action this script will take as determed by
+There are two types of action this script will take as determined by
 the first argument:
 
 =over 4
@@ -58,11 +59,12 @@ either of the hook files already exist, unless C<--force> is used.
 
 =item pre-commit [MAKE ARGS]
 
-Called from a Git pre-commit hook.  Backs up your index and working
-tree into a Git stash. Runs L<perltidy> on any Perl files in the Git
-index using the F<.perltidyrc>. If F<.podtidy-opts> exists then
-L<podtidy> will also be run on any POD files in the Git index,
-otherwise a warning is issued.
+Called from a Git pre-commit hook.  Checks out your index to a
+temporary working directory. Runs L<perltidy> on any Perl files in the
+Git index using the F<.perltidyrc>. If F<.podtidy-opts> exists then
+L<podtidy> will also be run on any POD files in the Git index.  Any
+tidying errors stop the commmit. Otherwise the index and your working
+tree are updated with tidied files.
 
 If any MAKE ARGS are given they will be passed to a L<make> call.  This
 way you can ensure that your code passes a C<make test> or C<make
@@ -70,38 +72,12 @@ disttest> check before each commit.  If the PERLTIDY_MAKE environment
 variable exists it will I<override> any arguments. Setting
 PERLTIDY_MAKE="" will skip the make call entirely.
 
-Failure of any of the above will result in a hard reset and the saved
-stash popped (I.e. re-applied and deleted). The commit will be stopped.
-On success the index is updated with the tidied files and the commit is
-allowed to proceed.  In the event that your index was an interactive or
-patched version of your working tree, the stash will be kept for the
-post-commit hook. Otherwise it will be dropped.
-
 This command will fail if there is no .perltidyrc file in the
 repository.
 
 =item post-commit
 
-Called from a Git post-commit hook to re-apply stashed (but not
-indexed) changes. In the event that your index was an interactive or
-patched version of your working tree, the post-commit command does the
-following:
-
-=over
-
-=item * checks out the I<previous> commit
-
-=item * pops the stash saved by the pre-commit command
-
-=item * tidies the files that were stashed
-
-=item * saves a new stash with the completely tidied files
-
-=item * checks out the I<latest> commit
-
-=item * pops the stash with the tidied files
-
-=back
+This command is a left-over from earlier versions and now does nothing.
 
 =back
 
@@ -130,11 +106,6 @@ Perltidy command options file.
 
 Podtidy command options file. This is githook-perltidy specific.
 
-=item F<.githook-perltidy>
-
-A temporary file used to communicate between the pre-commit and
-post-commit calls.
-
 =back
 
 =head1 SUPPORT
@@ -153,7 +124,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2013 Mark Lawrence <nomad@null.net>
+Copyright 2011-2016 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

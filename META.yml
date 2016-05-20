@@ -15,7 +15,7 @@ configure_requires:
 distribution_type: module
 dynamic_config: 1
 generated_by: 'Module::Install version 1.14'
-license: gpl3
+license: gpl_3
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: 1.4
@@ -36,6 +36,6 @@ requires:
   Time::Piece: 0
   perl: 5.6.0
 resources:
-  license: http://opensource.org/licenses/gpl-3.0.html
+  license: http://opensource.org/licenses/gpl-license.php
   repository: git://github.com/mlawren/githook-perltidy.git
-version: 0.11.2
+version: 0.11.3_1

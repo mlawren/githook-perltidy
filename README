@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.11.2 (2016-01-20)
+    0.11.3_1 (2016-05-20)
 
 SYNOPSIS
     Make sure everyone uses the same tidy options across your project:
@@ -17,17 +17,18 @@ SYNOPSIS
         $ githook-perltidy install
 
 DESCRIPTION
-    githook-perltidy is a script that can be invoked by Git pre-commit and
-    post-commit hooks to run perltidy and podtidy on Perl and POD files (and
-    optionally run make(1) targets), ensuring that your project's code is
-    always cleanly committed.
+    githook-perltidy is a script that can be invoked by Git pre-commit hook
+    to run perltidy and podtidy on Perl and POD files (and optionally run
+    make(1) targets), ensuring that your project's code is always cleanly
+    committed.
 
     This script is is efficient: it only modifies Perl and POD files that
     are being committed and not every file in your repository. It also tries
-    its hardest to be safe: the index and working tree are stashed away
-    beforehand, and restored in the event of failure.
+    its hardest to be safe: tidying is performed on a separate working tree
+    so that your own working files are not left in a bad state in the event
+    of failure.
 
-    There are three types of action this script will take as determed by the
+    There are two types of action this script will take as determined by the
     first argument:
 
     install [--force, -f] [MAKE ARGS]
@@ -41,11 +42,12 @@ DESCRIPTION
         if either of the hook files already exist, unless "--force" is used.
 
     pre-commit [MAKE ARGS]
-        Called from a Git pre-commit hook. Backs up your index and working
-        tree into a Git stash. Runs perltidy on any Perl files in the Git
-        index using the .perltidyrc. If .podtidy-opts exists then podtidy
-        will also be run on any POD files in the Git index, otherwise a
-        warning is issued.
+        Called from a Git pre-commit hook. Checks out your index to a
+        temporary working directory. Runs perltidy on any Perl files in the
+        Git index using the .perltidyrc. If .podtidy-opts exists then
+        podtidy will also be run on any POD files in the Git index. Any
+        tidying errors stop the commmit. Otherwise the index and your
+        working tree are updated with tidied files.
 
         If any MAKE ARGS are given they will be passed to a make call. This
         way you can ensure that your code passes a "make test" or "make
@@ -53,33 +55,12 @@ DESCRIPTION
         variable exists it will *override* any arguments. Setting
         PERLTIDY_MAKE="" will skip the make call entirely.
 
-        Failure of any of the above will result in a hard reset and the
-        saved stash popped (I.e. re-applied and deleted). The commit will be
-        stopped. On success the index is updated with the tidied files and
-        the commit is allowed to proceed. In the event that your index was
-        an interactive or patched version of your working tree, the stash
-        will be kept for the post-commit hook. Otherwise it will be dropped.
-
         This command will fail if there is no .perltidyrc file in the
         repository.
 
     post-commit
-        Called from a Git post-commit hook to re-apply stashed (but not
-        indexed) changes. In the event that your index was an interactive or
-        patched version of your working tree, the post-commit command does
-        the following:
-
-        *   checks out the *previous* commit
-
-        *   pops the stash saved by the pre-commit command
-
-        *   tidies the files that were stashed
-
-        *   saves a new stash with the completely tidied files
-
-        *   checks out the *latest* commit
-
-        *   pops the stash with the tidied files
+        This command is a left-over from earlier versions and now does
+        nothing.
 
 CAVEATS
     There are two ways in which githook-perltidy behaviour may affect your
@@ -99,10 +80,6 @@ FILES
     .podtidy-opts
         Podtidy command options file. This is githook-perltidy specific.
 
-    .githook-perltidy
-        A temporary file used to communicate between the pre-commit and
-        post-commit calls.
-
 SUPPORT
     This tool is managed via github:
 
@@ -115,7 +92,7 @@ AUTHOR
     Mark Lawrence <nomad@null.net>
 
 COPYRIGHT AND LICENSE
-    Copyright 2011-2013 Mark Lawrence <nomad@null.net>
+    Copyright 2011-2016 Mark Lawrence <nomad@null.net>
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by the

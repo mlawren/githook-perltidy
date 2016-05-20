@@ -5,7 +5,7 @@ use App::githook_perltidy::Util qw/get_perltidyrc/;
 use File::Basename;
 use Path::Tiny;
 
-our $VERSION = '0.11.2';
+our $VERSION = '0.11.3_1';
 
 sub run {
     my $opts = shift;
@@ -56,7 +56,7 @@ App::githook_perltidy::install - install git hooks
 
 =head1 VERSION
 
-0.11.2 (2016-01-20)
+0.11.3_1 (2016-05-20)
 
 =head1 SEE ALSO
 
@@ -68,7 +68,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2013 Mark Lawrence <nomad@null.net>
+Copyright 2011-2016 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

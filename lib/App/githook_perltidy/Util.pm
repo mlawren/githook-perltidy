@@ -1,61 +1,43 @@
 package App::githook_perltidy::Util;
 use strict;
 use warnings;
-use constant POST_HOOK_FILE => '.githook-perltidy';
 use Carp qw/croak/;
 use Exporter::Tidy all => [
     qw/ get_perltidyrc
       have_podtidy_opts
       get_podtidy_opts
-      sys
-      POST_HOOK_FILE /
+      sys /
 ];
 use Path::Tiny;
 
-our $VERSION = '0.11.2';
+our $VERSION = '0.11.3_1';
 
 sub get_perltidyrc {
-    my $rc;
-    if ( $ENV{GIT_DIR} ) {
-        $rc = path( $ENV{GIT_DIR} )->parent->child('.perltidyrc');
-    }
-    else {
-        $rc = path('.perltidyrc');
-    }
 
-    if ( system("git ls-files --error-unmatch $rc > /dev/null 2>&1") != 0 ) {
+    if (
+        system("git ls-files --error-unmatch .perltidyrc > /dev/null 2>&1") !=
+        0 )
+    {
         die ".perltidyrc not in repository.\n";
     }
-    return $rc;
+
+    return path( $ENV{GIT_DIR} // '.' )->parent->child('.perltidyrc');
 }
 
 sub have_podtidy_opts {
-    my $rc;
-    if ( $ENV{GIT_DIR} ) {
-        $rc = path( $ENV{GIT_DIR} )->parent->child('.podtidy-opts');
-    }
-    else {
-        $rc = '.podtidy-opts';
-    }
-
-    return -e $rc;
+    return -e path( $ENV{GIT_DIR} // '.' )->parent->child('.podtidy-opts');
 }
 
 sub get_podtidy_opts {
-    my $rc;
-    if ( $ENV{GIT_DIR} ) {
-        $rc = path( $ENV{GIT_DIR} )->parent->child('.podtidy-opts');
-    }
-    else {
-        $rc = '.podtidy-opts';
-    }
 
-    if ( -e $rc
-        && system("git ls-files --error-unmatch $rc > /dev/null 2>&1") != 0 )
+    if (
+        system("git ls-files --error-unmatch .podtidy-opts > /dev/null 2>&1")
+        != 0 )
     {
         die ".podtidy-opts not in repository.\n";
     }
 
+    my $rc = path( $ENV{GIT_DIR} // '.' )->parent->child('.podtidy-opts');
     my %opts;
 
     if ( -e $rc ) {
@@ -71,7 +53,7 @@ sub get_podtidy_opts {
 }
 
 sub sys {
-    print '    ' . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
+    print '  ' . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
     system("@_") == 0 or croak "@_ failed: $?";
 }
 
@@ -84,7 +66,7 @@ App::githook_perltidy::Util - shared utility functions for App::gith...
 
 =head1 VERSION
 
-0.11.2 (2016-01-20)
+0.11.3_1 (2016-05-20)
 
 =head1 SYNOPSIS
 
@@ -122,11 +104,6 @@ repository.
 Runs C<@cmd> using the Perl C<system> builtin. Raises an exception on
 error.
 
-=item POST_HOOK_FILE
-
-A constant value containing the name of the file for sharing
-information between pre and post hook calls.
-
 =back
 
 =head1 AUTHOR
@@ -135,7 +112,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2013 Mark Lawrence <nomad@null.net>
+Copyright 2011-2016 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

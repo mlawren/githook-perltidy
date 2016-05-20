@@ -1,19 +1,10 @@
 0.11.3_1 (yyyy-mm-dd)
 
-    API / Behaviour Changes:
-        - None.
-
-    New Features:
-        - None.
-
-    Enhancements:
-        - None.
-
     Bug Fixes:
-        - Fix license typo in Makefile.PL (Mohammad S Anwar)
-
-    Dependencies:
-        - None.
+       - Fix license typo in Makefile.PL (Mohammad S Anwar)
+       - Replace backup/recover (stash/pop) implementation with setting
+         GIT_WORK_TREE to a temporary directory. This should fix
+         https://github.com/mlawren/githook-perltidy/issues/8.
 
 0.11.2 (2016-01-20)
 

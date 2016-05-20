@@ -82,8 +82,7 @@ is read_file('file.pl'), $with_indent, 'detect .pl extension';
 
 write_file( 'bad.pl', $bad_syntax );
 run(qw!git add bad.pl!);
-like exception { run( qw!git commit -m!, 'bad syntax' ) },
-  qr/githook-perltidy: pre-commit FAIL/,
+ok exception { run( qw!git commit -m!, 'bad syntax' ) },
   'commit stopped on bad syntax';
 
 is read_file('bad.pl'), $bad_syntax, 'working tree restored';

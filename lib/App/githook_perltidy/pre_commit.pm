@@ -3,29 +3,33 @@ use strict;
 use warnings;
 use App::githook_perltidy::Util qw/:all/;
 use File::Basename;
+use File::Copy;
 use Path::Tiny;
 use Perl::Tidy;
 use Pod::Tidy;
-use Time::Piece;
 
 our $VERSION = '0.11.3_1';
 
-my $stashed;
-my $success;
-my $partial;
-my %partial;
+my $temp_dir;
+
+sub tmp_sys {
+    local $ENV{GIT_WORK_TREE} = $temp_dir;
+    sys(@_);
+}
 
 sub run {
-    my $opts = shift;
-    $stashed = 0;
-    $success = 0;
-    $partial = 0;
-    %partial = ();
-
+    my $opts      = shift;
     my $me        = basename($0);
+    my $rc        = get_perltidyrc();
     my @perlfiles = ();
+    my %partial   = ();
 
-    my $rc = get_perltidyrc();
+    $temp_dir = Path::Tiny->tempdir('githook-perltidy-XXXXXXXX');
+
+    # Both of these start out as relative which breaks when we want to
+    # modify the repo and index from a different working tree
+    $ENV{GIT_DIR}        = path( $ENV{GIT_DIR} )->absolute->stringify;
+    $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify;
 
     # Use the -z flag to get clean filenames with no escaping or quoting
     # "lines" are separated with NUL, so set input record separator
@@ -39,14 +43,16 @@ sub run {
             next unless $line =~ m/^(.)(.) (.*)/;
 
             my ( $index, $wtree, $file ) = ( $1, $2, $3 );
-            $partial++ if $wtree eq 'M';
             next unless ( $index eq 'A' or $index eq 'M' );
 
+            tmp_sys( qw/git checkout-index/, $file );
+
             if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
+                my $tmp_file = $temp_dir->child($file);
 
               # reset line separator to newline when checking first line of file
                 local $/ = "\n";
-                open( my $fh2, '<', $file ) || die "open $file: $!";
+                open( my $fh2, '<', $tmp_file ) || die "open $tmp_file: $!";
                 my $possible = <$fh2> || next;
 
                 #        warn $possible;
@@ -56,35 +62,24 @@ sub run {
             }
 
             push( @perlfiles, $file );
-            $partial{$file} = $file . '|' . ( $wtree eq 'M' ? 1 : 0 );
+            $partial{$file} = $wtree eq 'M';
         }
     }
 
-    if ( !@perlfiles ) {
-        print "$me pre-commit: no changes to tidy\n";
-        exit 0;
-    }
-
-    print "$me pre-commit:\n    # saving non-indexed changes and tidying\n";
-
-    sys(
-        qw/git stash save --quiet --keep-index /,
-        $me . ' ' . localtime->datetime
-    );
-    $stashed = 1;
-
-    sys(qw/git checkout-index -a /);
+    exit 0 unless @perlfiles;
 
     my $have_podtidy_opts = have_podtidy_opts();
-    print "    Skipping podtidy calls: no .podtidy-opts file\n"
+    print "  $me: no .podtidy-opts - skipping podtidy calls\n"
       unless $have_podtidy_opts;
 
     foreach my $file (@perlfiles) {
+        my $tmp_file = $temp_dir->child($file);
+
         if ($have_podtidy_opts) {
-            print "    podtidy $file\n";
+            print "  $me: podtidy INDEX/$file\n";
 
             Pod::Tidy::tidy_files(
-                files     => [$file],
+                files     => [$tmp_file],
                 recursive => 0,
                 verbose   => 0,
                 inplace   => 1,
@@ -94,24 +89,62 @@ sub run {
             );
         }
 
-        unlink $file . '~';
-
         unless ( $file =~ m/\.pod$/i ) {
-            unlink $file . '.ERR';
+            print "  $me: perltidy INDEX/$file\n";
 
-            print "    perltidy --profile=$rc -nst -b -bext=.bak $file\n";
-            my $error = Perl::Tidy::perltidy(
-                argv => [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, $file ],
-            );
+            my $error =
+              Perl::Tidy::perltidy( argv =>
+                  [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, "$tmp_file" ],
+              );
 
-            unlink $file . '.bak';
-            if ( -e $file . '.ERR' ) {
-                die path( $file . '.ERR' )->slurp;
+            if ( -e $tmp_file . '.ERR' ) {
+                die path( $tmp_file . '.ERR' )->slurp;
             }
             elsif ($error) {
-                die "$me pre-commit: An unknown error occurred.";
+                die "  $me: An unknown perltidy error occurred.";
             }
         }
+
+        tmp_sys( qw/git add /, $file );
+
+        # Redo the whole thing again for partially modified files
+        if ( $partial{$file} ) {
+            print "  $me: copy $file $tmp_file\n";
+            copy $file, $tmp_file;
+
+            if ($have_podtidy_opts) {
+                print "  $me: podtidy WORK_TREE/$file\n";
+
+                Pod::Tidy::tidy_files(
+                    files     => [$tmp_file],
+                    recursive => 0,
+                    verbose   => 0,
+                    inplace   => 1,
+                    nobackup  => 1,
+                    columns   => 72,
+                    get_podtidy_opts(),
+                );
+            }
+
+            unless ( $file =~ m/\.pod$/i ) {
+                print "  $me: perltidy WORK_TREE/$file $tmp_file\n";
+
+                my $error = Perl::Tidy::perltidy(
+                    argv => [ '--profile=' . $rc, qw/-nst -b/, "$tmp_file" ], );
+
+                if ( -e $tmp_file . '.ERR' ) {
+                    die path( $tmp_file . '.ERR' )->slurp;
+                }
+                elsif ($error) {
+                    die "  $me: An unknown perltidy error occurred.";
+                }
+            }
+
+        }
+
+        # Copy the tidied file back to the real working directory
+        print "  $me: copy $tmp_file $file\n";
+        copy $tmp_file, $file;
     }
 
     $opts->{make_args} = $ENV{PERLTIDY_MAKE} if exists $ENV{PERLTIDY_MAKE};
@@ -135,37 +168,6 @@ sub run {
 
         sys("make $opts->{make_args}");
     }
-
-    sys( qw/git add /, @perlfiles );
-
-    $success = 1;
-
-}
-
-END {
-
-    # Save our exit status as the system calls in sys() will change it
-    my $exit = $?;
-    unlink POST_HOOK_FILE;
-
-    if ($success) {
-        if ($partial) {
-            print "    # writing '"
-              . POST_HOOK_FILE
-              . "' for post-commit hook\n";
-            path(POST_HOOK_FILE)->spew( join( "\n", values %partial ) );
-        }
-        else {
-            sys(qw/git stash drop -q/);
-        }
-    }
-    elsif ($stashed) {
-        print STDERR "\n", basename($0) . ": pre-commit FAIL! Restoring...\n";
-        sys(qw/git reset --hard/);
-        sys(qw/git stash pop --quiet --index/);
-    }
-
-    $? = $exit;
 }
 
 1;
@@ -189,7 +191,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2013 Mark Lawrence <nomad@null.net>
+Copyright 2011-2016 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

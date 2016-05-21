@@ -1,3 +1,9 @@
+0.11.3_2 (2016-05-21)
+
+    Dependencies:
+        - Don't use the defined-or "//" operator - min perl version
+          5.6.
+
 0.11.3_1 (2016-05-20)
 
     Bug Fixes:

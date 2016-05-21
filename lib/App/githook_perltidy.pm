@@ -55,7 +55,7 @@ App::githook_perltidy - dispatch module for githook-perltidy.
 
 =head1 VERSION
 
-0.11.3_2 (yyyy-mm-dd)
+0.11.3_2 (2016-05-21)
 
 =head1 SEE ALSO
 

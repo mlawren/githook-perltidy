@@ -5,7 +5,7 @@ use App::githook_perltidy::Util qw/get_perltidyrc/;
 use File::Basename;
 use Path::Tiny;
 
-our $VERSION = '0.11.3_2';
+our $VERSION = '0.11.3_3';
 
 sub run {
     my $opts = shift;
@@ -56,7 +56,7 @@ App::githook_perltidy::install - install git hooks
 
 =head1 VERSION
 
-0.11.3_2 (2016-05-21)
+0.11.3_3 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

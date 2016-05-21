@@ -21,11 +21,11 @@ sub get_perltidyrc {
         die ".perltidyrc not in repository.\n";
     }
 
-    return path( $ENV{GIT_DIR} // '.' )->parent->child('.perltidyrc');
+    return path( $ENV{GIT_DIR} || '.' )->parent->child('.perltidyrc');
 }
 
 sub have_podtidy_opts {
-    return -e path( $ENV{GIT_DIR} // '.' )->parent->child('.podtidy-opts');
+    return -e path( $ENV{GIT_DIR} || '.' )->parent->child('.podtidy-opts');
 }
 
 sub get_podtidy_opts {
@@ -37,7 +37,7 @@ sub get_podtidy_opts {
         die ".podtidy-opts not in repository.\n";
     }
 
-    my $rc = path( $ENV{GIT_DIR} // '.' )->parent->child('.podtidy-opts');
+    my $rc = path( $ENV{GIT_DIR} || '.' )->parent->child('.podtidy-opts');
     my %opts;
 
     if ( -e $rc ) {

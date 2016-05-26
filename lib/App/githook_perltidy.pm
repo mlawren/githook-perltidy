@@ -43,6 +43,7 @@ arg make_args => (
 subcmd(
     cmd     => 'post-commit',
     comment => 'Merge non-indexed changes after commit',
+    hidden  => 1,
 );
 
 1;

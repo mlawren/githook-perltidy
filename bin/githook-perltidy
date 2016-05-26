@@ -24,7 +24,7 @@ Make sure everyone uses the same tidy options across your project:
     $ git add .perltidyrc .podtidy-opts
     $ git commit
 
-Install the pre-commit and post-commit hooks:
+Install the pre-commit hook:
 
     $ githook-perltidy install
 
@@ -75,11 +75,10 @@ PERLTIDY_MAKE="" will skip the make call entirely.
 This command will fail if there is no .perltidyrc file in the
 repository.
 
-=item post-commit
-
-This command is a left-over from earlier versions and now does nothing.
-
 =back
+
+There is also a C<post-commit> command left over from earlier versions
+that now does nothing and can be ignored.
 
 =head1 CAVEATS
 

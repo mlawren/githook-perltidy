@@ -5,17 +5,11 @@ use App::githook_perltidy::Util qw/get_perltidyrc/;
 use File::Basename;
 use Path::Tiny;
 
-our $VERSION = '0.11.3_2';
+our $VERSION = '0.11.4';
 
 sub run {
     my $opts = shift;
     my $me   = basename($0);
-
-    my $stashed   = 0;
-    my $success   = 0;
-    my $partial   = 0;
-    my @perlfiles = ();
-    my %partial   = ();
 
     get_perltidyrc();
 
@@ -29,20 +23,9 @@ sub run {
         die "File/link exists: $pre_file\n" unless $opts->{force};
     }
 
-    my $post_file = $hooks_dir->child('post-commit');
-    if ( -e $post_file or -l $post_file ) {
-        die "File/link exists: $post_file\n" unless $opts->{force};
-    }
-
     $pre_file->spew("#!/bin/sh\n$0 pre-commit $opts->{make_args}\n");
     chmod 0755, $pre_file || warn "chmod: $!";
     print "$me: $pre_file";
-    print " (forced)" if $opts->{force};
-    print "\n";
-
-    $post_file->spew("#!/bin/sh\n$0 post-commit\n");
-    chmod 0755, $post_file || warn "chmod: $!";
-    print "$me: $post_file";
     print " (forced)" if $opts->{force};
     print "\n";
 }
@@ -56,7 +39,7 @@ App::githook_perltidy::install - install git hooks
 
 =head1 VERSION
 
-0.11.3_2 (2016-05-21)
+0.11.4 (2016-05-26)
 
 =head1 SEE ALSO
 

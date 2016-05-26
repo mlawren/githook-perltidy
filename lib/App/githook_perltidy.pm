@@ -2,7 +2,7 @@ package App::githook_perltidy;
 use strict;
 use OptArgs;
 
-our $VERSION = '0.11.3_2';
+our $VERSION = '0.11.4';
 
 arg command => (
     isa      => 'SubCmd',
@@ -55,7 +55,7 @@ App::githook_perltidy - dispatch module for githook-perltidy.
 
 =head1 VERSION
 
-0.11.3_2 (2016-05-21)
+0.11.4 (2016-05-26)
 
 =head1 SEE ALSO
 

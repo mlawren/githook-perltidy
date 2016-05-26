@@ -2,7 +2,7 @@ package App::githook_perltidy::post_commit;
 use strict;
 use warnings;
 
-our $VERSION = '0.11.3_2';
+our $VERSION = '0.11.4';
 
 sub run {
 
@@ -18,7 +18,7 @@ App::githook_perltidy::post_commit - git post-commit hook
 
 =head1 VERSION
 
-0.11.3_2 (2016-05-21)
+0.11.4 (2016-05-26)
 
 =head1 DESCRIPTION
 

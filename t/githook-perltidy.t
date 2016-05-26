@@ -18,8 +18,7 @@ chdir $dir || die "chdir $dir: $!";
 note "Testing $githook_perltidy in $dir";
 
 my $hook_dir = path( '.git', 'hooks' );
-my $pre      = $hook_dir->child('pre-commit');
-my $post     = $hook_dir->child('post-commit');
+my $pre = $hook_dir->child('pre-commit');
 
 like exception { run($githook_perltidy) }, qr/^usage:/, 'usage';
 
@@ -36,22 +35,19 @@ run(qw!git add .perltidyrc!);
 run( qw!git commit -m!, 'add perltidyrc' );
 
 $pre->remove;
-$post->remove;
 
-like run( $githook_perltidy, qw!install! ),
-  qr/pre-commit.*post-commit/s, 'install output';
+like run( $githook_perltidy, qw!install! ), qr/pre-commit/s, 'install output';
 
-ok -e $pre,  'pre-commit exists';
-ok -e $post, 'post-commit exists';
+ok -e $pre, 'pre-commit exists';
 
 like exception { run( $githook_perltidy, qw!install! ) },
   qr/exists/, 'existing hook files';
 
 like run( $githook_perltidy, qw!install --force! ),
-  qr/pre-commit \(forced\).*post-commit \(forced\)/s, 'install --force';
+  qr/pre-commit \(forced\)/s, 'install --force';
 
 like run( $githook_perltidy, qw!install -f! ),
-  qr/pre-commit \(forced\).*post-commit \(forced\)/s, 'install -f';
+  qr/pre-commit \(forced\)/s, 'install -f';
 
 my $no_indent = '#!' . $^X . '
 if (1) {
@@ -137,7 +133,6 @@ SKIP: {
     skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };
 
     $pre->remove;
-    $post->remove;
 
     write_file(
         'Makefile.PL', "
@@ -150,12 +145,10 @@ WriteMakefile(
     );
 
     like run( $githook_perltidy, qw!install test ATTRIBUTE=1! ),
-      qr/pre-commit.*post-commit/s, 'install make args output';
+      qr/pre-commit/s, 'install make args output';
 
     like read_file($pre), qr/pre-commit test ATTRIBUTE=1/,
       'pre content make args ';
-
-    ok -e $post, 'post-commit exists';
 
     run(qw!git add Makefile.PL!);
     like run( qw!git commit -m!, 'add Makefile.PL' ),

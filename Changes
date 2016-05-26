@@ -1,20 +1,5 @@
 0.11.3_3 (yyyy-mm-dd)
 
-    API / Behaviour Changes:
-        - None.
-
-    New Features:
-        - None.
-
-    Enhancements:
-        - None.
-
-    Bug Fixes:
-        - None.
-
-    Dependencies:
-        - None.
-
     Other:
         - No longer install a post-commit hook (unecessary since
           0.11.3_1) but we keep the post-commit command as a no-op for

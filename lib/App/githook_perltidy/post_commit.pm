@@ -18,7 +18,7 @@ App::githook_perltidy::post_commit - git post-commit hook
 
 =head1 VERSION
 
-0.11.4 (yyyy-mm-dd)
+0.11.4 (2016-05-26)
 
 =head1 DESCRIPTION
 

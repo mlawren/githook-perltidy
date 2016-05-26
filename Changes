@@ -1,4 +1,4 @@
-0.11.3_3 (yyyy-mm-dd)
+0.11.4 (yyyy-mm-dd)
 
     Other:
         - No longer install a post-commit hook (unecessary since

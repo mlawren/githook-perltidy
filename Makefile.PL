@@ -37,6 +37,11 @@ install_script 'bin/githook-perltidy';
 
 repository 'git://github.com/mlawren/githook-perltidy.git';
 
+no_index package => 'App::githook_perltidy::Util';
+no_index package => 'App::githook_perltidy::install';
+no_index package => 'App::githook_perltidy::pre_commit';
+no_index package => 'App::githook_perltidy::post_commit';
+
 WriteAll;
 
 # Create the test script

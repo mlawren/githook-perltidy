@@ -16,10 +16,11 @@
         - None.
 
     Other:
-        - Hide the post-commit command in the usage message and
-          give it even less emphasis in the documentation.
+        - Hide the post-commit command in the usage message and give it
+          even less emphasis in the documentation.
         - Stop Makefile.PL from complaining about not being able to
           detect the perl version.
+        - Do not index any package on CPAN except App::githook_perltidy
 
 
 0.11.4 (2016-05-26)

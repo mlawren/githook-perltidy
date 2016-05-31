@@ -26,6 +26,12 @@ sub run {
 
     $temp_dir = Path::Tiny->tempdir('githook-perltidy-XXXXXXXX');
 
+    my $perltidy = \&Perl::Tidy::perltidy;
+    if( $opts->{sweet} ){
+        require Perl::Tidy::Sweetened;
+        $perltidy = \&Perl::Tidy::Sweetened::perltidy;
+    }
+
     # Both of these start out as relative which breaks when we want to
     # modify the repo and index from a different working tree
     $ENV{GIT_DIR}        = path( $ENV{GIT_DIR} )->absolute->stringify;
@@ -93,7 +99,7 @@ sub run {
             print "  $me: perltidy INDEX/$file\n";
 
             my $error =
-              Perl::Tidy::perltidy( argv =>
+              $perltidy->( argv =>
                   [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, "$tmp_file" ],
               );
 
@@ -129,7 +135,7 @@ sub run {
             unless ( $file =~ m/\.pod$/i ) {
                 print "  $me: perltidy WORK_TREE/$file $tmp_file\n";
 
-                my $error = Perl::Tidy::perltidy(
+                my $error = $perltidy->(
                     argv => [ '--profile=' . $rc, qw/-nst -b/, "$tmp_file" ], );
 
                 if ( -e $tmp_file . '.ERR' ) {

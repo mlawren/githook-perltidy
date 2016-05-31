@@ -23,7 +23,8 @@ sub run {
         die "File/link exists: $pre_file\n" unless $opts->{force};
     }
 
-    $pre_file->spew("#!/bin/sh\n$0 pre-commit $opts->{make_args}\n");
+    my $sweet = $opts->{sweet} ? ' -s' : '';
+    $pre_file->spew("#!/bin/sh\n$0 pre-commit$sweet $opts->{make_args}\n");
     chmod 0755, $pre_file || warn "chmod: $!";
     print "$me: $pre_file";
     print " (forced)" if $opts->{force};

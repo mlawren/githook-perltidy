@@ -46,18 +46,21 @@ the first argument:
 
 =over 4
 
-=item install [--force, -f] [MAKE ARGS]
+=item install [--force, -f] [--sweet, -s] [MAKE ARGS]
 
 Should be run from the command-line in the top-level directory of your
 repository. Writes F<pre-commit> and F<post-commit> files in the
-F<$GIT_DIR/hooks/> directory. Any MAKE ARGS given will be added to the
+F<$GIT_DIR/hooks/> directory.  Any MAKE ARGS given will be added to the
 C<githook-perltidy pre-commit> call.
+
+Will add the C<--sweet> flag to all C<pre-commit> call if C<--sweet>
+is used.
 
 This command will fail if there is no .perltidyrc file in the
 repository or if the hooks directory isn't found. It will also fail if
 either of the hook files already exist, unless C<--force> is used.
 
-=item pre-commit [MAKE ARGS]
+=item pre-commit [--sweet, -s] [MAKE ARGS]
 
 Called from a Git pre-commit hook.  Checks out your index to a
 temporary working directory. Runs L<perltidy> on any Perl files in the
@@ -65,6 +68,8 @@ Git index using the F<.perltidyrc>. If F<.podtidy-opts> exists then
 L<podtidy> will also be run on any POD files in the Git index.  Any
 tidying errors stop the commmit. Otherwise the index and your working
 tree are updated with tidied files.
+
+Will use L<Perl::Tidy::Sweet> to cleanup code if C<--sweet> is used.
 
 If any MAKE ARGS are given they will be passed to a L<make> call.  This
 way you can ensure that your code passes a C<make test> or C<make
@@ -115,7 +120,7 @@ This tool is managed via github:
 
 =head1 SEE ALSO
 
-L<githooks>(5), L<perltidy>(1), L<podtidy>(1)
+L<githooks>(5), L<perltidy>(1), L<podtidy>(1), L<perltidy-sweet>(1)
 
 =head1 AUTHOR
 

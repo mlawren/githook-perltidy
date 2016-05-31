@@ -28,9 +28,21 @@ opt force => (
     alias   => 'f',
 );
 
+opt sweet => (
+    isa     => 'Bool',
+    comment => 'Use Perl::Tidy::Sweet instead of Perl::Tidy',
+    alias   => 's',
+);
+
 subcmd(
     cmd     => 'pre-commit',
     comment => 'Run perltidy, podtidy and (optionally) tests',
+);
+
+opt sweet => (
+    isa     => 'Bool',
+    comment => 'Use Perl::Tidy::Sweet instead of Perl::Tidy',
+    alias   => 's',
 );
 
 arg make_args => (

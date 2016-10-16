@@ -21,7 +21,7 @@
         - Stop Makefile.PL from complaining about not being able to
           detect the perl version.
         - Do not index any package on CPAN except App::githook_perltidy
-
+        - Replace File::Slurp with Path::Tiny (only used in tests)
 
 0.11.4 (2016-05-26)
 

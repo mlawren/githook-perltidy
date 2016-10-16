@@ -24,7 +24,6 @@ requires 'Perl::Tidy'     => 0;
 requires 'Pod::Tidy'      => 0;
 requires 'Time::Piece'    => 0;
 
-test_requires 'File::Slurp' => 0;
 test_requires 'FindBin'     => 0;
 test_requires 'Path::Tiny'  => 0;
 test_requires 'Sys::Cmd'    => 0;

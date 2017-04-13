@@ -98,7 +98,8 @@ sub run {
               );
 
             if ( -e $tmp_file . '.ERR' ) {
-                die path( $tmp_file . '.ERR' )->slurp;
+                my $str = path( $tmp_file . '.ERR' )->slurp;
+                die $str if length($str);
             }
             elsif ($error) {
                 die "  $me: An unknown perltidy error occurred.";

@@ -10,7 +10,7 @@
         - None.
 
     Bug Fixes:
-        - None.
+        - Don't raise an exception for erroneous Perl::Tidy errors
 
     Dependencies:
         - None.

@@ -4,7 +4,6 @@ author:
   - 'Mark Lawrence <nomad@null.net>'
 build_requires:
   ExtUtils::MakeMaker: 6.59
-  File::Slurp: 0
   FindBin: 0
   Path::Tiny: 0
   Sys::Cmd: 0
@@ -25,6 +24,11 @@ no_index:
     - inc
     - t
     - xt
+  package:
+    - App::githook_perltidy::Util
+    - App::githook_perltidy::install
+    - App::githook_perltidy::pre_commit
+    - App::githook_perltidy::post_commit
 requires:
   Carp: 0
   Exporter::Tidy: 0
@@ -38,4 +42,4 @@ requires:
 resources:
   license: http://opensource.org/licenses/gpl-license.php
   repository: git://github.com/mlawren/githook-perltidy.git
-version: 0.11.4
+version: 0.11.5_1

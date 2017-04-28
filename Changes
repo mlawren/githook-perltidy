@@ -1,3 +1,28 @@
+0.11.5_1 (2017-04-28)
+
+    API / Behaviour Changes:
+        - None.
+
+    New Features:
+        - None.
+
+    Enhancements:
+        - None.
+
+    Bug Fixes:
+        - Don't raise an exception for erroneous Perl::Tidy errors
+
+    Dependencies:
+        - None.
+
+    Other:
+        - Hide the post-commit command in the usage message and give it
+          even less emphasis in the documentation.
+        - Stop Makefile.PL from complaining about not being able to
+          detect the perl version.
+        - Do not index any package on CPAN except App::githook_perltidy
+        - Replace File::Slurp with Path::Tiny (only used in tests)
+
 0.11.4 (2016-05-26)
 
     Other:

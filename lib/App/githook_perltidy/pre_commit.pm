@@ -8,7 +8,7 @@ use Path::Tiny;
 use Perl::Tidy;
 use Pod::Tidy;
 
-our $VERSION = '0.11.4';
+our $VERSION = '0.11.5_1';
 
 my $temp_dir;
 
@@ -98,7 +98,8 @@ sub run {
               );
 
             if ( -e $tmp_file . '.ERR' ) {
-                die path( $tmp_file . '.ERR' )->slurp;
+                my $str = path( $tmp_file . '.ERR' )->slurp;
+                die $str if length($str);
             }
             elsif ($error) {
                 die "  $me: An unknown perltidy error occurred.";
@@ -179,7 +180,7 @@ App::githook_perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.11.4 (2016-05-26)
+0.11.5_1 (2017-04-28)
 
 =head1 SEE ALSO
 

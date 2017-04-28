@@ -8,11 +8,11 @@ BEGIN {
 use inc::Module::Install;
 
 name 'App-githook-perltidy';
-version '0.11.4';
+version '0.11.5_1';
+perl_version '5.006';
 all_from 'lib/App/githook_perltidy.pm';
 abstract 'run perltidy and podtidy before Git commits';
 license 'gpl_3';
-perl_version '5.006';
 readme_from 'bin/githook-perltidy';
 
 requires 'File::Basename' => 0;
@@ -24,7 +24,6 @@ requires 'Perl::Tidy'     => 0;
 requires 'Pod::Tidy'      => 0;
 requires 'Time::Piece'    => 0;
 
-test_requires 'File::Slurp' => 0;
 test_requires 'FindBin'     => 0;
 test_requires 'Path::Tiny'  => 0;
 test_requires 'Sys::Cmd'    => 0;
@@ -36,6 +35,11 @@ tests_recursive 't';
 install_script 'bin/githook-perltidy';
 
 repository 'git://github.com/mlawren/githook-perltidy.git';
+
+no_index package => 'App::githook_perltidy::Util';
+no_index package => 'App::githook_perltidy::install';
+no_index package => 'App::githook_perltidy::pre_commit';
+no_index package => 'App::githook_perltidy::post_commit';
 
 WriteAll;
 

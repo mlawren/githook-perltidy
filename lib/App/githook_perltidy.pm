@@ -2,7 +2,7 @@ package App::githook_perltidy;
 use strict;
 use OptArgs;
 
-our $VERSION = '0.11.4';
+our $VERSION = '0.11.5_1';
 
 arg command => (
     isa      => 'SubCmd',
@@ -43,6 +43,7 @@ arg make_args => (
 subcmd(
     cmd     => 'post-commit',
     comment => 'Merge non-indexed changes after commit',
+    hidden  => 1,
 );
 
 1;
@@ -55,7 +56,7 @@ App::githook_perltidy - dispatch module for githook-perltidy.
 
 =head1 VERSION
 
-0.11.4 (2016-05-26)
+0.11.5_1 (2017-04-28)
 
 =head1 SEE ALSO
 

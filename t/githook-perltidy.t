@@ -3,7 +3,6 @@ use warnings;
 use Test::More;
 use Carp qw/croak/;
 use Path::Tiny;
-use File::Slurp;
 use FindBin qw/$Bin/;
 use Test::Fatal;
 use Sys::Cmd qw/run/;
@@ -26,7 +25,7 @@ run(qw!git init!);
 run( qw!git config user.email!, 'you@example.com' );
 run( qw!git config user.name!,  'Your Name' );
 
-write_file( '.perltidyrc', "-i 4\n-syn\n-w\n" );
+path('.perltidyrc')->spew_utf8("-i 4\n-syn\n-w\n");
 
 like exception { run( $githook_perltidy, qw!install! ) },
   qr/\.perltidyrc/, '.perltidyrc check';
@@ -66,31 +65,31 @@ if (1) {
 not really perl;
 ';
 
-write_file( 'file', $no_indent );
+path('file')->spew_utf8($no_indent);
 run(qw!git add file!);
 run( qw!git commit -m!, 'add file' );
-is read_file('file'), $with_indent, 'detect no-extension';
+is path('file')->slurp_utf8, $with_indent, 'detect no-extension';
 
-write_file( 'file.pl', $no_indent );
+path('file.pl')->spew_utf8($no_indent);
 run(qw!git add file.pl!);
 run( qw!git commit -m!, 'add file.pl' );
-is read_file('file.pl'), $with_indent, 'detect .pl extension';
+is path('file.pl')->slurp_utf8, $with_indent, 'detect .pl extension';
 
-write_file( 'bad.pl', $bad_syntax );
+path('bad.pl')->spew_utf8($bad_syntax);
 run(qw!git add bad.pl!);
 ok exception { run( qw!git commit -m!, 'bad syntax' ) },
   'commit stopped on bad syntax';
 
-is read_file('bad.pl'), $bad_syntax, 'working tree restored';
+is path('bad.pl')->slurp_utf8, $bad_syntax, 'working tree restored';
 like run(qw!git status --porcelain!), qr/^A\s+bad.pl$/sm, 'index status';
 unlink 'bad.pl';
 run(qw!git checkout-index bad.pl!);
-is read_file('bad.pl'), $bad_syntax, 'index contents';
+is path('bad.pl')->slurp_utf8, $bad_syntax, 'index contents';
 run(qw!git reset!);
 
 # .podtidy-opts
 
-write_file( '.podtidy-opts', "--columns 10\n" );
+path('.podtidy-opts')->spew_utf8("--columns 10\n");
 
 my $long_pod = "
 =head1 title
@@ -98,7 +97,7 @@ my $long_pod = "
 This is a rather long line, well at least longer than 10 characters
 ";
 
-write_file( 'x.pod', $long_pod );
+path('x.pod')->spew_utf8($long_pod);
 run(qw!git add x.pod!);
 
 like exception { run( qw!git commit -m!, 'add .podtidy-opts' ) },
@@ -127,15 +126,14 @@ characters
 
 ";
 
-is scalar read_file('x.pod'), $short_pod, 'podtidy';
+is scalar path('x.pod')->slurp_utf8, $short_pod, 'podtidy';
 
 SKIP: {
     skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };
 
     $pre->remove;
 
-    write_file(
-        'Makefile.PL', "
+    path('Makefile.PL')->spew_utf8( "
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
@@ -147,7 +145,7 @@ WriteMakefile(
     like run( $githook_perltidy, qw!install test ATTRIBUTE=1! ),
       qr/pre-commit/s, 'install make args output';
 
-    like read_file($pre), qr/pre-commit test ATTRIBUTE=1/,
+    like path($pre)->slurp_utf8, qr/pre-commit test ATTRIBUTE=1/,
       'pre content make args ';
 
     run(qw!git add Makefile.PL!);

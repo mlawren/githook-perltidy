@@ -10,7 +10,7 @@ use Exporter::Tidy all => [
 ];
 use Path::Tiny;
 
-our $VERSION = '0.11.5_1';
+our $VERSION = '0.11.5_2';
 
 sub get_perltidyrc {
 
@@ -66,7 +66,7 @@ App::githook_perltidy::Util - shared utility functions for App::gith...
 
 =head1 VERSION
 
-0.11.5_1 (2017-04-28)
+0.11.5_2 (yyyy-mm-dd)
 
 =head1 SYNOPSIS
 

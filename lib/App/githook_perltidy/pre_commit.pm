@@ -8,7 +8,7 @@ use Path::Tiny;
 use Perl::Tidy;
 use Pod::Tidy;
 
-our $VERSION = '0.11.5_1';
+our $VERSION = '0.11.5_2';
 
 my $temp_dir;
 
@@ -180,7 +180,7 @@ App::githook_perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.11.5_1 (2017-04-28)
+0.11.5_2 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

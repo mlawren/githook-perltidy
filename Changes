@@ -1,10 +1,4 @@
-0.11.5_2 (yyyy-mm-dd)
-
-    API / Behaviour Changes:
-        - None.
-
-    New Features:
-        - None.
+0.11.5_2 (2018-06-27)
 
     Bug Fixes:
         - Robust Perl::Tidy error detection instead of hackiness

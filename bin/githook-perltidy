@@ -1,8 +1,11 @@
 #!perl
 use strict;
-use OptArgs qw/dispatch/;
+use App::githook_perltidy;
+use OptArgs2 qw/class_optargs/;
 
-dispatch(qw/run App::githook_perltidy/);
+my ( $class, $opts ) = class_optargs('App::githook_perltidy');
+eval "require $class" or die $@;
+$class->new($opts)->run;
 
 1;
 __END__
@@ -13,7 +16,7 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
-0.11.4 (2016-05-26)
+0.11.5_2 (2018-06-27)
 
 =head1 SYNOPSIS
 
@@ -24,7 +27,7 @@ Make sure everyone uses the same tidy options across your project:
     $ git add .perltidyrc .podtidy-opts
     $ git commit
 
-Install the pre-commit and post-commit hooks:
+Install the pre-commit hook:
 
     $ githook-perltidy install
 
@@ -75,9 +78,18 @@ PERLTIDY_MAKE="" will skip the make call entirely.
 This command will fail if there is no .perltidyrc file in the
 repository.
 
-=item post-commit
+=back
 
-This command is a left-over from earlier versions and now does nothing.
+There is also a C<post-commit> command left over from earlier versions
+that now does nothing and can be ignored.
+
+=head1 OPTIONS
+
+=over
+
+=item --verbose, -v
+
+Print underlying Git commands or filesystem actions as they are run.
 
 =back
 
@@ -124,7 +136,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2016 Mark Lawrence <nomad@null.net>
+Copyright 2011-2018 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

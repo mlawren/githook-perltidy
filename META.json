@@ -1,0 +1,63 @@
+{
+   "abstract" : "run perltidy and podtidy before Git commits",
+   "author" : [
+      "Mark Lawrencde <nomad@null.net>"
+   ],
+   "dynamic_config" : 0,
+   "generated_by" : "ExtUtils::MakeMaker version 7.24, CPAN::Meta::Converter version 2.150010",
+   "license" : [
+      "gpl_3"
+   ],
+   "meta-spec" : {
+      "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
+      "version" : "2"
+   },
+   "name" : "App-githook-perltidy",
+   "no_index" : {
+      "directory" : [
+         "t",
+         "inc"
+      ],
+      "package" : [
+         "App::githook_perltidy::Util",
+         "App::githook_perltidy::install",
+         "App::githook_perltidy::pre_commit",
+         "App::githook_perltidy::post_commit"
+      ]
+   },
+   "prereqs" : {
+      "build" : {
+         "requires" : {
+            "ExtUtils::MakeMaker" : "0"
+         }
+      },
+      "configure" : {
+         "requires" : {
+            "ExtUtils::MakeMaker::CPANfile" : "0.08"
+         }
+      },
+      "runtime" : {
+         "requires" : {
+            "Carp" : "0",
+            "File::Basename" : "0",
+            "OptArgs2" : "v0.0.10",
+            "Path::Tiny" : "0",
+            "Perl::Tidy" : "0",
+            "Pod::Tidy" : "0"
+         }
+      },
+      "test" : {
+         "requires" : {
+            "FindBin" : "0",
+            "Path::Tiny" : "0",
+            "Sys::Cmd" : "0",
+            "Test::Fatal" : "0",
+            "Test::More" : "0"
+         }
+      }
+   },
+   "release_status" : "unstable",
+   "resources" : {},
+   "version" : "v0.11.5_2",
+   "x_serialization_backend" : "JSON::PP version 2.27400_02"
+}

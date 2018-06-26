@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.11.4 (2016-05-26)
+    0.11.5_2 (2018-06-27)
 
 SYNOPSIS
     Make sure everyone uses the same tidy options across your project:
@@ -12,7 +12,7 @@ SYNOPSIS
         $ git add .perltidyrc .podtidy-opts
         $ git commit
 
-    Install the pre-commit and post-commit hooks:
+    Install the pre-commit hook:
 
         $ githook-perltidy install
 
@@ -58,9 +58,12 @@ DESCRIPTION
         This command will fail if there is no .perltidyrc file in the
         repository.
 
-    post-commit
-        This command is a left-over from earlier versions and now does
-        nothing.
+    There is also a "post-commit" command left over from earlier versions
+    that now does nothing and can be ignored.
+
+OPTIONS
+    --verbose, -v
+        Print underlying Git commands or filesystem actions as they are run.
 
 CAVEATS
     There are two ways in which githook-perltidy behaviour may affect your
@@ -92,7 +95,7 @@ AUTHOR
     Mark Lawrence <nomad@null.net>
 
 COPYRIGHT AND LICENSE
-    Copyright 2011-2016 Mark Lawrence <nomad@null.net>
+    Copyright 2011-2018 Mark Lawrence <nomad@null.net>
 
     This program is free software; you can redistribute it and/or modify it
     under the terms of the GNU General Public License as published by the

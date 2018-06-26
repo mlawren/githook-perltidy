@@ -1,17 +1,16 @@
 package App::githook_perltidy::install;
 use strict;
 use warnings;
-use App::githook_perltidy::Util qw/get_perltidyrc/;
+use parent 'App::githook_perltidy';
 use File::Basename;
 use Path::Tiny;
 
-our $VERSION = '0.11.4';
+our $VERSION = '0.11.5_2';
 
 sub run {
-    my $opts = shift;
-    my $me   = basename($0);
+    my $self = shift;
 
-    get_perltidyrc();
+    die ".perltidyrc not in repository.\n" unless $self->{perltidyrc};
 
     my $hooks_dir = path( '.git', 'hooks' );
     if ( !-d $hooks_dir ) {
@@ -20,13 +19,13 @@ sub run {
 
     my $pre_file = $hooks_dir->child('pre-commit');
     if ( -e $pre_file or -l $pre_file ) {
-        die "File/link exists: $pre_file\n" unless $opts->{force};
+        die "File/link exists: $pre_file\n" unless $self->{opts}->{force};
     }
 
-    $pre_file->spew("#!/bin/sh\n$0 pre-commit $opts->{make_args}\n");
+    $pre_file->spew("#!/bin/sh\n$0 pre-commit $self->{opts}->{make_args}\n");
     chmod 0755, $pre_file || warn "chmod: $!";
-    print "$me: $pre_file";
-    print " (forced)" if $opts->{force};
+    print "$self->{me}: $pre_file";
+    print " (forced)" if $self->{opts}->{force};
     print "\n";
 }
 
@@ -39,7 +38,7 @@ App::githook_perltidy::install - install git hooks
 
 =head1 VERSION
 
-0.11.4 (2016-05-26)
+0.11.5_2 (2018-06-27)
 
 =head1 SEE ALSO
 
@@ -51,7 +50,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2016 Mark Lawrence <nomad@null.net>
+Copyright 2011-2018 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

@@ -1,3 +1,29 @@
+0.11.5_2 (2018-06-27)
+
+    Bug Fixes:
+        - Robust Perl::Tidy error detection instead of hackiness
+
+    Dependencies:
+        - Upgraded from OptArgs to OptArgs2 (0.0.10).
+        - Nothing exported with Exporter::Tidy anymore
+
+    Packaging:
+        - Convert Makefile.PL from Module::Install to
+          ExtUtils::MakeMaker plus a cpanfile.
+
+0.11.5_1 (2017-04-28)
+
+    Bug Fixes:
+        - Don't raise an exception for erroneous Perl::Tidy errors
+
+    Other:
+        - Hide the post-commit command in the usage message and give it
+          even less emphasis in the documentation.
+        - Stop Makefile.PL from complaining about not being able to
+          detect the perl version.
+        - Do not index any package on CPAN except App::githook_perltidy
+        - Replace File::Slurp with Path::Tiny (only used in tests)
+
 0.11.4 (2016-05-26)
 
     Other:
@@ -21,9 +47,6 @@
 
 0.11.2 (2016-01-20)
 
-    API Changes:
-        - None.
-
     New Features:
         - Added a "--force" option to install, to overwrite existing
           git hooks
@@ -46,12 +69,6 @@
 
 0.10.2 (2012-06-27)
 
-    API Changes:
-        - None.
-
-    New Features:
-        - None.
-
     Enhancements:
         - Tidying of POD is now optional. Pod::Tidy will only be called
           if .podtidy-opts exists (and is in the repository)
@@ -61,68 +78,26 @@
 
 0.10.1 (2012-05-06)
 
-    API Changes:
-        - None.
-
-    New Features:
-        - None.
-
     Enhancements:
         - Use Pod::Tidy directly instead of calling out to podtidy(1)
         - Use Perl::Tidy directly instead of calling out to perltidy(1)
 
-    Bug Fixes:
-        - None.
-
 0.10.0 (2012-05-06)
-
-    API Changes:
-        - None.
 
     New Features:
         - Support a project-wide ".podtidy-opts" file
 
-    Enhancements:
-        - None.
-
-    Bug Fixes:
-        - None.
-
 0.9.3 (2012-05-05)
-
-    API Changes:
-        - None.
-
-    New Features:
-        - None.
 
     Enhancements:
         - Attempt to make tests a little more portable
 
-    Bug Fixes:
-        - None.
-
 0.9.2 (2012-05-05)
-
-    API Changes:
-        - None.
-
-    New Features:
-        - None.
-
-    Enhancements:
-        - None.
 
     Bug Fixes:
         - Stop using hard-coded /usr/bin/perl in tests
 
 0.9.1 (2012-05-03)
-
-    API Changes:
-        - None.
-
-    New Features:
-        - None.
 
     Enhancements:
         - Second release to CPAN
@@ -134,27 +109,12 @@
 
 0.04 (2012-05-01)
 
-    API Changes:
-        - None.
-
-    New Features:
-        - None.
-
     Enhancements:
         - Handle partially indexed files better on post-commit
         - Distribution name change to App-githook-perltidy.
         - First release to CPAN (mostly for the tester reports)
 
-    Bug Fixes:
-        - None.
-
 0.03 (2011-10-14)
-
-    API Changes:
-        - None.
-
-    New Features:
-        - None.
 
     Enhancements:
         - PERLTIDY_MAKE environment variable support.
@@ -164,12 +124,6 @@
         - IMPORTANT! Properly detect a partial dirty tree.
 
 0.02 (2011-09-20)
-
-    API Changes:
-        - None.
-
-    New Features:
-        - None.
 
     Enhancements:
         - Depend on Pod::Tidy and Perl::Tidy to bring in the CLI tools.

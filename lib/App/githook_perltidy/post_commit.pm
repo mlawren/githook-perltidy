@@ -1,8 +1,9 @@
 package App::githook_perltidy::post_commit;
 use strict;
 use warnings;
+use parent 'App::githook_perltidy';
 
-our $VERSION = '0.11.4';
+our $VERSION = '0.11.5_2';
 
 sub run {
 
@@ -18,7 +19,7 @@ App::githook_perltidy::post_commit - git post-commit hook
 
 =head1 VERSION
 
-0.11.4 (2016-05-26)
+0.11.5_2 (2018-06-27)
 
 =head1 DESCRIPTION
 
@@ -34,7 +35,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2016 Mark Lawrence <nomad@null.net>
+Copyright 2011-2018 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

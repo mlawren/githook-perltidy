@@ -40,10 +40,8 @@ sub run {
 
         while ( my $line = <$fh> ) {
             chomp $line;
-            next unless $line =~ m/^(.)(.) (.*)/;
-
-            my ( $index, $wtree, $file ) = ( $1, $2, $3 );
-            next unless ( $index eq 'A' or $index eq 'M' );
+            next unless $line =~ m/^[AM](.) (.*)/;
+            my ( $wtree, $file ) = ( $1, $2 );
 
             tmp_sys( qw/git checkout-index/, $file );
 

@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 BEGIN {
     unless ( system('git --version') == 0 ) {
         print STDERR "No git found. Exiting.\n";
@@ -5,43 +7,43 @@ BEGIN {
     }
 }
 
-use inc::Module::Install;
+use strict;
+use warnings;
+use 5.006;
+use ExtUtils::MakeMaker::CPANfile;
+use Pod::Text;
 
-name 'App-githook-perltidy';
-version '0.11.5_2';
-perl_version '5.006';
-all_from 'lib/App/githook_perltidy.pm';
-abstract 'run perltidy and podtidy before Git commits';
-license 'gpl_3';
-readme_from 'bin/githook-perltidy';
+WriteMakefile(
+    NAME      => 'App::githook::perltidy',
+    ABSTRACT  => 'run perltidy and podtidy before Git commits',
+    AUTHOR    => 'Mark Lawrencde <nomad@null.net>',
+    VERSION   => '0.11.5_2',
+    LICENSE   => 'gpl_3',
+    EXE_FILES => ['bin/githook-perltidy'],
+    META_ADD  => {
+        resources =>
+          { repository => 'https//github.com/mlawren/githook-perltidy', },
+    },
+    META_MERGE => {
+        no_index => {
+            package => [
+                qw(
+                  App::githook_perltidy::Util
+                  App::githook_perltidy::install
+                  App::githook_perltidy::pre_commit
+                  App::githook_perltidy::post_commit
+                  )
+            ],
+        },
+    },
+);
 
-requires 'File::Basename' => 0;
-requires 'Carp'           => 0;
-requires 'Exporter::Tidy' => 0;
-requires 'OptArgs'        => 0;
-requires 'Path::Tiny'     => 0;
-requires 'Perl::Tidy'     => 0;
-requires 'Pod::Tidy'      => 0;
-requires 'Time::Piece'    => 0;
+if ( -e '.git' ) {
+    my $parser = Pod::Text->new( sentence => 0 );
 
-test_requires 'FindBin'     => 0;
-test_requires 'Path::Tiny'  => 0;
-test_requires 'Sys::Cmd'    => 0;
-test_requires 'Test::Fatal' => 0;
-test_requires 'Test::More'  => 0;
-
-tests_recursive 't';
-
-install_script 'bin/githook-perltidy';
-
-repository 'git://github.com/mlawren/githook-perltidy.git';
-
-no_index package => 'App::githook_perltidy::Util';
-no_index package => 'App::githook_perltidy::install';
-no_index package => 'App::githook_perltidy::pre_commit';
-no_index package => 'App::githook_perltidy::post_commit';
-
-WriteAll;
+    # Read POD from file.pod and write to file.txt.
+    $parser->parse_from_file( 'bin/githook-perltidy', 'README' );
+}
 
 # Create the test script
 open( FH, '>', 't/githook-perltidy' ) or die "open: $!";

@@ -27,7 +27,7 @@
         - None.
 
     Bug Fixes:
-        - Don't raise an exception for erroneous Perl::Tidy errors
+        - Robust Perl::Tidy error detection instead of hack
 
     Dependencies:
         - None.
@@ -35,8 +35,7 @@
     Other:
         - Hide the post-commit command in the usage message and give it
           even less emphasis in the documentation.
-        - Stop Makefile.PL from complaining about not being able to
-          detect the perl version.
+        - Convert Makefile.PL to ExtUtils::MakeMaker plus a CPANfile.
         - Do not index any package on CPAN except App::githook_perltidy
         - Replace File::Slurp with Path::Tiny (only used in tests)
 

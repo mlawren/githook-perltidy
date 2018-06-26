@@ -1,6 +1,7 @@
 package App::githook_perltidy::post_commit;
 use strict;
 use warnings;
+use parent 'App::githook_perltidy';
 
 our $VERSION = '0.11.5_2';
 

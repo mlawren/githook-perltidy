@@ -1,8 +1,7 @@
 package App::githook_perltidy::pre_commit;
 use strict;
 use warnings;
-use App::githook_perltidy::Util qw/:all/;
-use File::Basename;
+use parent 'App::githook_perltidy';
 use File::Copy;
 use Path::Tiny;
 use Perl::Tidy;
@@ -13,23 +12,44 @@ our $VERSION = '0.11.5_2';
 my $temp_dir;
 
 sub tmp_sys {
+    my $self = shift;
     local $ENV{GIT_WORK_TREE} = $temp_dir;
-    sys(@_);
+    $self->sys(@_);
+}
+
+sub perl_tidy {
+    my $self     = shift;
+    my $file     = shift;
+    my $tmp_file = shift;
+
+    die ".perltidyrc not in repository.\n" unless $self->{perltidyrc};
+
+    print "  $self->{me}: perltidy INDEX/$file\n" if $self->{opts}->{verbose};
+
+    my $errormsg;
+
+    my $error = Perl::Tidy::perltidy(
+        argv       => [ qw{-nst -b -bext=/}, "$tmp_file" ],
+        errorfile  => \$errormsg,
+        perltidyrc => $self->{perltidyrc}->stringify,
+    );
+
+    if ( length($errormsg) ) {
+        $self->lprint('');
+        die $self->{me} . ': ' . $file . ":\n" . $errormsg;
+    }
+    elsif ($error) {
+        $self->lprint('');
+        die $self->{me} . ': An unknown perltidy error occurred.';
+    }
 }
 
 sub run {
-    my $opts      = shift;
-    my $me        = basename($0);
-    my $rc        = get_perltidyrc();
+    my $self      = shift;
     my @perlfiles = ();
     my %partial   = ();
 
     $temp_dir = Path::Tiny->tempdir('githook-perltidy-XXXXXXXX');
-
-    # Both of these start out as relative which breaks when we want to
-    # modify the repo and index from a different working tree
-    $ENV{GIT_DIR}        = path( $ENV{GIT_DIR} )->absolute->stringify;
-    $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify;
 
     # Use the -z flag to get clean filenames with no escaping or quoting
     # "lines" are separated with NUL, so set input record separator
@@ -43,7 +63,7 @@ sub run {
             next unless $line =~ m/^[AM](.) (.*)/;
             my ( $wtree, $file ) = ( $1, $2 );
 
-            tmp_sys( qw/git checkout-index/, $file );
+            $self->tmp_sys( qw/git checkout-index/, $file );
 
             if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
                 my $tmp_file = $temp_dir->child($file);
@@ -64,17 +84,25 @@ sub run {
         }
     }
 
-    exit 0 unless @perlfiles;
+    unless (@perlfiles) {
+        $self->lprint("$self->{me}: hits: 0\n");
+        exit 0;
+    }
 
-    my $have_podtidy_opts = have_podtidy_opts();
-    print "  $me: no .podtidy-opts - skipping podtidy calls\n"
-      unless $have_podtidy_opts;
+    print "  $self->{me}: no .podtidy-opts - skipping podtidy calls\n"
+      if $self->{opts}->{verbose} and not $self->{podtidyrc};
 
+    my $i     = 1;
+    my $total = scalar @perlfiles;
     foreach my $file (@perlfiles) {
+        $self->lprint(
+            $self->{me} . ': (' . $i++ . '/' . $total . ') ' . $file );
+
         my $tmp_file = $temp_dir->child($file);
 
-        if ($have_podtidy_opts) {
-            print "  $me: podtidy INDEX/$file\n";
+        if ( $self->{podtidyrc} ) {
+            print "  $self->{me}: podtidy INDEX/$file\n"
+              if $self->{opts}->{verbose};
 
             Pod::Tidy::tidy_files(
                 files     => [$tmp_file],
@@ -83,38 +111,28 @@ sub run {
                 inplace   => 1,
                 nobackup  => 1,
                 columns   => 72,
-                get_podtidy_opts(),
+                %{ $self->{podtidyrc_opts} },
             );
         }
 
         unless ( $file =~ m/\.pod$/i ) {
-            print "  $me: perltidy INDEX/$file\n";
+            print "  $self->{me}: perltidy INDEX/$file\n"
+              if $self->{opts}->{verbose};
 
-            my $errormsg;
-
-            my $error = Perl::Tidy::perltidy(
-                argv       => [ qw{-nst -b -bext=/}, "$tmp_file" ],
-                errorfile  => \$errormsg,
-                perltidyrc => $rc->stringify,
-            );
-
-            if ( length($errormsg) ) {
-                die '  ' . $me . ': ' . $errormsg;
-            }
-            elsif ($error) {
-                die "  $me: An unknown perltidy error occurred.";
-            }
+            $self->perl_tidy( $file, $tmp_file );
         }
 
-        tmp_sys( qw/git add /, $file );
+        $self->tmp_sys( qw/git add /, $file );
 
         # Redo the whole thing again for partially modified files
         if ( $partial{$file} ) {
-            print "  $me: copy $file $tmp_file\n";
+            print "  $self->{me}: copy $file $tmp_file\n"
+              if $self->{opts}->{verbose};
             copy $file, $tmp_file;
 
-            if ($have_podtidy_opts) {
-                print "  $me: podtidy WORK_TREE/$file\n";
+            if ( $self->{podtidyrc} ) {
+                print "  $self->{me}: podtidy WORK_TREE/$file\n"
+                  if $self->{opts}->{verbose};
 
                 Pod::Tidy::tidy_files(
                     files     => [$tmp_file],
@@ -123,34 +141,31 @@ sub run {
                     inplace   => 1,
                     nobackup  => 1,
                     columns   => 72,
-                    get_podtidy_opts(),
+                    $self->{podtidyrc_opts},
                 );
             }
 
             unless ( $file =~ m/\.pod$/i ) {
-                print "  $me: perltidy WORK_TREE/$file $tmp_file\n";
+                print "  $self->{me}: perltidy WORK_TREE/$file $tmp_file\n"
+                  if $self->{opts}->{verbose};
 
-                my $error = Perl::Tidy::perltidy(
-                    argv => [ '--profile=' . $rc, qw/-nst -b/, "$tmp_file" ], );
-
-                if ( -e $tmp_file . '.ERR' ) {
-                    die path( $tmp_file . '.ERR' )->slurp;
-                }
-                elsif ($error) {
-                    die "  $me: An unknown perltidy error occurred.";
-                }
+                $self->perl_tidy( $file, $tmp_file );
             }
 
         }
 
         # Copy the tidied file back to the real working directory
-        print "  $me: copy $tmp_file $file\n";
+        print "  $self->{me}: copy $tmp_file $file\n"
+          if $self->{opts}->{verbose};
         copy $tmp_file, $file;
     }
 
-    $opts->{make_args} = $ENV{PERLTIDY_MAKE} if exists $ENV{PERLTIDY_MAKE};
+    $self->lprint("githook-perltidy: ($total)\n");
 
-    if ( $opts->{make_args} ) {
+    $self->{opts}->{make_args} = $ENV{PERLTIDY_MAKE}
+      if exists $ENV{PERLTIDY_MAKE};
+
+    if ( $self->{opts}->{make_args} ) {
 
         # Stop the git that is calling this pre-commit script from
         # interfering with any possible git calls in Makefile.PL or any
@@ -159,15 +174,16 @@ sub run {
         delete $ENV{$_} for grep( /^GIT_/, keys %ENV );
 
         if ( -e 'Makefile.PL' ) {
-            sys(qw/perl Makefile.PL/) if grep( /^Makefile.PL$/i, @perlfiles );
-            sys(qw/perl Makefile.PL/) unless -f 'Makefile';
+            $self->sys(qw/perl Makefile.PL/)
+              if grep( /^Makefile.PL$/i, @perlfiles );
+            $self->sys(qw/perl Makefile.PL/) unless -f 'Makefile';
         }
         elsif ( -e 'Build.PL' ) {
-            sys(qw/perl Build.PL/) if grep( /^Build.PL$/i, @perlfiles );
-            sys(qw/perl Build.PL/) unless -f 'Makefile';
+            $self->sys(qw/perl Build.PL/) if grep( /^Build.PL$/i, @perlfiles );
+            $self->sys(qw/perl Build.PL/) unless -f 'Makefile';
         }
 
-        sys("make $opts->{make_args}");
+        $self->sys("make $self->{opts}->{make_args}");
     }
 }
 

@@ -49,12 +49,17 @@ if ( -e '.git' ) {
 open( FH, '>', 't/githook-perltidy' ) or die "open: $!";
 
 print FH qq{#!$^X
-use strict;
 use FindBin qw/\$Bin/;
 use lib "\$Bin/../lib";
-use OptArgs qw/dispatch/;
 
-dispatch(qw/run App::githook_perltidy/);
+use strict;
+use App::githook_perltidy;
+use OptArgs2 qw/class_optargs/;
+
+my ( \$class, \$opts ) = class_optargs('App::githook_perltidy');
+eval "require \$class" or die \$@;
+\$class->new(\$opts)->run;
+
 };
 
 close FH;

@@ -1,50 +1,162 @@
 package App::githook_perltidy;
 use strict;
-use OptArgs;
+use Carp 'croak';
+use File::Basename;
+use OptArgs2;
+use Path::Tiny;
 
 our $VERSION = '0.11.5_2';
 
-arg command => (
-    isa      => 'SubCmd',
-    comment  => 'command to run',
-    required => 1,
+cmd 'App::githook_perltidy' => (
+    comment => 'tidy perl and pod files before Git commits',
+    optargs => sub {
+        arg command => (
+            isa      => 'SubCmd',
+            comment  => '',
+            required => 1,
+        );
+
+        opt verbose => (
+            isa => 'Flag',
+
+            comment => 'be explicit about underlying actions',
+            alias   => 'v',
+            default => sub { $ENV{GITHOOK_PERLTIDY_VERBOSE} },
+        );
+    },
 );
 
-subcmd(
-    cmd     => 'install',
-    comment => 'Install pre-commit and post-commit hooks',
+subcmd 'App::githook_perltidy::install' => (
+    comment => 'Install githook-perltidy Git hooks',
+    optargs => sub {
+        arg make_args => (
+            isa     => 'Str',
+            comment => 'arguments to pass to a make call after tidying',
+            default => '',
+            greedy  => 1,
+        );
+
+        opt force => (
+            isa     => 'Bool',
+            comment => 'Overwrite existing git commit hooks',
+            alias   => 'f',
+        );
+    },
 );
 
-arg make_args => (
-    isa     => 'Str',
-    comment => 'arguments to pass to a make call after tidying',
-    default => '',
-    greedy  => 1,
+subcmd 'App::githook_perltidy::pre_commit' => (
+    comment => 'run perltidy|podtidy on indexed files',
+    optargs => sub {
+        arg make_args => (
+            isa     => 'Str',
+            comment => 'arguments to pass to a make call after tidying',
+            default => '',
+            greedy  => 1,
+        );
+    },
 );
 
-opt force => (
-    isa     => 'Bool',
-    comment => 'Overwrite existing git commit hooks',
-    alias   => 'f',
-);
-
-subcmd(
-    cmd     => 'pre-commit',
-    comment => 'Run perltidy, podtidy and (optionally) tests',
-);
-
-arg make_args => (
-    isa     => 'Str',
-    comment => 'arguments to pass to a make call after tidying',
-    default => '',
-    greedy  => 1,
-);
-
-subcmd(
-    cmd     => 'post-commit',
-    comment => 'Merge non-indexed changes after commit',
+subcmd 'App::githook_perltidy::post_commit' => (
+    comment => '(depreciated)',
     hidden  => 1,
 );
+
+sub new {
+    my $proto = shift;
+    my $class = ref $proto || $proto;
+    my $opts  = shift || die "usage: $class->new(\$opts)";
+    my $self  = bless { opts => $opts }, $class;
+
+    $self->{me} //= basename($0);
+
+    # Both of these start out as relative which breaks when we want to
+    # modify the repo and index from a different working tree
+    $ENV{GIT_DIR} = path( $ENV{GIT_DIR} ? $ENV{GIT_DIR} : '.git' )->absolute;
+    $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify
+      if $ENV{GIT_INDEX_FILE};
+
+    my $perltidyrc = path( $ENV{GIT_DIR} )->parent->child('.perltidyrc');
+    if ( -e $perltidyrc ) {
+        if (
+            system("git ls-files --error-unmatch .perltidyrc > /dev/null 2>&1")
+            != 0 )
+        {
+            die ".perltidyrc not committed.\n";
+        }
+
+        $self->{perltidyrc} = $perltidyrc;
+    }
+
+    my $podtidyrc = path( $ENV{GIT_DIR} )->parent->child('.podtidy-opts');
+    if ( -e $podtidyrc ) {
+        if (
+            system(
+                "git ls-files --error-unmatch .podtidy-opts > /dev/null 2>&1")
+            != 0
+          )
+        {
+            die ".podtidy-opts not committed.\n";
+        }
+
+        $self->{podtidyrc} = $podtidyrc;
+        my $pod_opts = {};
+
+        foreach my $line ( $self->{podtidyrc}->lines ) {
+            chomp $line;
+            $line =~ s/^--//;
+            my ( $opt, $arg ) = split / /, $line;
+            $pod_opts->{$opt} = $arg;
+        }
+
+        $self->{podtidyrc_opts} = $pod_opts;
+    }
+
+    $self;
+}
+
+my $old = '';
+
+sub lprint {
+    my $self = shift;
+    my $msg  = shift;
+
+    if ( $self->{opts}->{verbose} or !-t select ) {
+        if ( $msg eq "\n" ) {
+            print $old, "\n";
+            $old = '';
+            return;
+        }
+        elsif ( $msg =~ m/\n/ ) {
+            $old = '';
+            return print $msg;
+        }
+        $old = $msg;
+        return;
+    }
+
+    local $| ||= 1;
+
+    my $chars;
+    if ( $msg eq "\n" ) {
+        $chars = print $old, "\n";
+    }
+    else {
+        $chars = print ' ' x length($old), "\b" x length($old), $msg, "\r";
+    }
+
+    $old = $msg =~ m/\n/ ? '' : $msg;
+
+    use Time::HiRes 'usleep';
+    usleep(300000);
+    return $chars;
+}
+
+sub sys {
+    my $self = shift;
+    print '  ' . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n"
+      if $self->{opts}->{verbose};
+    system("@_") == 0 or Carp::croak "@_ failed: $?";
+}
 
 1;
 
@@ -52,7 +164,7 @@ __END__
 
 =head1 NAME
 
-App::githook_perltidy - dispatch module for githook-perltidy.
+App::githook_perltidy - OptArgs2 module for githook-perltidy.
 
 =head1 VERSION
 

@@ -6,14 +6,16 @@
     New Features:
         - None.
 
-    Enhancements:
-        - None.
-
     Bug Fixes:
-        - None.
+        - Robust Perl::Tidy error detection instead of hackiness
 
     Dependencies:
-        - None.
+        - Upgraded from OptArgs to OptArgs2 (0.0.10).
+        - Nothing exported with Exporter::Tidy anymore
+
+    Packaging:
+        - Convert Makefile.PL from Module::Install to
+          ExtUtils::MakeMaker plus a cpanfile.
 
 0.11.5_1 (2017-04-28)
 
@@ -27,7 +29,7 @@
         - None.
 
     Bug Fixes:
-        - Robust Perl::Tidy error detection instead of hack
+        - Don't raise an exception for erroneous Perl::Tidy errors
 
     Dependencies:
         - None.
@@ -35,7 +37,8 @@
     Other:
         - Hide the post-commit command in the usage message and give it
           even less emphasis in the documentation.
-        - Convert Makefile.PL to ExtUtils::MakeMaker plus a CPANfile.
+        - Stop Makefile.PL from complaining about not being able to
+          detect the perl version.
         - Do not index any package on CPAN except App::githook_perltidy
         - Replace File::Slurp with Path::Tiny (only used in tests)
 

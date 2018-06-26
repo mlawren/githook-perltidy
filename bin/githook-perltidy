@@ -1,8 +1,11 @@
 #!perl
 use strict;
-use OptArgs qw/dispatch/;
+use App::githook_perltidy;
+use OptArgs2 qw/class_optargs/;
 
-dispatch(qw/run App::githook_perltidy/);
+my ( $class, $opts ) = class_optargs('App::githook_perltidy');
+eval "require $class" or die $@;
+$class->new($opts)->run;
 
 1;
 __END__
@@ -79,6 +82,16 @@ repository.
 
 There is also a C<post-commit> command left over from earlier versions
 that now does nothing and can be ignored.
+
+=head1 OPTIONS
+
+=over
+
+=item --verbose, -v
+
+Print underlying Git commands or filesystem actions as they are run.
+
+=back
 
 =head1 CAVEATS
 

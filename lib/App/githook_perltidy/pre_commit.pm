@@ -92,14 +92,16 @@ sub run {
         unless ( $file =~ m/\.pod$/i ) {
             print "  $me: perltidy INDEX/$file\n";
 
-            my $error =
-              Perl::Tidy::perltidy( argv =>
-                  [ '--profile=' . $rc, qw/-nst -b -bext=.bak/, "$tmp_file" ],
-              );
+            my $errormsg;
 
-            if ( -e $tmp_file . '.ERR' ) {
-                my $str = path( $tmp_file . '.ERR' )->slurp;
-                die $str if length($str);
+            my $error = Perl::Tidy::perltidy(
+                argv       => [ qw{-nst -b -bext=/}, "$tmp_file" ],
+                errorfile  => \$errormsg,
+                perltidyrc => $rc->stringify,
+            );
+
+            if ( length($errormsg) ) {
+                die '  ' . $me . ': ' . $errormsg;
             }
             elsif ($error) {
                 die "  $me: An unknown perltidy error occurred.";

@@ -20,6 +20,7 @@ WriteMakefile(
     VERSION   => '0.11.5_3',
     LICENSE   => 'gpl_3',
     EXE_FILES => ['bin/githook-perltidy'],
+    test      => { RECURSIVE_TEST_FILES => 1, },
     META_ADD  => {
         resources =>
           { repository => 'https//github.com/mlawren/githook-perltidy', },

@@ -44,6 +44,23 @@ sub perl_tidy {
     }
 }
 
+sub pod_tidy {
+    my $self     = shift;
+    my $tmp_file = shift;
+
+    die ".podtidy-opts not in repository.\n" unless $self->{podtidyrc};
+
+    Pod::Tidy::tidy_files(
+        files     => [$tmp_file],
+        recursive => 0,
+        verbose   => 0,
+        inplace   => 1,
+        nobackup  => 1,
+        columns   => 72,
+        %{ $self->{podtidyrc_opts} },
+    );
+}
+
 sub run {
     my $self      = shift;
     my @perlfiles = ();
@@ -104,15 +121,7 @@ sub run {
             print "  $self->{me}: podtidy INDEX/$file\n"
               if $self->{opts}->{verbose};
 
-            Pod::Tidy::tidy_files(
-                files     => [$tmp_file],
-                recursive => 0,
-                verbose   => 0,
-                inplace   => 1,
-                nobackup  => 1,
-                columns   => 72,
-                %{ $self->{podtidyrc_opts} },
-            );
+            $self->pod_tidy($tmp_file);
         }
 
         unless ( $file =~ m/\.pod$/i ) {
@@ -134,15 +143,7 @@ sub run {
                 print "  $self->{me}: podtidy WORK_TREE/$file\n"
                   if $self->{opts}->{verbose};
 
-                Pod::Tidy::tidy_files(
-                    files     => [$tmp_file],
-                    recursive => 0,
-                    verbose   => 0,
-                    inplace   => 1,
-                    nobackup  => 1,
-                    columns   => 72,
-                    $self->{podtidyrc_opts},
-                );
+                $self->pod_tidy($tmp_file);
             }
 
             unless ( $file =~ m/\.pod$/i ) {

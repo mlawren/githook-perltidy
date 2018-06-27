@@ -85,7 +85,7 @@ sub run {
     }
 
     unless (@perlfiles) {
-        $self->lprint("$self->{me}: hits: 0\n");
+        $self->lprint("$self->{me}: (0)\n");
         exit 0;
     }
 

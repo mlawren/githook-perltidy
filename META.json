@@ -1,7 +1,7 @@
 {
    "abstract" : "run perltidy and podtidy before Git commits",
    "author" : [
-      "Mark Lawrencde <nomad@null.net>"
+      "Mark Lawrence <nomad@null.net>"
    ],
    "dynamic_config" : 0,
    "generated_by" : "ExtUtils::MakeMaker version 7.24, CPAN::Meta::Converter version 2.150010",
@@ -56,8 +56,8 @@
          }
       }
    },
-   "release_status" : "unstable",
+   "release_status" : "stable",
    "resources" : {},
-   "version" : "v0.11.5_2",
+   "version" : "v0.11.5",
    "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

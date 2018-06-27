@@ -16,10 +16,11 @@ use Pod::Text;
 WriteMakefile(
     NAME      => 'App::githook::perltidy',
     ABSTRACT  => 'run perltidy and podtidy before Git commits',
-    AUTHOR    => 'Mark Lawrencde <nomad@null.net>',
-    VERSION   => '0.11.5_2',
+    AUTHOR    => 'Mark Lawrence <nomad@null.net>',
+    VERSION   => '0.11.5',
     LICENSE   => 'gpl_3',
     EXE_FILES => ['bin/githook-perltidy'],
+    test      => { RECURSIVE_TEST_FILES => 1, },
     META_ADD  => {
         resources =>
           { repository => 'https//github.com/mlawren/githook-perltidy', },

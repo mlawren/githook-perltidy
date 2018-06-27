@@ -1,7 +1,7 @@
 ---
 abstract: 'run perltidy and podtidy before Git commits'
 author:
-  - 'Mark Lawrencde <nomad@null.net>'
+  - 'Mark Lawrence <nomad@null.net>'
 build_requires:
   ExtUtils::MakeMaker: '0'
   FindBin: '0'
@@ -35,5 +35,5 @@ requires:
   Perl::Tidy: '0'
   Pod::Tidy: '0'
 resources: {}
-version: v0.11.5_2
+version: v0.11.5
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

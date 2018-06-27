@@ -7,7 +7,7 @@ use Path::Tiny;
 use Perl::Tidy;
 use Pod::Tidy;
 
-our $VERSION = '0.11.5_2';
+our $VERSION = '0.11.5';
 
 my $temp_dir;
 
@@ -42,6 +42,23 @@ sub perl_tidy {
         $self->lprint('');
         die $self->{me} . ': An unknown perltidy error occurred.';
     }
+}
+
+sub pod_tidy {
+    my $self     = shift;
+    my $tmp_file = shift;
+
+    die ".podtidy-opts not in repository.\n" unless $self->{podtidyrc};
+
+    Pod::Tidy::tidy_files(
+        files     => [$tmp_file],
+        recursive => 0,
+        verbose   => 0,
+        inplace   => 1,
+        nobackup  => 1,
+        columns   => 72,
+        %{ $self->{podtidyrc_opts} },
+    );
 }
 
 sub run {
@@ -85,7 +102,7 @@ sub run {
     }
 
     unless (@perlfiles) {
-        $self->lprint("$self->{me}: hits: 0\n");
+        $self->lprint("$self->{me}: (0)\n");
         exit 0;
     }
 
@@ -104,15 +121,7 @@ sub run {
             print "  $self->{me}: podtidy INDEX/$file\n"
               if $self->{opts}->{verbose};
 
-            Pod::Tidy::tidy_files(
-                files     => [$tmp_file],
-                recursive => 0,
-                verbose   => 0,
-                inplace   => 1,
-                nobackup  => 1,
-                columns   => 72,
-                %{ $self->{podtidyrc_opts} },
-            );
+            $self->pod_tidy($tmp_file);
         }
 
         unless ( $file =~ m/\.pod$/i ) {
@@ -134,15 +143,7 @@ sub run {
                 print "  $self->{me}: podtidy WORK_TREE/$file\n"
                   if $self->{opts}->{verbose};
 
-                Pod::Tidy::tidy_files(
-                    files     => [$tmp_file],
-                    recursive => 0,
-                    verbose   => 0,
-                    inplace   => 1,
-                    nobackup  => 1,
-                    columns   => 72,
-                    $self->{podtidyrc_opts},
-                );
+                $self->pod_tidy($tmp_file);
             }
 
             unless ( $file =~ m/\.pod$/i ) {
@@ -196,7 +197,7 @@ App::githook_perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.11.5_2 (2018-06-27)
+0.11.5 (2018-06-27)
 
 =head1 SEE ALSO
 

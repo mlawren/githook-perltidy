@@ -1,22 +1,12 @@
 0.11.5_3 (yyyy-mm-dd)
 
-    API / Behaviour Changes:
-        - None.
-
-    New Features:
-        - None.
-
-    Enhancements:
-        - None.
-
     Bug Fixes:
-        - None.
-
-    Dependencies:
-        - None.
+        - Fix broken podtidy for partial file commits
 
     Packaging:
-        - None.
+        - Ensure all tests are run (recursively) and not just the
+          top-level one
+        - Fix up my surname in Makefile.PL meta data
 
 0.11.5_2 (2018-06-27)
 

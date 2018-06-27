@@ -10,7 +10,8 @@
         - None.
 
     Bug Fixes:
-        - None.
+        - Correctly generate usage message when passed an invalid
+          COMMAND argument.
 
     Dependencies:
         - None.

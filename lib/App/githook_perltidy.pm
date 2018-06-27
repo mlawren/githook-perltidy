@@ -64,8 +64,11 @@ subcmd 'App::githook_perltidy::post_commit' => (
 sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;
-    my $opts  = shift || die "usage: $class->new(\$opts)";
-    my $self  = bless { opts => $opts }, $class;
+
+    die OptArgs2::usage(__PACKAGE__) if $class eq __PACKAGE__;
+
+    my $opts = shift || die "usage: $class->new(\$opts)";
+    my $self = bless { opts => $opts }, $class;
 
     $self->{me} //= basename($0);
 

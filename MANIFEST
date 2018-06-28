@@ -11,7 +11,6 @@ README
 t/App/githook_perltidy/install.t
 t/App/githook_perltidy/post_commit.t
 t/App/githook_perltidy/pre_commit.t
-t/App/githook_perltidy/Util.t
 t/githook-perltidy.t
 TODO
 META.yml                                 Module YAML meta-data (added by MakeMaker)

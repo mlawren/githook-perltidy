@@ -19,7 +19,6 @@
          "inc"
       ],
       "package" : [
-         "App::githook_perltidy::Util",
          "App::githook_perltidy::install",
          "App::githook_perltidy::pre_commit",
          "App::githook_perltidy::post_commit"
@@ -58,6 +57,6 @@
    },
    "release_status" : "stable",
    "resources" : {},
-   "version" : "v0.11.5",
+   "version" : "v0.11.6",
    "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

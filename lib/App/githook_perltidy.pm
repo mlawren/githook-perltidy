@@ -5,7 +5,7 @@ use File::Basename;
 use OptArgs2;
 use Path::Tiny;
 
-our $VERSION = '0.11.5';
+our $VERSION = '0.11.6';
 
 cmd 'App::githook_perltidy' => (
     comment => 'tidy perl and pod files before Git commits',
@@ -64,8 +64,11 @@ subcmd 'App::githook_perltidy::post_commit' => (
 sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;
-    my $opts  = shift || die "usage: $class->new(\$opts)";
-    my $self  = bless { opts => $opts }, $class;
+
+    die OptArgs2::usage(__PACKAGE__) if $class eq __PACKAGE__;
+
+    my $opts = shift || die "usage: $class->new(\$opts)";
+    my $self = bless { opts => $opts }, $class;
 
     $self->{me} //= basename($0);
 
@@ -168,7 +171,7 @@ App::githook_perltidy - OptArgs2 module for githook-perltidy.
 
 =head1 VERSION
 
-0.11.5 (2018-06-27)
+0.11.6 (2018-06-28)
 
 =head1 SEE ALSO
 

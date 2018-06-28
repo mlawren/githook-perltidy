@@ -29,7 +29,6 @@ WriteMakefile(
         no_index => {
             package => [
                 qw(
-                  App::githook_perltidy::Util
                   App::githook_perltidy::install
                   App::githook_perltidy::pre_commit
                   App::githook_perltidy::post_commit

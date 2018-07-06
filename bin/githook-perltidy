@@ -50,12 +50,11 @@ Anyone making commits in a setup repository can now add a call to
 B<githook-perltidy> in their pre-commit script, or have
 B<githook-perltidy> create one.
 
-    githook-perltidy install [--force, -f] [MAKE ARGS]
+    githook-perltidy install [--force, -f]
 
 The C<install> command must be run from the top-level directory of your
 repository. It writes a F<pre-commit> file in the F<$GIT_DIR/hooks/>
-directory. Any MAKE ARGS given will be added to the C<githook-perltidy
-pre-commit> call.
+directory.
 
     $ githook-perltidy install
     $ cat .git/hooks/pre-commit
@@ -75,13 +74,7 @@ also be run on any POD files in the Git index.  Any tidying errors stop
 the commmit. Otherwise the index and your working tree are updated with
 tidied files.
 
-    githook-perltidy pre-commit [MAKE ARGS]
-
-If any MAKE ARGS are given they will be passed to a L<make> call.  This
-way you can ensure that your code passes a C<make test> or C<make
-disttest> check before each commit.  If the PERLTIDY_MAKE environment
-variable exists it will I<override> any arguments. Setting
-PERLTIDY_MAKE="" will skip the make call entirely.
+    githook-perltidy pre-commit
 
 This command fails if there is no F<.perltidyrc> file in the
 repository.

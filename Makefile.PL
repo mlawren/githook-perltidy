@@ -15,6 +15,7 @@ use Pod::Text;
 
 WriteMakefile(
     NAME      => 'App::githook_perltidy',
+    DISTNAME  => 'githook-perltidy',
     ABSTRACT  => 'run perltidy and podtidy before Git commits',
     AUTHOR    => 'Mark Lawrence <nomad@null.net>',
     VERSION   => '0.11.7_1',

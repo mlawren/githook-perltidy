@@ -74,11 +74,14 @@ sub new {
 
     # Both of these start out as relative which breaks when we want to
     # modify the repo and index from a different working tree
-    $ENV{GIT_DIR} = path( $ENV{GIT_DIR} ? $ENV{GIT_DIR} : '.git' )->absolute;
+    $ENV{GIT_DIR} = path( $ENV{GIT_DIR} || '.git' )->absolute;
     $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify
       if $ENV{GIT_INDEX_FILE};
 
-    my $perltidyrc = path( $ENV{GIT_DIR} )->parent->child('.perltidyrc');
+    my $repo       = path( $ENV{GIT_DIR} )->parent;
+    my $perltidyrc = $repo->child('.perltidyrc');
+    my $podtidyrc  = $repo->child('.podtidy-opts');
+
     if ( -e $perltidyrc ) {
         if (
             system("git ls-files --error-unmatch .perltidyrc > /dev/null 2>&1")
@@ -90,7 +93,6 @@ sub new {
         $self->{perltidyrc} = $perltidyrc;
     }
 
-    my $podtidyrc = path( $ENV{GIT_DIR} )->parent->child('.podtidy-opts');
     if ( -e $podtidyrc ) {
         if (
             system(

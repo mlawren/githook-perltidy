@@ -1,0 +1,4 @@
+#!perl
+if (1) {
+print "dent\n";
+}

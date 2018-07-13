@@ -17,7 +17,7 @@ license: gpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
   version: '1.4'
-name: App-githook-perltidy
+name: githook-perltidy
 no_index:
   directory:
     - t
@@ -32,7 +32,8 @@ requires:
   OptArgs2: v0.0.10
   Path::Tiny: '0'
   Perl::Tidy: '0'
+  Pod::Text: '0'
   Pod::Tidy: '0'
 resources: {}
-version: v0.11.6
+version: v0.11.7_1
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

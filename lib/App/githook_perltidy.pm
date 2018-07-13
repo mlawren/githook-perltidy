@@ -5,7 +5,7 @@ use File::Basename;
 use OptArgs2;
 use Path::Tiny;
 
-our $VERSION = '0.11.6';
+our $VERSION = '0.11.7_1';
 
 cmd 'App::githook_perltidy' => (
     comment => 'tidy perl and pod files before Git commits',
@@ -74,11 +74,15 @@ sub new {
 
     # Both of these start out as relative which breaks when we want to
     # modify the repo and index from a different working tree
-    $ENV{GIT_DIR} = path( $ENV{GIT_DIR} ? $ENV{GIT_DIR} : '.git' )->absolute;
+    $ENV{GIT_DIR} = path( $ENV{GIT_DIR} || '.git' )->absolute;
     $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify
       if $ENV{GIT_INDEX_FILE};
 
-    my $perltidyrc = path( $ENV{GIT_DIR} )->parent->child('.perltidyrc');
+    my $repo            = path( $ENV{GIT_DIR} )->parent;
+    my $perltidyrc      = $repo->child('.perltidyrc');
+    my $podtidyrc       = $repo->child('.podtidy-opts');
+    my $readme_from_pod = $repo->child('.readme_from_pod');
+
     if ( -e $perltidyrc ) {
         if (
             system("git ls-files --error-unmatch .perltidyrc > /dev/null 2>&1")
@@ -90,7 +94,6 @@ sub new {
         $self->{perltidyrc} = $perltidyrc;
     }
 
-    my $podtidyrc = path( $ENV{GIT_DIR} )->parent->child('.podtidy-opts');
     if ( -e $podtidyrc ) {
         if (
             system(
@@ -112,6 +115,21 @@ sub new {
         }
 
         $self->{podtidyrc_opts} = $pod_opts;
+    }
+
+    $self->{readme_from_pod} = '';
+    if ( -e $readme_from_pod ) {
+        if (
+            system(
+                "git ls-files --error-unmatch .readme_from_pod > /dev/null 2>&1"
+            ) != 0
+          )
+        {
+            die ".readme_from_pod is not committed.\n";
+        }
+
+        ( $self->{readme_from_pod} ) =
+          path($readme_from_pod)->lines( { chomp => 1, count => 1 } );
     }
 
     $self;
@@ -171,7 +189,7 @@ App::githook_perltidy - OptArgs2 module for githook-perltidy.
 
 =head1 VERSION
 
-0.11.6 (2018-06-28)
+0.11.7_1 (2018-07-13)
 
 =head1 SEE ALSO
 

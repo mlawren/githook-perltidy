@@ -12,6 +12,12 @@ t/App/githook_perltidy/install.t
 t/App/githook_perltidy/post_commit.t
 t/App/githook_perltidy/pre_commit.t
 t/githook-perltidy.t
+t/src/junk
+t/src/perltidyrc
+t/src/podtidy-opts
+t/src/untidy
+t/src/untidy_perl
+t/src/untidy_pod
 TODO
 META.yml                                 Module YAML meta-data (added by MakeMaker)
 META.json                                Module JSON meta-data (added by MakeMaker)

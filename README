@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.11.7_1 (2018-07-13)
+    0.11.8 (2018-07-13)
 
 SYNOPSIS
         githook-perltidy COMMAND [OPTIONS...]
@@ -28,13 +28,14 @@ DESCRIPTION
         $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
         $ git commit -m 'githook-perltidy support' && git push
 
-    If you would like automatic README-from-POD support you can also create
-    a file called .readme_from_pod containing the name of the source file.
+    githook-perltidy has an automatic README-from-POD feature. To enable it
+    you create and commit a file called .readme_from containing the name of
+    a source file containing POD text:
 
-        $ echo 'lib/Your/App.pm' > .readme_from_pod
-        $ echo '^\.readme_from_pod' >> MANIFEST.SKIP
-        $ git add .readme_from_pod MANIFEST.SKIP
-        $ git commit -m 'githook-perltidy readme_from_pod' && git push
+        $ echo 'lib/Your/App.pm' > .readme_from
+        $ echo '^\.readme_from' >> MANIFEST.SKIP
+        $ git add .readme_from MANIFEST.SKIP
+        $ git commit -m 'githook-perltidy readme_from' && git push
 
     With the above in place the README file will be updated (and potentially
     committed) whenever lib/Your/App.pm is committed.
@@ -59,13 +60,16 @@ DESCRIPTION
     The "pre-commit" command loops through the Git index, checking out
     Perl/POD files to a temporary working directory. It runs perltidy on the
     temporary Perl files using .perltidyrc. If .podtidy-opts exists then
-    podtidy is also run on Perl and POD files. The Git index is updated and
-    your original working tree files are also tidied. A tidying error stop
-    the script (and therefore the commit) immediately.
+    podtidy is also run on Perl and POD files. The Git index is updated
+    along with your original working files.
+
+    A tidying error stops the script (and therefore the commit) immediately.
+    Any successful cleanups to the index and working tree up until that
+    point remain in place.
 
     This command fails if there is no .perltidyrc file in the repository.
 
-    If .readme_from_pod exists and the file named therein is tidied, then
+    If .readme_from exists and the file named therein is tidied, then
     githook-perltidy translates it with Pod::Text into a new README file. If
     the README file is tracked by Git then it is also added it to the index
     for committing.
@@ -76,14 +80,16 @@ GLOBAL OPTIONS
 
 CAVEATS
     There are two ways in which githook-perltidy behaviour may affect your
-    existing workflow. Firstly if you are accustomed to commiting changes to
-    files which are still open in your editor, your editor may complain that
-    the underlying file has changed on disk. Possibily your editor doesn't
-    even detect the change and your next write will not be 'tidy'.
+    existing workflow.
 
-    Secondly, aborting a commit with an empty commit message or via a later
-    command in the pre-commit hook will still result in changed (tidied)
-    files on disk and in the index.
+    *   If you are accustomed to commiting changes to files which are still
+        open in your editor, your editor may complain that the underlying
+        file has changed on disk. Possibily your editor doesn't even detect
+        the change and your next write will not be 'tidy'.
+
+    *   Aborting a commit with an empty commit message or via a later
+        command in the pre-commit hook will still result in changed (tidied)
+        files on disk and in the index.
 
 FILES
     .perltidyrc
@@ -92,7 +98,7 @@ FILES
     .podtidy-opts
         Podtidy command options file. This is githook-perltidy specific.
 
-    .readme_from_pod
+    .readme_from
         Automatic README config file. This is githook-perltidy specific.
 
 SUPPORT

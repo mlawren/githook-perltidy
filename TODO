@@ -1,20 +1,13 @@
-* "make test" on renames?
+Things to do:
 
-* Investigate use of git attribute filters
+- Fix git version problem?
+  http://www.cpantesters.org/cpan/report/31c1071a-9f72-11e2-a3b7-ea8478f8667a
 
-* Re-add files which are newly added "A" status when doing partial
-commit?
+- Check that current branch is not (no branch)
 
-* Fix git version problem?
-    http://www.cpantesters.org/cpan/report/31c1071a-9f72-11e2-a3b7-ea8478f8667a
+- Also tidy up on renames, as they show up only as renames even if the
+  file got modified as well.
 
-* Check that current branch is not (no branch)
+- Detect modified .perltidyrc or .podtidy-opts files and error out
 
-* "amend" screws with the reset stuff
-
-Check Makefile vs Makefile.PL modification times for re-run.
-
-Also tidy up on renames, as they show up only as renames even if the
-file got modified as well.
-
-* Detect modified .perltidyrc or .podtidy-opts files and error out
+- Investigate use of git attribute filters

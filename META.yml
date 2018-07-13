@@ -35,5 +35,5 @@ requires:
   Pod::Text: '0'
   Pod::Tidy: '0'
 resources: {}
-version: v0.11.7_1
+version: v0.11.8
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

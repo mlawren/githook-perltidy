@@ -7,7 +7,7 @@ use Path::Tiny;
 use Perl::Tidy;
 use Pod::Tidy;
 
-our $VERSION = '0.11.7_1';
+our $VERSION = '0.11.8';
 
 my $temp_dir;
 
@@ -133,7 +133,7 @@ sub run {
 
         $self->tmp_sys( qw/git add /, $file );
 
-        if ( $file eq $self->{readme_from_pod} ) {
+        if ( $file eq $self->{readme_from} ) {
             require Pod::Text;
             my $parser = Pod::Text->new( sentence => 0, width => 78 );
             my $tmp_readme = $temp_dir->child('README');
@@ -215,7 +215,7 @@ App::githook_perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.11.7_1 (2018-07-13)
+0.11.8 (2018-07-13)
 
 =head1 SEE ALSO
 

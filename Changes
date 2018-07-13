@@ -1,19 +1,4 @@
-0.11.9_1 (yyyy-mm-dd)
-
-    API / Behaviour Changes:
-        - None.
-
-    New Features:
-        - None.
-
-    Enhancements:
-        - None.
-
-    Bug Fixes:
-        - None.
-
-    Dependencies:
-        - None.
+0.11.9 (yyyy-mm-dd)
 
     Packaging:
         - Revert back to the old distribution name of

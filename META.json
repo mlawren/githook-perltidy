@@ -12,7 +12,7 @@
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
       "version" : "2"
    },
-   "name" : "githook-perltidy",
+   "name" : "App-githook_perltidy",
    "no_index" : {
       "directory" : [
          "t",
@@ -58,6 +58,6 @@
    },
    "release_status" : "stable",
    "resources" : {},
-   "version" : "v0.11.8",
+   "version" : "v0.11.9",
    "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

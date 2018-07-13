@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.11.8 (2018-07-13)
+    0.11.9 (2018-07-13)
 
 SYNOPSIS
         githook-perltidy COMMAND [OPTIONS...]

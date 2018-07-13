@@ -2,12 +2,13 @@
 MANIFEST.bak
 MANIFEST.SKIP
 MYMETA*
+blib/
 build-stamp
 install-stamp
 pm_to_blib
 ^blib
 Makefile$
 Makefile.old
-^App-githook-perltidy
+^githook-perltidy-*
 t/githook-perltidy$
 xt/

@@ -44,8 +44,9 @@ working on your code uses the the same tidy options:
     $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
     $ git commit -m 'githook-perltidy support' && git push
 
-If you would like automatic README-from-POD support you can also create
-a file called F<.readme_from> containing the name of the source file.
+B<githook-perltidy> has an automatic README-from-POD feature. To enable
+it you create and commit a file called F<.readme_from> containing the
+name of a source file containing POD text:
 
     $ echo 'lib/Your/App.pm' > .readme_from
     $ echo '^\.readme_from' >> MANIFEST.SKIP
@@ -78,8 +79,11 @@ The C<pre-commit> command loops through the Git index, checking out
 Perl/POD files to a temporary working directory. It runs L<perltidy> on
 the temporary Perl files using F<.perltidyrc>. If F<.podtidy-opts>
 exists then L<podtidy> is also run on Perl and POD files.  The Git
-index is updated and your original working tree files are also tidied.
-A tidying error stop the script (and therefore the commit) immediately.
+index is updated along with your original working files.
+
+A tidying error stops the script (and therefore the commit)
+immediately. Any successful cleanups to the index and working tree up
+until that point remain in place.
 
 This command fails if there is no F<.perltidyrc> file in the
 repository.
@@ -102,15 +106,21 @@ Print underlying Git commands or filesystem actions as they are run.
 =head1 CAVEATS
 
 There are two ways in which B<githook-perltidy> behaviour may affect
-your existing workflow. Firstly if you are accustomed to commiting
+your existing workflow.
+
+=over
+
+=item * If you are accustomed to commiting
 changes to files which are still open in your editor, your editor may
 complain that the underlying file has changed on disk. Possibily your
 editor doesn't even detect the change and your next write will not be
 'tidy'.
 
-Secondly, aborting a commit with an empty commit message or via a later
+=item * Aborting a commit with an empty commit message or via a later
 command in the pre-commit hook will still result in changed (tidied)
 files on disk and in the index.
+
+=back
 
 =head1 FILES
 

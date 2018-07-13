@@ -45,13 +45,12 @@ working on your code uses the the same tidy options:
     $ git commit -m 'githook-perltidy support' && git push
 
 If you would like automatic README-from-POD support you can also create
-a file called F<.readme_from_pod> containing the name of the source
-file.
+a file called F<.readme_from> containing the name of the source file.
 
-    $ echo 'lib/Your/App.pm' > .readme_from_pod
-    $ echo '^\.readme_from_pod' >> MANIFEST.SKIP
-    $ git add .readme_from_pod MANIFEST.SKIP
-    $ git commit -m 'githook-perltidy readme_from_pod' && git push
+    $ echo 'lib/Your/App.pm' > .readme_from
+    $ echo '^\.readme_from' >> MANIFEST.SKIP
+    $ git add .readme_from MANIFEST.SKIP
+    $ git commit -m 'githook-perltidy readme_from' && git push
 
 With the above in place the F<README> file will be updated (and
 potentially committed) whenever F<lib/Your/App.pm> is committed.
@@ -85,10 +84,10 @@ A tidying error stop the script (and therefore the commit) immediately.
 This command fails if there is no F<.perltidyrc> file in the
 repository.
 
-If F<.readme_from_pod> exists and the file named therein is tidied,
-then B<githook-perltidy> translates it with L<Pod::Text> into a new
-README file. If the README file is tracked by Git then it is also added
-it to the index for committing.
+If F<.readme_from> exists and the file named therein is tidied, then
+B<githook-perltidy> translates it with L<Pod::Text> into a new README
+file. If the README file is tracked by Git then it is also added it to
+the index for committing.
 
 =head1 GLOBAL OPTIONS
 
@@ -125,7 +124,7 @@ Perltidy command options file.
 
 Podtidy command options file. This is githook-perltidy specific.
 
-=item F<.readme_from_pod>
+=item F<.readme_from>
 
 Automatic README config file. This is githook-perltidy specific.
 

@@ -11,5 +11,5 @@ MYMETA.yml
 Makefile
 README
 blib/
-githook-perltidy*
+App-githook_perltidy*
 t/githook-perltidy

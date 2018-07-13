@@ -5,6 +5,7 @@ requires 'Carp'           => 0;
 requires 'OptArgs2'       => '0.0.10';
 requires 'Path::Tiny'     => 0;
 requires 'Perl::Tidy'     => 0;
+requires 'Pod::Text'      => 0;
 requires 'Pod::Tidy'      => 0;
 
 on 'test' => sub {

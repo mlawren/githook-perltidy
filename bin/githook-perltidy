@@ -34,27 +34,35 @@ hardest to be safe: tidying is performed in a temporary location so
 that your own working files are not left in a bad state in the event of
 failure.
 
-=head2 Repository Setup
-
 Before you can use B<githook-perltidy> you need to make sure everyone
 working on your code uses the the same tidy options:
 
     $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
     $ echo '--columns 72' > .podtidy-opts
-    $ git add .perltidyrc .podtidy-opts
-    $ git commit && git push
+    $ echo '^\.perltidyrc' >> MANIFEST.SKIP
+    $ echo '^\.podtidy-ops' >> MANIFEST.SKIP
+    $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
+    $ git commit -m 'githook-perltidy support' && git push
 
-=head2 Installation
+If you would like automatic README-from-POD support you can also create
+a file called F<.readme_from_pod> containing the name of the source
+file.
 
-Anyone making commits in a setup repository can now add a call to
-B<githook-perltidy> in their pre-commit script, or have
-B<githook-perltidy> create one.
+    $ echo 'lib/Your/App.pm' > .readme_from_pod
+    $ echo '^\.readme_from_pod' >> MANIFEST.SKIP
+    $ git add .readme_from_pod MANIFEST.SKIP
+    $ git commit -m 'githook-perltidy readme_from_pod' && git push
 
-    githook-perltidy install [--force, -f]
+With the above in place the F<README> file will be updated (and
+potentially committed) whenever F<lib/Your/App.pm> is committed.
 
-The C<install> command must be run from the top-level directory of your
-repository. It writes a F<pre-commit> file in the F<$GIT_DIR/hooks/>
-directory.
+=head2 githook-perltidy install [--force, -f]
+
+Anyone making commits in a setup repository should ensure
+B<githook-perltidy> runs from their pre-commit script. The C<install>
+command can be used to create one, and must be run from the top-level
+directory of your repository. It writes a F<pre-commit> file in the
+F<$GIT_DIR/hooks/> directory.
 
     $ githook-perltidy install
     $ cat .git/hooks/pre-commit
@@ -62,22 +70,25 @@ directory.
     /usr/local/bin/githook-perltidy pre-commit
 
 This command fails if there is no F<.perltidyrc> file in the repository
-or if the hooks directory isn't found. It will also fail if the hook
-file exists, unless C<--force> is used.
+or if the hooks directory isn't found. It will also fail if the Git
+F<pre-commit> already file exists, unless C<--force> is used.
 
-=head2 Pre-Commit Actions
+=head2 githook-perltidy pre-commit
 
-The C<pre-commit> command checks out your index to a temporary working
-directory. Runs L<perltidy> on any Perl files in the Git index using
-the F<.perltidyrc>. If F<.podtidy-opts> exists then L<podtidy> will
-also be run on any POD files in the Git index.  Any tidying errors stop
-the commmit. Otherwise the index and your working tree are updated with
-tidied files.
-
-    githook-perltidy pre-commit
+The C<pre-commit> command loops through the Git index, checking out
+Perl/POD files to a temporary working directory. It runs L<perltidy> on
+the temporary Perl files using F<.perltidyrc>. If F<.podtidy-opts>
+exists then L<podtidy> is also run on Perl and POD files.  The Git
+index is updated and your original working tree files are also tidied.
+A tidying error stop the script (and therefore the commit) immediately.
 
 This command fails if there is no F<.perltidyrc> file in the
 repository.
+
+If F<.readme_from_pod> exists and the file named therein is tidied,
+then B<githook-perltidy> translates it with L<Pod::Text> into a new
+README file. If the README file is tracked by Git then it is also added
+it to the index for committing.
 
 =head1 GLOBAL OPTIONS
 
@@ -113,6 +124,10 @@ Perltidy command options file.
 =item F<.podtidy-opts>
 
 Podtidy command options file. This is githook-perltidy specific.
+
+=item F<.readme_from_pod>
+
+Automatic README config file. This is githook-perltidy specific.
 
 =back
 

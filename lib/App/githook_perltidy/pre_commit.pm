@@ -133,6 +133,24 @@ sub run {
 
         $self->tmp_sys( qw/git add /, $file );
 
+        if ( $file eq $self->{readme_from_pod} ) {
+            require Pod::Text;
+            my $parser = Pod::Text->new( sentence => 0, width => 78 );
+            my $tmp_readme = $temp_dir->child('README');
+
+            $parser->parse_from_file( $file, $tmp_readme->stringify );
+
+            if (
+                system("git ls-files --error-unmatch README > /dev/null 2>&1")
+                == 0 )
+            {
+                $self->tmp_sys(qw/git add README/);
+            }
+
+            print "  $self->{me}: copy README\n" if $self->{opts}->{verbose};
+            copy $tmp_readme, 'README';
+        }
+
         # Redo the whole thing again for partially modified files
         if ( $partial{$file} ) {
             print "  $self->{me}: copy $file $tmp_file\n"

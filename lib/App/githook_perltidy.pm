@@ -78,9 +78,10 @@ sub new {
     $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify
       if $ENV{GIT_INDEX_FILE};
 
-    my $repo       = path( $ENV{GIT_DIR} )->parent;
-    my $perltidyrc = $repo->child('.perltidyrc');
-    my $podtidyrc  = $repo->child('.podtidy-opts');
+    my $repo            = path( $ENV{GIT_DIR} )->parent;
+    my $perltidyrc      = $repo->child('.perltidyrc');
+    my $podtidyrc       = $repo->child('.podtidy-opts');
+    my $readme_from_pod = $repo->child('.readme_from_pod');
 
     if ( -e $perltidyrc ) {
         if (
@@ -114,6 +115,21 @@ sub new {
         }
 
         $self->{podtidyrc_opts} = $pod_opts;
+    }
+
+    $self->{readme_from_pod} = '';
+    if ( -e $readme_from_pod ) {
+        if (
+            system(
+                "git ls-files --error-unmatch .readme_from_pod > /dev/null 2>&1"
+            ) != 0
+          )
+        {
+            die ".readme_from_pod is not committed.\n";
+        }
+
+        ( $self->{readme_from_pod} ) =
+          path($readme_from_pod)->lines( { chomp => 1, count => 1 } );
     }
 
     $self;

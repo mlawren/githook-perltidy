@@ -5,7 +5,7 @@ use File::Basename;
 use OptArgs2;
 use Path::Tiny;
 
-our $VERSION = '0.11.7_2';
+our $VERSION = '0.11.8';
 
 cmd 'App::githook_perltidy' => (
     comment => 'tidy perl and pod files before Git commits',
@@ -189,7 +189,7 @@ App::githook_perltidy - OptArgs2 module for githook-perltidy.
 
 =head1 VERSION
 
-0.11.7_2 (yyyy-mm-dd)
+0.11.8 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

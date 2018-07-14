@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use parent 'App::githook_perltidy';
 
-our $VERSION = '0.11.10_1';
+our $VERSION = '0.11.10';
 
 sub run {
 
@@ -19,7 +19,7 @@ App::githook_perltidy::post_commit - git post-commit hook
 
 =head1 VERSION
 
-0.11.10_1 (yyyy-mm-dd)
+0.11.10 (yyyy-mm-dd)
 
 =head1 DESCRIPTION
 

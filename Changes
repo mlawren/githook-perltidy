@@ -1,3 +1,11 @@
+0.11.10 (2018-07-14)
+
+    Packaging:
+        - Return to the original distribution name of
+          App-githook-perltidy with a package name of
+          App::githook_perltidy. Seems that I can't change anything
+          without losing PAUSE history or permissions.
+
 0.11.9 (2018-07-13)
 
     Packaging:

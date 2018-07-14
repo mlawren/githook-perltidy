@@ -14,10 +14,10 @@ use ExtUtils::MakeMaker::CPANfile;
 use Pod::Text;
 
 WriteMakefile(
-    NAME      => 'App::githook_perltidy',
+    NAME      => 'App::githook::perltidy',
     ABSTRACT  => 'run perltidy and podtidy before Git commits',
     AUTHOR    => 'Mark Lawrence <nomad@null.net>',
-    VERSION   => '0.11.9',
+    VERSION   => '0.11.10',
     LICENSE   => 'gpl_3',
     EXE_FILES => ['bin/githook-perltidy'],
     test      => { RECURSIVE_TEST_FILES => 1, },

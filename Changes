@@ -16,7 +16,10 @@
         - None.
 
     Packaging:
-        - None.
+        - Renamed development branch "devel" to "master" and now just
+          have a single "dist" branch for distributions. Now visitors
+          to Github will see current development history first thing
+          instead of searching around for a strange branch scheme.
 
 0.11.11_1 (2018-07-17)
 

@@ -34,12 +34,15 @@ sub copy_src {
     my $dest = shift || die 'copy_src($file, $DEST)';
     copy( $srcdir->child($file), $dest ) or die "copy: $!";
 
+    my $errormsg;
+
     if ( -e '.perltidyrc' ) {
         if ( -e '.podtidy-opts' ) {
             copy( $dest, $dest . '.perlpodtidy' ) or die "copy: $!";
 
             Perl::Tidy::perltidy(
                 argv       => [ qw{-nst -b -bext=/}, "$dest.perlpodtidy" ],
+                errorfile  => \$errormsg,
                 perltidyrc => $srcdir->child('perltidyrc')->stringify,
             );
 
@@ -58,6 +61,7 @@ sub copy_src {
 
             Perl::Tidy::perltidy(
                 argv       => [ qw{-nst -b -bext=/}, "$dest.perltidy" ],
+                errorfile  => \$errormsg,
                 perltidyrc => $srcdir->child('perltidyrc')->stringify,
             );
         }
@@ -68,6 +72,7 @@ sub copy_src {
 
             Perl::Tidy::Sweetened::perltidy(
                 argv       => [ qw{-nst -b -bext=/}, "$dest.perlspodtidy" ],
+                errorfile  => \$errormsg,
                 perltidyrc => $srcdir->child('perltidyrc')->stringify,
             );
 
@@ -86,6 +91,7 @@ sub copy_src {
 
             Perl::Tidy::Sweetened::perltidy(
                 argv       => [ qw{-nst -b -bext=/}, "$dest.perlstidy" ],
+                errorfile  => \$errormsg,
                 perltidyrc => $srcdir->child('perltidyrc')->stringify,
             );
         }

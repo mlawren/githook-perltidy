@@ -61,6 +61,17 @@ subcmd 'App::githook_perltidy::post_commit' => (
     hidden  => 1,
 );
 
+sub check_committed {
+    my $file = shift;
+
+    if (
+        system( 'git ls-files --error-unmatch ' . $file . ' > /dev/null 2>&1' )
+        != 0 )
+    {
+        die $file->basename . " is not committed.\n";
+    }
+}
+
 sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;
@@ -84,26 +95,12 @@ sub new {
     my $readme_from = $repo->child('.readme_from');
 
     if ( -e $perltidyrc ) {
-        if (
-            system("git ls-files --error-unmatch .perltidyrc > /dev/null 2>&1")
-            != 0 )
-        {
-            die ".perltidyrc not committed.\n";
-        }
-
+        check_committed($perltidyrc);
         $self->{perltidyrc} = $perltidyrc;
     }
 
     if ( -e $podtidyrc ) {
-        if (
-            system(
-                "git ls-files --error-unmatch .podtidy-opts > /dev/null 2>&1")
-            != 0
-          )
-        {
-            die ".podtidy-opts not committed.\n";
-        }
-
+        check_committed($podtidyrc);
         $self->{podtidyrc} = $podtidyrc;
         my $pod_opts = {};
 
@@ -119,14 +116,7 @@ sub new {
 
     $self->{readme_from} = '';
     if ( -e $readme_from ) {
-        if (
-            system(
-                "git ls-files --error-unmatch .readme_from > /dev/null 2>&1")
-            != 0
-          )
-        {
-            die ".readme_from is not committed.\n";
-        }
+        check_committed($readme_from);
 
         ( $self->{readme_from} ) =
           path($readme_from)->lines( { chomp => 1, count => 1 } );

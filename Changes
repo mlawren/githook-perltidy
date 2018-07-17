@@ -9,6 +9,7 @@
     Enhancements:
         - Use Test::TempDir::Tiny instead of home-grown temp directory
           code.
+        - Minor code refactoring
 
     Bug Fixes:
         - None.

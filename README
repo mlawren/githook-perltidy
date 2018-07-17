@@ -13,13 +13,13 @@ DESCRIPTION
     running perltidy (Perl::Tidy) and podtidy (Pod::Tidy) on them.
 
     This script is is efficient: it only modifies files that are being
-    committed and not every file in your repository. It also tries its
-    hardest to be safe: tidying is performed in a temporary location so that
-    your own working files are not left in a bad state in the event of
-    failure.
+    committed and not every file in your repository. It also tries its hardest
+    to be safe: tidying is performed in a temporary location so that your own
+    working files are not left in a bad state in the event of failure.
 
-    Before you can use githook-perltidy you need to make sure everyone
-    working on your code uses the the same tidy options:
+  Repository Setup
+    Before you can use githook-perltidy you need to make sure everyone working
+    on your code uses the the same tidy options:
 
         $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
         $ echo '--columns 72' > .podtidy-opts
@@ -28,14 +28,16 @@ DESCRIPTION
         $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
         $ git commit -m 'githook-perltidy support' && git push
 
-    You may prefer to tidy with Perl::Tidy::Sweetend instead of plain
-    Perl::Tidy. To enable that you use .perltidyrc.sweetened instead of
-    .perltidyrc. githook-perltidy does not depend on Perl::Tidy::Sweetend
-    directly so you will want to add that as an explicit "develop"
-    dependency in your cpanfile, Makefile.PL or Build.PL.
+  Sweeter Tidying
+    You may prefer to tidy with Perl::Tidy::Sweetened instead of plain
+    Perl::Tidy. To enable that you commit a .perltidyrc.sweetened file instead
+    of .perltidyrc. githook-perltidy does not depend on Perl::Tidy::Sweetend
+    directly so you will want to add that as an explicit "develop" dependency
+    in your cpanfile, Makefile.PL or Build.PL.
 
-    githook-perltidy has an automatic README-from-POD feature. To enable it
-    you create and commit a file called .readme_from containing the name of
+  Automatic README from POD
+    githook-perltidy also has an automatic README-from-POD feature. To enable
+    it you create and commit a file called .readme_from containing the name of
     a source file containing POD text:
 
         $ echo 'lib/Your/App.pm' > .readme_from
@@ -47,11 +49,10 @@ DESCRIPTION
     committed) whenever lib/Your/App.pm is committed.
 
   githook-perltidy install [--force, -f]
-    Anyone making commits in a setup repository should ensure
-    githook-perltidy runs from their pre-commit script. The "install"
-    command can be used to create one, and must be run from the top-level
-    directory of your repository. It writes a pre-commit file in the
-    $GIT_DIR/hooks/ directory.
+    Anyone making commits in a setup repository should ensure githook-perltidy
+    runs from their pre-commit script. The "install" command can be used to
+    create one, and must be run from the top-level directory of your
+    repository. It writes a pre-commit file in the $GIT_DIR/hooks/ directory.
 
         $ githook-perltidy install
         $ cat .git/hooks/pre-commit
@@ -59,9 +60,8 @@ DESCRIPTION
         /usr/local/bin/githook-perltidy pre-commit
 
     This command fails if there is no .perltidyrc or .perltidyrc.sweetened
-    file in the repository or if the hooks directory isn't found. It will
-    also fail if the Git pre-commit already file exists, unless "--force" is
-    used.
+    file in the repository or if the hooks directory isn't found. It will also
+    fail if the Git pre-commit already file exists, unless "--force" is used.
 
   githook-perltidy pre-commit
     The "pre-commit" command loops through the Git index, checking out
@@ -71,8 +71,8 @@ DESCRIPTION
     Git index is updated along with your original working files.
 
     A tidying error stops the script (and therefore the commit) immediately.
-    Any successful cleanups to the index and working tree up until that
-    point remain in place.
+    Any successful cleanups to the index and working tree up until that point
+    remain in place.
 
     This command fails if there is no .perltidyrc or .perltidyrc.sweetened
     file in the repository.
@@ -91,13 +91,13 @@ CAVEATS
     existing workflow.
 
     *   If you are accustomed to commiting changes to files which are still
-        open in your editor, your editor may complain that the underlying
-        file has changed on disk. Possibily your editor doesn't even detect
-        the change and your next write will not be 'tidy'.
+        open in your editor, your editor may complain that the underlying file
+        has changed on disk. Possibily your editor doesn't even detect the
+        change and your next write will not be 'tidy'.
 
-    *   Aborting a commit with an empty commit message or via a later
-        command in the pre-commit hook will still result in changed (tidied)
-        files on disk and in the index.
+    *   Aborting a commit with an empty commit message or via a later command
+        in the pre-commit hook will still result in changed (tidied) files on
+        disk and in the index.
 
 FILES
     .perltidyrc
@@ -128,7 +128,7 @@ COPYRIGHT AND LICENSE
     Copyright 2011-2018 Mark Lawrence <nomad@null.net>
 
     This program is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the
-    Free Software Foundation; either version 3 of the License, or (at your
-    option) any later version.
+    under the terms of the GNU General Public License as published by the Free
+    Software Foundation; either version 3 of the License, or (at your option)
+    any later version.
 

@@ -5,7 +5,7 @@ use File::Basename;
 use OptArgs2;
 use Path::Tiny;
 
-our $VERSION = '0.11.10';
+our $VERSION = '0.11.11_1';
 
 cmd 'App::githook_perltidy' => (
     comment => 'tidy perl and pod files before Git commits',
@@ -61,6 +61,17 @@ subcmd 'App::githook_perltidy::post_commit' => (
     hidden  => 1,
 );
 
+sub check_committed {
+    my $file = shift;
+
+    if (
+        system( 'git ls-files --error-unmatch ' . $file . ' > /dev/null 2>&1' )
+        != 0 )
+    {
+        die $file->basename . " is not committed.\n";
+    }
+}
+
 sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;
@@ -78,32 +89,27 @@ sub new {
     $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify
       if $ENV{GIT_INDEX_FILE};
 
-    my $repo        = path( $ENV{GIT_DIR} )->parent;
-    my $perltidyrc  = $repo->child('.perltidyrc');
-    my $podtidyrc   = $repo->child('.podtidy-opts');
-    my $readme_from = $repo->child('.readme_from');
+    my $repo         = path( $ENV{GIT_DIR} )->parent;
+    my $perltidyrc   = $repo->child('.perltidyrc');
+    my $perltidyrc_s = $repo->child('.perltidyrc.sweetened');
+    my $podtidyrc    = $repo->child('.podtidy-opts');
+    my $readme_from  = $repo->child('.readme_from');
 
     if ( -e $perltidyrc ) {
-        if (
-            system("git ls-files --error-unmatch .perltidyrc > /dev/null 2>&1")
-            != 0 )
-        {
-            die ".perltidyrc not committed.\n";
-        }
+        die ".perltidyrc and .perltidyrc.sweetened are incompatible\n"
+          if ( -e $perltidyrc_s );
 
+        check_committed($perltidyrc);
         $self->{perltidyrc} = $perltidyrc;
+    }
+    elsif ( -e $perltidyrc_s ) {
+        check_committed($perltidyrc_s);
+        $self->{perltidyrc} = $perltidyrc_s;
+        $self->{sweetened}  = 1;
     }
 
     if ( -e $podtidyrc ) {
-        if (
-            system(
-                "git ls-files --error-unmatch .podtidy-opts > /dev/null 2>&1")
-            != 0
-          )
-        {
-            die ".podtidy-opts not committed.\n";
-        }
-
+        check_committed($podtidyrc);
         $self->{podtidyrc} = $podtidyrc;
         my $pod_opts = {};
 
@@ -119,14 +125,7 @@ sub new {
 
     $self->{readme_from} = '';
     if ( -e $readme_from ) {
-        if (
-            system(
-                "git ls-files --error-unmatch .readme_from > /dev/null 2>&1")
-            != 0
-          )
-        {
-            die ".readme_from is not committed.\n";
-        }
+        check_committed($readme_from);
 
         ( $self->{readme_from} ) =
           path($readme_from)->lines( { chomp => 1, count => 1 } );
@@ -189,7 +188,7 @@ App::githook_perltidy - OptArgs2 module for githook-perltidy.
 
 =head1 VERSION
 
-0.11.10 (2018-07-14)
+0.11.11_1 (2018-07-17)
 
 =head1 SEE ALSO
 

@@ -7,7 +7,7 @@ use Path::Tiny;
 use Perl::Tidy;
 use Pod::Tidy;
 
-our $VERSION = '0.11.10';
+our $VERSION = '0.11.11_1';
 
 my $temp_dir;
 
@@ -28,7 +28,7 @@ sub perl_tidy {
 
     my $errormsg;
 
-    my $error = Perl::Tidy::perltidy(
+    my $error = $self->{perltidy}->(
         argv       => [ qw{-nst -b -bext=/}, "$tmp_file" ],
         errorfile  => \$errormsg,
         perltidyrc => $self->{perltidyrc}->stringify,
@@ -104,6 +104,14 @@ sub run {
     unless (@perlfiles) {
         $self->lprint("$self->{me}: (0)\n");
         exit 0;
+    }
+
+    if ( $self->{sweetened} ) {
+        require Perl::Tidy::Sweetened;
+        $self->{perltidy} = \&Perl::Tidy::Sweetened::perltidy;
+    }
+    else {
+        $self->{perltidy} = \&Perl::Tidy::perltidy;
     }
 
     print "  $self->{me}: no .podtidy-opts - skipping podtidy calls\n"
@@ -215,7 +223,7 @@ App::githook_perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.11.10 (2018-07-14)
+0.11.11_1 (2018-07-17)
 
 =head1 SEE ALSO
 

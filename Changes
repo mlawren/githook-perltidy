@@ -1,3 +1,17 @@
+0.11.11_1 (2018-07-17)
+
+    New Features:
+        - Add support for Perl::Tidy::Sweetened inspired by a patch by
+          Mark Grimes (MGRIMES)
+
+    Enhancements:
+        - Use Test::TempDir::Tiny instead of home-grown temp directory
+          code.
+        - Minor code refactoring
+
+    Packaging:
+        - Use META-SPEC version 2 and add Github repository URLs.
+
 0.11.10 (2018-07-14)
 
     Packaging:

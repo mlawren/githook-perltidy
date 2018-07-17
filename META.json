@@ -4,7 +4,7 @@
       "Mark Lawrence <nomad@null.net>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 7.24, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "ExtUtils::MakeMaker version 7.34, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "gpl_3"
    ],
@@ -52,12 +52,19 @@
             "Path::Tiny" : "0",
             "Sys::Cmd" : "0",
             "Test::Fatal" : "0",
-            "Test::More" : "0"
+            "Test::More" : "0",
+            "Test::TempDir::Tiny" : "0",
+            "Time::Piece" : "0"
          }
       }
    },
-   "release_status" : "stable",
-   "resources" : {},
-   "version" : "v0.11.10",
+   "release_status" : "unstable",
+   "resources" : {
+      "repository" : {
+         "type" : "git",
+         "url" : "ssh://git@github.com/mlawren/githook-perltidy.git"
+      }
+   },
+   "version" : "v0.11.11_1",
    "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

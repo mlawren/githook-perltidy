@@ -16,7 +16,7 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
-0.11.10 (2018-07-14)
+0.11.11_1 (2018-07-17)
 
 =head1 SYNOPSIS
 
@@ -26,7 +26,8 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 B<githook-perltidy> is a script designed to run from a Git pre-commit
 hook. It ensures that your Perl and POD files are always cleanly
-commited by running L<perltidy> and L<podtidy> on them.
+commited by running L<perltidy> (L<Perl::Tidy>) and L<podtidy>
+(L<Pod::Tidy>) on them.
 
 This script is is efficient: it only modifies files that are being
 committed and not every file in your repository. It also tries its
@@ -43,6 +44,13 @@ working on your code uses the the same tidy options:
     $ echo '^\.podtidy-ops' >> MANIFEST.SKIP
     $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
     $ git commit -m 'githook-perltidy support' && git push
+
+You may prefer to tidy with L<Perl::Tidy::Sweetend> instead of plain
+L<Perl::Tidy>. To enable that you use F<.perltidyrc.sweetened> instead
+of F<.perltidyrc>. B<githook-perltidy> does not depend on
+L<Perl::Tidy::Sweetend> directly so you will want to add that as an
+explicit "develop" dependency in your F<cpanfile>, F<Makefile.PL> or
+F<Build.PL>.
 
 B<githook-perltidy> has an automatic README-from-POD feature. To enable
 it you create and commit a file called F<.readme_from> containing the
@@ -69,24 +77,26 @@ F<$GIT_DIR/hooks/> directory.
     #!/bin/sh
     /usr/local/bin/githook-perltidy pre-commit
 
-This command fails if there is no F<.perltidyrc> file in the repository
-or if the hooks directory isn't found. It will also fail if the Git
-F<pre-commit> already file exists, unless C<--force> is used.
+This command fails if there is no F<.perltidyrc> or
+F<.perltidyrc.sweetened> file in the repository or if the hooks
+directory isn't found. It will also fail if the Git F<pre-commit>
+already file exists, unless C<--force> is used.
 
 =head2 githook-perltidy pre-commit
 
 The C<pre-commit> command loops through the Git index, checking out
 Perl/POD files to a temporary working directory. It runs L<perltidy> on
-the temporary Perl files using F<.perltidyrc>. If F<.podtidy-opts>
-exists then L<podtidy> is also run on Perl and POD files.  The Git
-index is updated along with your original working files.
+the temporary Perl files using F<.perltidyrc> or
+F<.perltidyrc.sweetened>. If F<.podtidy-opts> exists then L<podtidy> is
+also run on Perl and POD files.  The Git index is updated along with
+your original working files.
 
 A tidying error stops the script (and therefore the commit)
 immediately. Any successful cleanups to the index and working tree up
 until that point remain in place.
 
-This command fails if there is no F<.perltidyrc> file in the
-repository.
+This command fails if there is no F<.perltidyrc> or
+F<.perltidyrc.sweetened> file in the repository.
 
 If F<.readme_from> exists and the file named therein is tidied, then
 B<githook-perltidy> translates it with L<Pod::Text> into a new README
@@ -129,6 +139,11 @@ files on disk and in the index.
 =item F<.perltidyrc>
 
 Perltidy command options file.
+
+=item F<.perltidyrc.sweetend>
+
+Perltidier (L<Perl::Tidy::Sweetened>) command options file. Conflicts
+with F<.perltidyrc>.
 
 =item F<.podtidy-opts>
 

@@ -14,19 +14,16 @@ use ExtUtils::MakeMaker::CPANfile;
 use Pod::Text;
 
 WriteMakefile(
-    NAME      => 'App::githook::perltidy',
-    ABSTRACT  => 'run perltidy and podtidy before Git commits',
-    AUTHOR    => 'Mark Lawrence <nomad@null.net>',
-    VERSION   => '0.11.11_1',
-    LICENSE   => 'gpl_3',
-    EXE_FILES => ['bin/githook-perltidy'],
-    test      => { RECURSIVE_TEST_FILES => 1, },
-    META_ADD  => {
-        resources =>
-          { repository => 'https//github.com/mlawren/githook-perltidy', },
-    },
+    NAME       => 'App::githook::perltidy',
+    ABSTRACT   => 'run perltidy and podtidy before Git commits',
+    AUTHOR     => 'Mark Lawrence <nomad@null.net>',
+    VERSION    => '0.11.11_1',
+    LICENSE    => 'gpl_3',
+    EXE_FILES  => ['bin/githook-perltidy'],
+    test       => { RECURSIVE_TEST_FILES => 1, },
     META_MERGE => {
-        no_index => {
+        'meta-spec' => { version => 2 },
+        no_index    => {
             package => [
                 qw(
                   App::githook_perltidy::install
@@ -34,6 +31,13 @@ WriteMakefile(
                   App::githook_perltidy::post_commit
                   )
             ],
+        },
+        resources => {
+            repository => {
+                type => 'git',
+                url  => 'ssh://git@github.com/mlawren/githook-perltidy.git',
+                web  => 'https//github.com/mlawren/githook-perltidy',
+            }
         },
     },
 );

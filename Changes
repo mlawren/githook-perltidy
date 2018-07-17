@@ -16,7 +16,7 @@
         - None.
 
     Packaging:
-        - None.
+        - Use META-SPEC version 2 and add Github repository URLs.
 
 0.11.10 (2018-07-14)
 

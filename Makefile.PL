@@ -17,7 +17,7 @@ WriteMakefile(
     NAME       => 'App::githook::perltidy',
     ABSTRACT   => 'run perltidy and podtidy before Git commits',
     AUTHOR     => 'Mark Lawrence <nomad@null.net>',
-    VERSION    => '0.11.11_1',
+    VERSION    => '0.11.11_2',
     LICENSE    => 'gpl_3',
     EXE_FILES  => ['bin/githook-perltidy'],
     test       => { RECURSIVE_TEST_FILES => 1, },

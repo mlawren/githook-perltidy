@@ -1,0 +1,5 @@
+method name_1 {}
+method name1 {    # Trailing comment
+}
+sub name2 {         # Trailing comment
+}

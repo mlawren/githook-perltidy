@@ -12,6 +12,8 @@ use Test::More;
 use Test::TempDir::Tiny;
 use Time::Piece;
 
+my $sweetened = eval { require Perl::Tidy::Sweetened };
+
 plan skip_all => 'No Git' unless eval { run(qw!git --version!); 1; };
 
 my $pre_commit       = path( '.git', 'hooks', 'pre-commit' );
@@ -60,6 +62,34 @@ sub copy_src {
             );
         }
     }
+    elsif ( -e '.perltidyrc.sweetened' and $sweetened ) {
+        if ( -e '.podtidy-opts' ) {
+            copy( $dest, $dest . '.perlspodtidy' ) or die "copy: $!";
+
+            Perl::Tidy::Sweetened::perltidy(
+                argv       => [ qw{-nst -b -bext=/}, "$dest.perlspodtidy" ],
+                perltidyrc => $srcdir->child('perltidyrc')->stringify,
+            );
+
+            Pod::Tidy::tidy_files(
+                files     => [ $dest . '.perlspodtidy' ],
+                recursive => 0,
+                verbose   => 0,
+                inplace   => 1,
+                nobackup  => 1,
+                columns   => 72,
+                %$pod_opts,
+            );
+        }
+        else {
+            copy( $dest, $dest . '.perlstidy' ) or die "copy: $!";
+
+            Perl::Tidy::Sweetened::perltidy(
+                argv       => [ qw{-nst -b -bext=/}, "$dest.perlstidy" ],
+                perltidyrc => $srcdir->child('perltidyrc')->stringify,
+            );
+        }
+    }
 
     if ( -e '.podtidy-opts' ) {
         copy( $dest, $dest . '.podtidy' ) or die "copy: $!";
@@ -95,9 +125,12 @@ sub is_file {
 }
 
 my $test = localtime->datetime;
+
 in_tempdir $test => sub {
     my $tmpdir = shift;
-    note "Testing $githook_perltidy in $tmpdir";
+
+    note "tidy: $githook_perltidy";
+    note "tempdir: $tmpdir";
 
     like exception { run($githook_perltidy) }, qr/^usage:/,
       'usage needs an argument';
@@ -153,6 +186,11 @@ in_tempdir $test => sub {
     add_commit('5');
     is_file( '5', '5.perltidy', 'detect #!perl' );
 
+    copy_src( 'perltidyrc', '.perltidyrc.sweetened' );
+    like exception { run( $githook_perltidy, qw!pre-commit! ) },
+      qr/incompatible/, '.perltidyrc[.sweetened] incompatible';
+    unlink '.perltidyrc.sweetened';
+
     # .podtidy-opts
 
     copy_src( 'podtidy-opts', '.podtidy-opts' );
@@ -166,6 +204,16 @@ in_tempdir $test => sub {
 
     add_commit('6.pod');
     is_file( '6.pod', '6.pod.podtidy', 'detect .pod' );
+
+    # Sweetened
+    if ($sweetened) {
+        run(qw!git mv .perltidyrc .perltidyrc.sweetened!);
+        add_commit( '.perltidyrc.sweetened', 'sweeten things up' );
+
+        copy_src( 'untidy_sweet', '7.pl' );
+        add_commit('7.pl');
+        is_file( '7.pl', '7.pl.perlspodtidy', 'sweet .pl' );
+    }
 
   SKIP: {
         skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };

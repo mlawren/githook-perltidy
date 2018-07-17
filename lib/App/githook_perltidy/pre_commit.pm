@@ -28,7 +28,7 @@ sub perl_tidy {
 
     my $errormsg;
 
-    my $error = Perl::Tidy::perltidy(
+    my $error = $self->{perltidy}->(
         argv       => [ qw{-nst -b -bext=/}, "$tmp_file" ],
         errorfile  => \$errormsg,
         perltidyrc => $self->{perltidyrc}->stringify,
@@ -104,6 +104,14 @@ sub run {
     unless (@perlfiles) {
         $self->lprint("$self->{me}: (0)\n");
         exit 0;
+    }
+
+    if ( $self->{sweetened} ) {
+        require Perl::Tidy::Sweetened;
+        $self->{perltidy} = \&Perl::Tidy::Sweetened::perltidy;
+    }
+    else {
+        $self->{perltidy} = \&Perl::Tidy::perltidy;
     }
 
     print "  $self->{me}: no .podtidy-opts - skipping podtidy calls\n"

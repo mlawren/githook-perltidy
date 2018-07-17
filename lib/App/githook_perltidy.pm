@@ -89,14 +89,23 @@ sub new {
     $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify
       if $ENV{GIT_INDEX_FILE};
 
-    my $repo        = path( $ENV{GIT_DIR} )->parent;
-    my $perltidyrc  = $repo->child('.perltidyrc');
-    my $podtidyrc   = $repo->child('.podtidy-opts');
-    my $readme_from = $repo->child('.readme_from');
+    my $repo         = path( $ENV{GIT_DIR} )->parent;
+    my $perltidyrc   = $repo->child('.perltidyrc');
+    my $perltidyrc_s = $repo->child('.perltidyrc.sweetened');
+    my $podtidyrc    = $repo->child('.podtidy-opts');
+    my $readme_from  = $repo->child('.readme_from');
 
     if ( -e $perltidyrc ) {
+        die ".perltidyrc and .perltidyrc.sweetened are incompatible\n"
+          if ( -e $perltidyrc_s );
+
         check_committed($perltidyrc);
         $self->{perltidyrc} = $perltidyrc;
+    }
+    elsif ( -e $perltidyrc_s ) {
+        check_committed($perltidyrc_s);
+        $self->{perltidyrc} = $perltidyrc_s;
+        $self->{sweetened}  = 1;
     }
 
     if ( -e $podtidyrc ) {

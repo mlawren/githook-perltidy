@@ -4,7 +4,8 @@
         - None.
 
     New Features:
-        - None.
+        - Add support for Perl::Tidy::Sweetened inspired by a patch by
+          Mark Grimes (MGRIMES)
 
     Enhancements:
         - Use Test::TempDir::Tiny instead of home-grown temp directory

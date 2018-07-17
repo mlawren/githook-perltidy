@@ -1,7 +1,4 @@
-0.11.11_1 (yyyy-mm-dd)
-
-    API / Behaviour Changes:
-        - None.
+0.11.11_1 (2018-07-17)
 
     New Features:
         - Add support for Perl::Tidy::Sweetened inspired by a patch by
@@ -11,12 +8,6 @@
         - Use Test::TempDir::Tiny instead of home-grown temp directory
           code.
         - Minor code refactoring
-
-    Bug Fixes:
-        - None.
-
-    Dependencies:
-        - None.
 
     Packaging:
         - Use META-SPEC version 2 and add Github repository URLs.

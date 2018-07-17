@@ -13,7 +13,8 @@
         - None.
 
     Dependencies:
-        - None.
+        - Add Perl::Tidy::Sweetened as a runtime "recommends"
+          dependency.
 
     Packaging:
         - Renamed development branch "devel" to "master" and now just

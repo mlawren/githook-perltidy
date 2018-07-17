@@ -7,7 +7,8 @@
         - None.
 
     Enhancements:
-        - None.
+        - Use Test::TempDir::Tiny instead of home-grown temp directory
+          code.
 
     Bug Fixes:
         - None.

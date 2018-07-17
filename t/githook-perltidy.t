@@ -9,19 +9,14 @@ use Pod::Tidy;
 use Sys::Cmd qw/run/;
 use Test::Fatal;
 use Test::More;
+use Test::TempDir::Tiny;
+use Time::Piece;
 
 plan skip_all => 'No Git' unless eval { run(qw!git --version!); 1; };
 
-my $cwd              = Path::Tiny->cwd;
-my $tmpdir           = Path::Tiny->tempdir( CLEANUP => 1 );
 my $pre_commit       = path( '.git', 'hooks', 'pre-commit' );
-my $srcdir           = path( $Bin, 'src' );
-my $githook_perltidy = path( $Bin, 'githook-perltidy' );
-
-# Make sure we get out of the tempdir before it is cleaned up
-END { chdir $cwd if $cwd; undef $tmpdir; }
-chdir $tmpdir || die "chdir $tmpdir: $!";
-note "Testing $githook_perltidy in $tmpdir";
+my $srcdir           = path( $Bin,   'src' );
+my $githook_perltidy = path( $Bin,   'githook-perltidy' );
 
 my $pod_opts = {};
 
@@ -99,111 +94,118 @@ sub is_file {
     is path($f1)->slurp_raw, path($f2)->slurp_raw, $test;
 }
 
-like exception { run($githook_perltidy) }, qr/^usage:/,
-  'usage needs an argument';
+my $test = localtime->datetime;
+in_tempdir $test => sub {
+    my $tmpdir = shift;
+    note "Testing $githook_perltidy in $tmpdir";
 
-run(qw!git init!);
-run( qw!git config user.email!, 'you@example.com' );
-run( qw!git config user.name!,  'Your Name' );
+    like exception { run($githook_perltidy) }, qr/^usage:/,
+      'usage needs an argument';
 
-like exception { run( $githook_perltidy, qw!install! ) },
-  qr/\.perltidyrc/, 'no .perltidyrc';
+    run(qw!git init!);
+    run( qw!git config user.email!, 'you@example.com' );
+    run( qw!git config user.name!,  'Your Name' );
 
-copy_src( 'perltidyrc', '.perltidyrc' );
+    like exception { run( $githook_perltidy, qw!install! ) },
+      qr/\.perltidyrc/, 'no .perltidyrc';
 
-like exception { run( $githook_perltidy, qw!install! ) },
-  qr/\.perltidyrc/, '.perltidyrc uncommitted';
+    copy_src( 'perltidyrc', '.perltidyrc' );
 
-add_commit('.perltidyrc');
+    like exception { run( $githook_perltidy, qw!install! ) },
+      qr/\.perltidyrc/, '.perltidyrc uncommitted';
 
-ok !-e $pre_commit, 'pre-commit not in place yet';
-like run( $githook_perltidy, qw!install! ), qr/pre-commit/s, 'install output';
+    add_commit('.perltidyrc');
 
-ok -e $pre_commit, 'pre-commit installed';
+    ok !-e $pre_commit, 'pre-commit not in place yet';
+    like run( $githook_perltidy, qw!install! ), qr/pre-commit/s,
+      'install output';
 
-like exception { run( $githook_perltidy, qw!install! ) },
-  qr/exists/, 'existing hook files';
+    ok -e $pre_commit, 'pre-commit installed';
 
-like run( $githook_perltidy, qw!install --force! ),
-  qr/pre-commit \(forced\)/s, 'install --force';
+    like exception { run( $githook_perltidy, qw!install! ) },
+      qr/exists/, 'existing hook files';
 
-like run( $githook_perltidy, qw!install -f! ),
-  qr/pre-commit \(forced\)/s, 'install -f';
+    like run( $githook_perltidy, qw!install --force! ),
+      qr/pre-commit \(forced\)/s, 'install --force';
 
-copy_src( 'untidy', '1' );
-add_commit('1');
-is_file( '1', $srcdir->child('untidy'), 'no #!perl | .pl | .pm: no tidy' );
+    like run( $githook_perltidy, qw!install -f! ),
+      qr/pre-commit \(forced\)/s, 'install -f';
 
-copy_src( 'untidy', '2.pl' );
-add_commit('2.pl');
-is_file( '2.pl', '2.pl.perltidy', 'detect .pl' );
+    copy_src( 'untidy', '1' );
+    add_commit('1');
+    is_file( '1', $srcdir->child('untidy'), 'no #!perl | .pl | .pm: no tidy' );
 
-copy_src( 'untidy', '3.pm' );
-add_commit('3.pm');
-is_file( '3.pm', '3.pm.perltidy', 'detect .pm' );
+    copy_src( 'untidy', '2.pl' );
+    add_commit('2.pl');
+    is_file( '2.pl', '2.pl.perltidy', 'detect .pl' );
 
-copy_src( 'junk', '4.pm' );
-ok exception { add_commit('4.pm') }, 'commit stopped on bad syntax';
-is_file( '4.pm', $srcdir->child('junk'), 'bad commit keeps working file' );
+    copy_src( 'untidy', '3.pm' );
+    add_commit('3.pm');
+    is_file( '3.pm', '3.pm.perltidy', 'detect .pm' );
 
-like run(qw!git status --porcelain!), qr/^A\s+4.pm$/sm, 'kept index status';
+    copy_src( 'junk', '4.pm' );
+    ok exception { add_commit('4.pm') }, 'commit stopped on bad syntax';
+    is_file( '4.pm', $srcdir->child('junk'), 'bad commit keeps working file' );
 
-copy_src( 'untidy_perl', '5' );
-add_commit('5');
-is_file( '5', '5.perltidy', 'detect #!perl' );
+    like run(qw!git status --porcelain!), qr/^A\s+4.pm$/sm, 'kept index status';
 
-# .podtidy-opts
+    copy_src( 'untidy_perl', '5' );
+    add_commit('5');
+    is_file( '5', '5.perltidy', 'detect #!perl' );
 
-copy_src( 'podtidy-opts', '.podtidy-opts' );
-copy_src( 'untidy_pod',   '6.pod' );
+    # .podtidy-opts
 
-like exception { add_commit('6.pod') }, qr/.podtidy-opts/,
-  '.podtidy-opts uncommitted';
+    copy_src( 'podtidy-opts', '.podtidy-opts' );
+    copy_src( 'untidy_pod',   '6.pod' );
 
-run(qw!git reset!);
-add_commit('.podtidy-opts');
+    like exception { add_commit('6.pod') }, qr/.podtidy-opts/,
+      '.podtidy-opts uncommitted';
 
-add_commit('6.pod');
-is_file( '6.pod', '6.pod.podtidy', 'detect .pod' );
+    run(qw!git reset!);
+    add_commit('.podtidy-opts');
 
-SKIP: {
-    skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };
+    add_commit('6.pod');
+    is_file( '6.pod', '6.pod.podtidy', 'detect .pod' );
 
-    $pre_commit->remove;
+  SKIP: {
+        skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };
 
-    path('Makefile.PL')->spew_utf8( "
+        $pre_commit->remove;
+
+        path('Makefile.PL')->spew_utf8( "
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
    NAME            => 'Your::Module',
 );
 "
-    );
+        );
 
-    like run( $githook_perltidy, qw!install test ATTRIBUTE=1! ),
-      qr/pre-commit/s, 'install make args output';
+        like run( $githook_perltidy, qw!install test ATTRIBUTE=1! ),
+          qr/pre-commit/s, 'install make args output';
 
-    like path($pre_commit)->slurp_utf8, qr/pre-commit test ATTRIBUTE=1/,
-      'pre content make args ';
+        like path($pre_commit)->slurp_utf8, qr/pre-commit test ATTRIBUTE=1/,
+          'pre content make args ';
 
-    run(qw!git add Makefile.PL!);
-    like run( qw!git commit -m!, 'add Makefile.PL' ),
-      qr/add Makefile.PL/sm,
-      'make run';
-    ok -e 'Makefile', 'perl Makefile.PL';
+        run(qw!git add Makefile.PL!);
+        like run( qw!git commit -m!, 'add Makefile.PL' ),
+          qr/add Makefile.PL/sm,
+          'make run';
+        ok -e 'Makefile', 'perl Makefile.PL';
 
-    unlink 'Makefile';
-    run(qw!git reset HEAD^!);
-    run(qw!git add Makefile.PL!);
-    like run(
-        qw!git commit -m!,
-        { env => { PERLTIDY_MAKE => '' } },
-        'add Makefile.PL'
-      ),
-      qr/add Makefile.PL/sm,
-      'no make run';
-    ok !-e 'Makefile', 'no perl Makefile.PL';
-}
+        unlink 'Makefile';
+        run(qw!git reset HEAD^!);
+        run(qw!git add Makefile.PL!);
+        like run(
+            qw!git commit -m!,
+            { env => { PERLTIDY_MAKE => '' } },
+            'add Makefile.PL'
+          ),
+          qr/add Makefile.PL/sm,
+          'no make run';
+        ok !-e 'Makefile', 'no perl Makefile.PL';
+    }
 
+};
 done_testing();
 

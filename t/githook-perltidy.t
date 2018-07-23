@@ -193,8 +193,11 @@ in_tempdir $test => sub {
     is_file( '5', '5.perltidy', 'detect #!perl' );
 
     copy_src( 'perltidyrc', '.perltidyrc.sweetened' );
-    like exception { run( $githook_perltidy, qw!pre-commit! ) },
+    like exception { run( $githook_perltidy, qw!install! ) },
+      qr/\.perltidyrc/, '.perltidyrc.sweetened uncommitted';
+    like exception { add_commit('.perltidyrc.sweetened') },
       qr/incompatible/, '.perltidyrc[.sweetened] incompatible';
+    run(qw!git reset!);
     unlink '.perltidyrc.sweetened';
 
     # .podtidy-opts

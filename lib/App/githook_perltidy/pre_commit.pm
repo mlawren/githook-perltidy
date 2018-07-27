@@ -66,6 +66,7 @@ sub run {
     my @perlfiles = ();
     my %partial   = ();
 
+    return if $ENV{NO_GITHOOK_PERLTIDY};
     $temp_dir = Path::Tiny->tempdir('githook-perltidy-XXXXXXXX');
 
     # Use the -z flag to get clean filenames with no escaping or quoting

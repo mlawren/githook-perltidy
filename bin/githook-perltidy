@@ -161,6 +161,17 @@ Automatic README config file. This is githook-perltidy specific.
 
 =back
 
+=head1 ENVIRONMENT
+
+=over
+
+=item NO_GITHOOK_PERLTIDY
+
+Setting this to 1 makes B<githook-perltidy> a no-op. Useful if you want
+to make a non-tidy commit.
+
+=back
+
 =head1 SUPPORT
 
 This tool is managed via github:

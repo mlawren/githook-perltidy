@@ -9,6 +9,7 @@
     Enhancements:
         - Minor documentation updates
         - Minor code clarity improvements
+        - Skip checks when NO_GITHOOK_PERLTIDY is set
 
     Bug Fixes:
         - None.

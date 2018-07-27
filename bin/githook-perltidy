@@ -95,28 +95,43 @@ F<$GIT_DIR/hooks/> directory.
 This command fails if there is no F<.perltidyrc> or
 F<.perltidyrc.sweetened> file in the repository or if the hooks
 directory isn't found. It will also fail if the Git F<pre-commit>
-already file exists, unless C<--force> is used.
+already file exists, unless C<--force> is used to replace it.
 
 =head2 githook-perltidy pre-commit
 
 The C<pre-commit> command loops through the Git index, checking out
-Perl/POD files to a temporary working directory. It runs L<perltidy> on
-the temporary Perl files using F<.perltidyrc> or
-F<.perltidyrc.sweetened>. If F<.podtidy-opts> exists then L<podtidy> is
-also run on Perl and POD files.  The Git index is updated along with
-your original working files.
+files to a temporary working directory. For each temporary file it
+then:
 
-A tidying error stops the script (and therefore the commit)
-immediately. Any successful cleanups to the index and working tree up
-until that point remain in place.
+=over
 
-This command fails if there is no F<.perltidyrc> or
-F<.perltidyrc.sweetened> file in the repository.
+=item * Runs L<perlcritic> if it is a Perl file and F<.perlcriticrc> exists.
 
-If F<.readme_from> exists and the file named therein is tidied, then
+=item * Runs L<perltidy> if it is a Perl file, unless
+L<.perltidy-sweet> exists in which case L<perltidy-sweet> is run instead.
+
+=item * Runs L<podtidy> if it is a Perl or a Pod file and
+F<.podtidy-opts> exists.
+
+=item * Updates the Git index (C<git add $TEMP_FILE>)
+
+=item * Runs L<perltidy> and/or L<podtidy> on your working tree file of
+the same name. This prevents future C<git diff> calls from showing
+diffs where there won't actually be any.
+
+=item * If F<.readme_from> exists and the file named therein is tidied, then
 B<githook-perltidy> translates it with L<Pod::Text> into a new README
 file. If the README file is tracked by Git then it is also added it to
 the index for committing.
+
+=back
+
+Any tidying or critique error stops the script (and therefore the
+commit) immediately. Any successful cleanups to the index and working
+tree up until that point remain in place.
+
+This command fails if there is no F<.perltidyrc> or
+F<.perltidyrc.sweetened> file in the repository.
 
 =head1 GLOBAL OPTIONS
 

@@ -68,26 +68,37 @@ DESCRIPTION
 
     This command fails if there is no .perltidyrc or .perltidyrc.sweetened
     file in the repository or if the hooks directory isn't found. It will also
-    fail if the Git pre-commit already file exists, unless "--force" is used.
+    fail if the Git pre-commit already file exists, unless "--force" is used
+    to replace it.
 
   githook-perltidy pre-commit
-    The "pre-commit" command loops through the Git index, checking out
-    Perl/POD files to a temporary working directory. It runs perltidy on the
-    temporary Perl files using .perltidyrc or .perltidyrc.sweetened. If
-    .podtidy-opts exists then podtidy is also run on Perl and POD files. The
-    Git index is updated along with your original working files.
+    The "pre-commit" command loops through the Git index, checking out files
+    to a temporary working directory. For each temporary file it then:
 
-    A tidying error stops the script (and therefore the commit) immediately.
-    Any successful cleanups to the index and working tree up until that point
-    remain in place.
+    *   Runs perlcritic if it is a Perl file and .perlcriticrc exists.
+
+    *   Runs perltidy if it is a Perl file, unless .perltidy-sweet exists in
+        which case perltidy-sweet is run instead.
+
+    *   Runs podtidy if it is a Perl or a Pod file and .podtidy-opts exists.
+
+    *   Updates the Git index ("git add $TEMP_FILE")
+
+    *   Runs perltidy and/or podtidy on your working tree file of the same
+        name. This prevents future "git diff" calls from showing diffs where
+        there won't actually be any.
+
+    *   If .readme_from exists and the file named therein is tidied, then
+        githook-perltidy translates it with Pod::Text into a new README file.
+        If the README file is tracked by Git then it is also added it to the
+        index for committing.
+
+    Any tidying or critique error stops the script (and therefore the commit)
+    immediately. Any successful cleanups to the index and working tree up
+    until that point remain in place.
 
     This command fails if there is no .perltidyrc or .perltidyrc.sweetened
     file in the repository.
-
-    If .readme_from exists and the file named therein is tidied, then
-    githook-perltidy translates it with Pod::Text into a new README file. If
-    the README file is tracked by Git then it is also added it to the index
-    for committing.
 
 GLOBAL OPTIONS
     --verbose, -v

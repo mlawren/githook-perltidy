@@ -8,6 +8,8 @@ requires 'Perl::Tidy'     => 0;
 requires 'Pod::Text'      => 0;
 requires 'Pod::Tidy'      => 0;
 
+recommends 'Pod::Tidy::Sweetened' => 0;
+
 on 'test' => sub {
     test_requires 'FindBin'             => 0;
     test_requires 'Path::Tiny'          => 0;

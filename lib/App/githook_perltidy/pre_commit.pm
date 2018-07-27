@@ -1,13 +1,12 @@
 package App::githook_perltidy::pre_commit;
 use strict;
 use warnings;
+use feature 'state';
 use parent 'App::githook_perltidy';
 use File::Copy;
 use Path::Tiny;
-use Perl::Tidy;
-use Pod::Tidy;
 
-our $VERSION = '0.11.11_1';
+our $VERSION = '0.11.11_2';
 
 my $temp_dir;
 
@@ -25,6 +24,17 @@ sub perl_tidy {
     die ".perltidyrc not in repository.\n" unless $self->{perltidyrc};
 
     print "  $self->{me}: perltidy INDEX/$file\n" if $self->{opts}->{verbose};
+
+    if ( !$self->{perltidy} ) {
+        if ( $self->{sweetened} ) {
+            require Perl::Tidy::Sweetened;
+            $self->{perltidy} = \&Perl::Tidy::Sweetened::perltidy;
+        }
+        else {
+            require Perl::Tidy;
+            $self->{perltidy} = \&Perl::Tidy::perltidy;
+        }
+    }
 
     my $errormsg;
 
@@ -50,6 +60,8 @@ sub pod_tidy {
 
     die ".podtidy-opts not in repository.\n" unless $self->{podtidyrc};
 
+    state $junk = require Pod::Tidy;
+
     Pod::Tidy::tidy_files(
         files     => [$tmp_file],
         recursive => 0,
@@ -61,11 +73,33 @@ sub pod_tidy {
     );
 }
 
+sub perl_critic {
+    my $self     = shift;
+    my $file     = shift || die 'perl_critic($FILE, $tmp_file)';
+    my $tmp_file = shift || die 'perl_critic($file, $TMP_FILE)';
+
+    die ".perlcriticrc not in repository.\n" unless $self->{perlcriticrc};
+
+    state $junk = require Perl::Critic;
+
+    print "  $self->{me}: perlcritic INDEX/$file\n" if $self->{opts}->{verbose};
+
+    my @violations =
+      Perl::Critic::critique( { -profile => $self->{perlcriticrc}->stringify },
+        $tmp_file->stringify );
+
+    if (@violations) {
+        $self->lprint('');
+        die $self->{me} . ': ' . $file . ":\n" . join( '', @violations );
+    }
+}
+
 sub run {
     my $self      = shift;
     my @perlfiles = ();
     my %partial   = ();
 
+    return if $ENV{NO_GITHOOK_PERLTIDY};
     $temp_dir = Path::Tiny->tempdir('githook-perltidy-XXXXXXXX');
 
     # Use the -z flag to get clean filenames with no escaping or quoting
@@ -106,14 +140,6 @@ sub run {
         exit 0;
     }
 
-    if ( $self->{sweetened} ) {
-        require Perl::Tidy::Sweetened;
-        $self->{perltidy} = \&Perl::Tidy::Sweetened::perltidy;
-    }
-    else {
-        $self->{perltidy} = \&Perl::Tidy::perltidy;
-    }
-
     print "  $self->{me}: no .podtidy-opts - skipping podtidy calls\n"
       if $self->{opts}->{verbose} and not $self->{podtidyrc};
 
@@ -124,6 +150,14 @@ sub run {
             $self->{me} . ': (' . $i++ . '/' . $total . ') ' . $file );
 
         my $tmp_file = $temp_dir->child($file);
+
+        # Critique first to avoid unecessary tidying
+        if ( $self->{perlcriticrc} ) {
+            print "  $self->{me}: perlcritic INDEX/$file\n"
+              if $self->{opts}->{verbose};
+
+            $self->perl_critic( $file, $tmp_file );
+        }
 
         if ( $self->{podtidyrc} ) {
             print "  $self->{me}: podtidy INDEX/$file\n"
@@ -223,7 +257,7 @@ App::githook_perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.11.11_1 (2018-07-17)
+0.11.11_2 (2018-07-27)
 
 =head1 SEE ALSO
 

@@ -5,7 +5,7 @@ use File::Basename;
 use OptArgs2;
 use Path::Tiny;
 
-our $VERSION = '0.11.11_1';
+our $VERSION = '0.11.11_2';
 
 cmd 'App::githook_perltidy' => (
     comment => 'tidy perl and pod files before Git commits',
@@ -61,15 +61,18 @@ subcmd 'App::githook_perltidy::post_commit' => (
     hidden  => 1,
 );
 
-sub check_committed {
+sub have_committed {
     my $file = shift;
 
-    if (
-        system( 'git ls-files --error-unmatch ' . $file . ' > /dev/null 2>&1' )
-        != 0 )
-    {
-        die $file->basename . " is not committed.\n";
+    if ( -e $file ) {
+        die $file->basename . " is not committed.\n"
+          unless system(
+            'git ls-files --error-unmatch ' . $file . ' > /dev/null 2>&1' ) ==
+          0;
+
+        return 1;
     }
+    return 0;
 }
 
 sub new {
@@ -93,23 +96,21 @@ sub new {
     my $perltidyrc   = $repo->child('.perltidyrc');
     my $perltidyrc_s = $repo->child('.perltidyrc.sweetened');
     my $podtidyrc    = $repo->child('.podtidy-opts');
+    my $perlcriticrc = $repo->child('.perlcriticrc');
     my $readme_from  = $repo->child('.readme_from');
 
-    if ( -e $perltidyrc ) {
-        die ".perltidyrc and .perltidyrc.sweetened are incompatible\n"
-          if ( -e $perltidyrc_s );
-
-        check_committed($perltidyrc);
+    if ( have_committed($perltidyrc) ) {
         $self->{perltidyrc} = $perltidyrc;
+
+        die ".perltidyrc and .perltidyrc.sweetened are incompatible\n"
+          if have_committed($perltidyrc_s);
     }
-    elsif ( -e $perltidyrc_s ) {
-        check_committed($perltidyrc_s);
+    elsif ( have_committed($perltidyrc_s) ) {
         $self->{perltidyrc} = $perltidyrc_s;
         $self->{sweetened}  = 1;
     }
 
-    if ( -e $podtidyrc ) {
-        check_committed($podtidyrc);
+    if ( have_committed($podtidyrc) ) {
         $self->{podtidyrc} = $podtidyrc;
         my $pod_opts = {};
 
@@ -124,11 +125,14 @@ sub new {
     }
 
     $self->{readme_from} = '';
-    if ( -e $readme_from ) {
-        check_committed($readme_from);
+    if ( have_committed($readme_from) ) {
 
         ( $self->{readme_from} ) =
           path($readme_from)->lines( { chomp => 1, count => 1 } );
+    }
+
+    if ( have_committed($perlcriticrc) ) {
+        $self->{perlcriticrc} = $perlcriticrc;
     }
 
     $self;
@@ -188,7 +192,7 @@ App::githook_perltidy - OptArgs2 module for githook-perltidy.
 
 =head1 VERSION
 
-0.11.11_1 (2018-07-17)
+0.11.11_2 (2018-07-27)
 
 =head1 SEE ALSO
 

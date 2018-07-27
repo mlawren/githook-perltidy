@@ -13,6 +13,7 @@ use Test::TempDir::Tiny;
 use Time::Piece;
 
 my $sweetened = eval { require Perl::Tidy::Sweetened };
+my $critic    = eval { require Perl::Critic };
 
 plan skip_all => 'No Git' unless eval { run(qw!git --version!); 1; };
 
@@ -34,6 +35,7 @@ sub copy_src {
     my $dest = shift || die 'copy_src($file, $DEST)';
     copy( $srcdir->child($file), $dest ) or die "copy: $!";
 
+    return if $dest =~ m/^\./;
     my $errormsg;
 
     if ( -e '.perltidyrc' ) {
@@ -115,7 +117,6 @@ sub copy_src {
 sub add_commit {
     my $file = shift || die 'add_commit($FILE)';
 
-    run(qw!git reset!);
     run( qw!git add!,       $file );
     run( qw!git commit -m!, 'add ' . $file );
 
@@ -187,14 +188,18 @@ in_tempdir $test => sub {
     is_file( '4.pm', $srcdir->child('junk'), 'bad commit keeps working file' );
 
     like run(qw!git status --porcelain!), qr/^A\s+4.pm$/sm, 'kept index status';
+    run(qw!git reset!);
 
     copy_src( 'untidy_perl', '5' );
     add_commit('5');
     is_file( '5', '5.perltidy', 'detect #!perl' );
 
     copy_src( 'perltidyrc', '.perltidyrc.sweetened' );
-    like exception { run( $githook_perltidy, qw!pre-commit! ) },
+    like exception { run( $githook_perltidy, qw!install! ) },
+      qr/\.perltidyrc/, '.perltidyrc.sweetened uncommitted';
+    like exception { add_commit('.perltidyrc.sweetened') },
       qr/incompatible/, '.perltidyrc[.sweetened] incompatible';
+    run(qw!git reset!);
     unlink '.perltidyrc.sweetened';
 
     # .podtidy-opts
@@ -221,12 +226,28 @@ in_tempdir $test => sub {
         is_file( '7.pl', '7.pl.perlspodtidy', 'sweet .pl' );
     }
 
+    # perlcritic
+    if ($critic) {
+        copy_src( 'perlcriticrc',  '.perlcriticrc' );
+        copy_src( 'uncritic_perl', '8.pl' );
+
+        like exception { add_commit('8.pl') },
+          qr/\.perlcriticrc/, '.perlcriticrc uncommitted';
+
+        run(qw!git reset!);
+        add_commit('.perlcriticrc');
+        like exception { add_commit('8.pl'); }, qr/strictures/, 'perlcritic';
+        run(qw!git reset!);
+    }
+
   SKIP: {
         skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };
 
         $pre_commit->remove;
 
         path('Makefile.PL')->spew_utf8( "
+use strict;
+use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(

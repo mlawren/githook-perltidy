@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.11.11_1 (2018-07-17)
+    0.11.11_2 (2018-07-27)
 
 SYNOPSIS
         githook-perltidy COMMAND [OPTIONS...]
@@ -18,8 +18,9 @@ DESCRIPTION
     your own working files are not left in a bad state in the event of
     failure.
 
+  Repository Setup
     Before you can use githook-perltidy you need to make sure everyone
-    working on your code uses the the same tidy options:
+    working on your code uses the the same Perl::Tidy and Pod::Tidy options:
 
         $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
         $ echo '--columns 72' > .podtidy-opts
@@ -28,15 +29,24 @@ DESCRIPTION
         $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
         $ git commit -m 'githook-perltidy support' && git push
 
-    You may prefer to tidy with Perl::Tidy::Sweetend instead of plain
-    Perl::Tidy. To enable that you use .perltidyrc.sweetened instead of
-    .perltidyrc. githook-perltidy does not depend on Perl::Tidy::Sweetend
-    directly so you will want to add that as an explicit "develop"
-    dependency in your cpanfile, Makefile.PL or Build.PL.
+   Sweeter Tidying
+    You may prefer to tidy with Perl::Tidy::Sweetened instead of plain
+    Perl::Tidy. To enable that you commit a .perltidyrc.sweetened file
+    instead of .perltidyrc. githook-perltidy does not depend on
+    Perl::Tidy::Sweetened directly so you will want to add that as an
+    explicit "develop" dependency in your cpanfile, Makefile.PL or Build.PL.
 
-    githook-perltidy has an automatic README-from-POD feature. To enable it
-    you create and commit a file called .readme_from containing the name of
-    a source file containing POD text:
+   Critical Checks
+    You may additionally wish to have Perl::Critic run against your commits.
+    To enable that you simply commit a .perlcriticrc file to the repository.
+    githook-perltidy does not depend on Perl::Critic directly so you will
+    want to add that as an explicit "develop" dependency in your cpanfile,
+    Makefile.PL or Build.PL.
+
+   README from POD
+    githook-perltidy also has an automatic README-from-POD feature. To
+    enable it you create and commit a file called .readme_from containing
+    the name of the source file containing POD text:
 
         $ echo 'lib/Your/App.pm' > .readme_from
         $ echo '^\.readme_from' >> MANIFEST.SKIP
@@ -61,26 +71,36 @@ DESCRIPTION
     This command fails if there is no .perltidyrc or .perltidyrc.sweetened
     file in the repository or if the hooks directory isn't found. It will
     also fail if the Git pre-commit already file exists, unless "--force" is
-    used.
+    used to replace it.
 
   githook-perltidy pre-commit
-    The "pre-commit" command loops through the Git index, checking out
-    Perl/POD files to a temporary working directory. It runs perltidy on the
-    temporary Perl files using .perltidyrc or .perltidyrc.sweetened. If
-    .podtidy-opts exists then podtidy is also run on Perl and POD files. The
-    Git index is updated along with your original working files.
+    The "pre-commit" command loops through the Git index, checking out files
+    to a temporary working directory. For each temporary file it then:
 
-    A tidying error stops the script (and therefore the commit) immediately.
-    Any successful cleanups to the index and working tree up until that
-    point remain in place.
+    *   Runs perlcritic if it is a Perl file and .perlcriticrc exists.
+
+    *   Runs perltidy if it is a Perl file, unless .perltidy-sweet exists in
+        which case perltidy-sweet is run instead.
+
+    *   Runs podtidy if it is a Perl or a Pod file and .podtidy-opts exists.
+
+    *   Updates the Git index ("git add $TEMP_FILE")
+
+    *   Runs perltidy and/or podtidy on your working tree file of the same
+        name. This prevents future "git diff" calls from showing diffs where
+        there won't actually be any.
+
+    *   If .readme_from exists and the file named therein is tidied, then
+        githook-perltidy translates it with Pod::Text into a new README
+        file. If the README file is tracked by Git then it is also added it
+        to the index for committing.
+
+    Any tidying or critique error stops the script (and therefore the
+    commit) immediately. Any successful cleanups to the index and working
+    tree up until that point remain in place.
 
     This command fails if there is no .perltidyrc or .perltidyrc.sweetened
     file in the repository.
-
-    If .readme_from exists and the file named therein is tidied, then
-    githook-perltidy translates it with Pod::Text into a new README file. If
-    the README file is tracked by Git then it is also added it to the index
-    for committing.
 
 GLOBAL OPTIONS
     --verbose, -v
@@ -112,6 +132,11 @@ FILES
 
     .readme_from
         Automatic README config file. This is githook-perltidy specific.
+
+ENVIRONMENT
+    NO_GITHOOK_PERLTIDY
+        Setting this to 1 makes githook-perltidy a no-op. Useful if you want
+        to make a non-tidy commit.
 
 SUPPORT
     This tool is managed via github:

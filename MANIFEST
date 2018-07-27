@@ -13,8 +13,10 @@ t/App/githook_perltidy/post_commit.t
 t/App/githook_perltidy/pre_commit.t
 t/githook-perltidy.t
 t/src/junk
+t/src/perlcriticrc
 t/src/perltidyrc
 t/src/podtidy-opts
+t/src/uncritic_perl
 t/src/untidy
 t/src/untidy_perl
 t/src/untidy_pod

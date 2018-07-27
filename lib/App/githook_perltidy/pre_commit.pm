@@ -61,6 +61,25 @@ sub pod_tidy {
     );
 }
 
+sub perl_critic {
+    my $self     = shift;
+    my $file     = shift || die 'perl_critic($FILE, $tmp_file)';
+    my $tmp_file = shift || die 'perl_critic($file, $TMP_FILE)';
+
+    die ".perlcriticrc not in repository.\n" unless $self->{perlcriticrc};
+
+    print "  $self->{me}: perlcritic INDEX/$file\n" if $self->{opts}->{verbose};
+
+    my @violations =
+      Perl::Critic::critique( { -profile => $self->{perlcriticrc}->stringify },
+        $tmp_file->stringify );
+
+    if (@violations) {
+        $self->lprint('');
+        die $self->{me} . ': ' . $file . ":\n" . join( '', @violations );
+    }
+}
+
 sub run {
     my $self      = shift;
     my @perlfiles = ();
@@ -115,6 +134,10 @@ sub run {
         $self->{perltidy} = \&Perl::Tidy::perltidy;
     }
 
+    if ( $self->{perlcriticrc} ) {
+        require Perl::Critic;
+    }
+
     print "  $self->{me}: no .podtidy-opts - skipping podtidy calls\n"
       if $self->{opts}->{verbose} and not $self->{podtidyrc};
 
@@ -125,6 +148,14 @@ sub run {
             $self->{me} . ': (' . $i++ . '/' . $total . ') ' . $file );
 
         my $tmp_file = $temp_dir->child($file);
+
+        # Critique first to avoid unecessary tidying
+        if ( $self->{perlcriticrc} ) {
+            print "  $self->{me}: perlcritic INDEX/$file\n"
+              if $self->{opts}->{verbose};
+
+            $self->perl_critic( $file, $tmp_file );
+        }
 
         if ( $self->{podtidyrc} ) {
             print "  $self->{me}: podtidy INDEX/$file\n"

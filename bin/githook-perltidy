@@ -57,6 +57,14 @@ L<Perl::Tidy::Sweetened> directly so you will want to add that as an
 explicit "develop" dependency in your F<cpanfile>, F<Makefile.PL> or
 F<Build.PL>.
 
+=head3 Critical Checks
+
+You may additionally wish to have L<Perl::Critic> run against your
+commits.  To enable that you simply commit a F<.perlcriticrc> file to
+the repository.  B<githook-perltidy> does not depend on L<Perl::Critic>
+directly so you will want to add that as an explicit "develop"
+dependency in your F<cpanfile>, F<Makefile.PL> or F<Build.PL>.
+
 =head3 README from POD
 
 B<githook-perltidy> also has an automatic README-from-POD feature. To

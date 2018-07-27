@@ -13,6 +13,7 @@ use Test::TempDir::Tiny;
 use Time::Piece;
 
 my $sweetened = eval { require Perl::Tidy::Sweetened };
+my $critic    = eval { require Perl::Critic };
 
 plan skip_all => 'No Git' unless eval { run(qw!git --version!); 1; };
 
@@ -225,12 +226,28 @@ in_tempdir $test => sub {
         is_file( '7.pl', '7.pl.perlspodtidy', 'sweet .pl' );
     }
 
+    # perlcritic
+    if ($critic) {
+        copy_src( 'perlcriticrc',  '.perlcriticrc' );
+        copy_src( 'uncritic_perl', '8.pl' );
+
+        like exception { add_commit('8.pl') },
+          qr/\.perlcriticrc/, '.perlcriticrc uncommitted';
+
+        run(qw!git reset!);
+        add_commit('.perlcriticrc');
+        like exception { add_commit('8.pl'); }, qr/strictures/, 'perlcritic';
+        run(qw!git reset!);
+    }
+
   SKIP: {
         skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };
 
         $pre_commit->remove;
 
         path('Makefile.PL')->spew_utf8( "
+use strict;
+use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(

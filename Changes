@@ -4,7 +4,7 @@
         - None.
 
     New Features:
-        - None.
+        - Add support for Perl::Critic checks
 
     Enhancements:
         - Minor documentation updates

@@ -35,6 +35,13 @@ DESCRIPTION
     directly so you will want to add that as an explicit "develop" dependency
     in your cpanfile, Makefile.PL or Build.PL.
 
+   Critical Checks
+    You may additionally wish to have Perl::Critic run against your commits.
+    To enable that you simply commit a .perlcriticrc file to the repository.
+    githook-perltidy does not depend on Perl::Critic directly so you will want
+    to add that as an explicit "develop" dependency in your cpanfile,
+    Makefile.PL or Build.PL.
+
    README from POD
     githook-perltidy also has an automatic README-from-POD feature. To enable
     it you create and commit a file called .readme_from containing the name of

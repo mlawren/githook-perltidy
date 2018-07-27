@@ -96,6 +96,7 @@ sub new {
     my $perltidyrc   = $repo->child('.perltidyrc');
     my $perltidyrc_s = $repo->child('.perltidyrc.sweetened');
     my $podtidyrc    = $repo->child('.podtidy-opts');
+    my $perlcriticrc = $repo->child('.perlcriticrc');
     my $readme_from  = $repo->child('.readme_from');
 
     if ( have_committed($perltidyrc) ) {
@@ -128,6 +129,10 @@ sub new {
 
         ( $self->{readme_from} ) =
           path($readme_from)->lines( { chomp => 1, count => 1 } );
+    }
+
+    if ( have_committed($perlcriticrc) ) {
+        $self->{perlcriticrc} = $perlcriticrc;
     }
 
     $self;

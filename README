@@ -19,7 +19,7 @@ DESCRIPTION
 
   Repository Setup
     Before you can use githook-perltidy you need to make sure everyone working
-    on your code uses the the same tidy options:
+    on your code uses the the same Perl::Tidy and Pod::Tidy options:
 
         $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
         $ echo '--columns 72' > .podtidy-opts
@@ -28,17 +28,17 @@ DESCRIPTION
         $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
         $ git commit -m 'githook-perltidy support' && git push
 
-  Sweeter Tidying
+   Sweeter Tidying
     You may prefer to tidy with Perl::Tidy::Sweetened instead of plain
     Perl::Tidy. To enable that you commit a .perltidyrc.sweetened file instead
-    of .perltidyrc. githook-perltidy does not depend on Perl::Tidy::Sweetend
+    of .perltidyrc. githook-perltidy does not depend on Perl::Tidy::Sweetened
     directly so you will want to add that as an explicit "develop" dependency
     in your cpanfile, Makefile.PL or Build.PL.
 
-  Automatic README from POD
+   README from POD
     githook-perltidy also has an automatic README-from-POD feature. To enable
     it you create and commit a file called .readme_from containing the name of
-    a source file containing POD text:
+    the source file containing POD text:
 
         $ echo 'lib/Your/App.pm' > .readme_from
         $ echo '^\.readme_from' >> MANIFEST.SKIP

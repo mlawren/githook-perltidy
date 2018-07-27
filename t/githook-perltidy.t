@@ -34,6 +34,7 @@ sub copy_src {
     my $dest = shift || die 'copy_src($file, $DEST)';
     copy( $srcdir->child($file), $dest ) or die "copy: $!";
 
+    return if $dest =~ m/^\./;
     my $errormsg;
 
     if ( -e '.perltidyrc' ) {
@@ -115,7 +116,6 @@ sub copy_src {
 sub add_commit {
     my $file = shift || die 'add_commit($FILE)';
 
-    run(qw!git reset!);
     run( qw!git add!,       $file );
     run( qw!git commit -m!, 'add ' . $file );
 
@@ -187,6 +187,7 @@ in_tempdir $test => sub {
     is_file( '4.pm', $srcdir->child('junk'), 'bad commit keeps working file' );
 
     like run(qw!git status --porcelain!), qr/^A\s+4.pm$/sm, 'kept index status';
+    run(qw!git reset!);
 
     copy_src( 'untidy_perl', '5' );
     add_commit('5');

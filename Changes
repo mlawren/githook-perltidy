@@ -1,7 +1,4 @@
-0.11.11_2 (yyyy-mm-dd)
-
-    API / Behaviour Changes:
-        - None.
+0.11.11_2 (2018-07-27)
 
     New Features:
         - Add support for Perl::Critic checks
@@ -11,9 +8,6 @@
         - Minor code clarity improvements
         - Skip checks when NO_GITHOOK_PERLTIDY is set
         - Finish faster when no tidying needed
-
-    Bug Fixes:
-        - None.
 
     Dependencies:
         - Add Perl::Tidy::Sweetened as a runtime "recommends"

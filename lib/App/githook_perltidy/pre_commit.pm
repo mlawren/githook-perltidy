@@ -1,11 +1,10 @@
 package App::githook_perltidy::pre_commit;
 use strict;
 use warnings;
+use feature 'state';
 use parent 'App::githook_perltidy';
 use File::Copy;
 use Path::Tiny;
-use Perl::Tidy;
-use Pod::Tidy;
 
 our $VERSION = '0.11.11_2';
 
@@ -25,6 +24,17 @@ sub perl_tidy {
     die ".perltidyrc not in repository.\n" unless $self->{perltidyrc};
 
     print "  $self->{me}: perltidy INDEX/$file\n" if $self->{opts}->{verbose};
+
+    if ( !$self->{perltidy} ) {
+        if ( $self->{sweetened} ) {
+            require Perl::Tidy::Sweetened;
+            $self->{perltidy} = \&Perl::Tidy::Sweetened::perltidy;
+        }
+        else {
+            require Perl::Tidy;
+            $self->{perltidy} = \&Perl::Tidy::perltidy;
+        }
+    }
 
     my $errormsg;
 
@@ -50,6 +60,8 @@ sub pod_tidy {
 
     die ".podtidy-opts not in repository.\n" unless $self->{podtidyrc};
 
+    state $junk = require Pod::Tidy;
+
     Pod::Tidy::tidy_files(
         files     => [$tmp_file],
         recursive => 0,
@@ -67,6 +79,8 @@ sub perl_critic {
     my $tmp_file = shift || die 'perl_critic($file, $TMP_FILE)';
 
     die ".perlcriticrc not in repository.\n" unless $self->{perlcriticrc};
+
+    state $junk = require Perl::Critic;
 
     print "  $self->{me}: perlcritic INDEX/$file\n" if $self->{opts}->{verbose};
 
@@ -124,18 +138,6 @@ sub run {
     unless (@perlfiles) {
         $self->lprint("$self->{me}: (0)\n");
         exit 0;
-    }
-
-    if ( $self->{sweetened} ) {
-        require Perl::Tidy::Sweetened;
-        $self->{perltidy} = \&Perl::Tidy::Sweetened::perltidy;
-    }
-    else {
-        $self->{perltidy} = \&Perl::Tidy::perltidy;
-    }
-
-    if ( $self->{perlcriticrc} ) {
-        require Perl::Critic;
     }
 
     print "  $self->{me}: no .podtidy-opts - skipping podtidy calls\n"

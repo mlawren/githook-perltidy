@@ -10,6 +10,7 @@
         - Minor documentation updates
         - Minor code clarity improvements
         - Skip checks when NO_GITHOOK_PERLTIDY is set
+        - Finish faster when no tidying needed
 
     Bug Fixes:
         - None.

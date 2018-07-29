@@ -169,24 +169,24 @@ files on disk and in the index.
 
 =item F<.perltidyrc>
 
-Perltidy command options file.
+L<Perl::Tidy> options file.
 
 =item F<.perltidyrc.sweetend>
 
-Perltidier (L<Perl::Tidy::Sweetened>) command options file. Conflicts
-with F<.perltidyrc>.
+L<Perl::Tidy::Sweetened> options file. Conflicts with F<.perltidyrc>.
 
 =item F<.podtidy-opts>
 
-Podtidy command options file. This is githook-perltidy specific.
+L<Pod::Tidy> options file. This is B<githook-perltidy> specific.
 
 =item F<.perlcriticrc>
 
-Perlcritic command options file.
+L<Perl::Critic> options file.
 
 =item F<.readme_from>
 
-Automatic README config file. This is githook-perltidy specific.
+Contains name of POD file to convert to a text README file. This is
+B<githook-perltidy> specific.
 
 =back
 
@@ -209,7 +209,7 @@ This tool is managed via github:
 
 =head1 SEE ALSO
 
-L<githooks>(5), L<perltidy>(1), L<podtidy>(1)
+L<githooks>(5), L<perltidy>(1), L<podtidy>(1), L<perlcritic>(1)
 
 =head1 AUTHOR
 

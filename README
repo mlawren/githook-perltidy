@@ -118,20 +118,20 @@ CAVEATS
 
 FILES
     .perltidyrc
-        Perltidy command options file.
+        Perl::Tidy options file.
 
     .perltidyrc.sweetend
-        Perltidier (Perl::Tidy::Sweetened) command options file. Conflicts
-        with .perltidyrc.
+        Perl::Tidy::Sweetened options file. Conflicts with .perltidyrc.
 
     .podtidy-opts
-        Podtidy command options file. This is githook-perltidy specific.
+        Pod::Tidy options file. This is githook-perltidy specific.
 
     .perlcriticrc
-        Perlcritic command options file.
+        Perl::Critic options file.
 
     .readme_from
-        Automatic README config file. This is githook-perltidy specific.
+        Contains name of POD file to convert to a text README file. This is
+        githook-perltidy specific.
 
 ENVIRONMENT
     NO_GITHOOK_PERLTIDY
@@ -144,7 +144,7 @@ SUPPORT
         https://github.com/mlawren/githook-perltidy
 
 SEE ALSO
-    githooks(5), perltidy(1), podtidy(1)
+    githooks(5), perltidy(1), podtidy(1), perlcritic(1)
 
 AUTHOR
     Mark Lawrence <nomad@null.net>

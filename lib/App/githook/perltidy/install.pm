@@ -1,11 +1,11 @@
-package App::githook_perltidy::install;
+package App::githook::perltidy::install;
 use strict;
 use warnings;
-use parent 'App::githook_perltidy';
+use parent 'App::githook::perltidy';
 use File::Basename;
 use Path::Tiny;
 
-our $VERSION = '0.11.11_3';
+our $VERSION = '0.11.11_4';
 
 sub run {
     my $self = shift;
@@ -34,11 +34,11 @@ __END__
 
 =head1 NAME
 
-App::githook_perltidy::install - install git hooks
+App::githook::perltidy::install - install git hooks
 
 =head1 VERSION
 
-0.11.11_3 (2018-07-31)
+0.11.11_4 (2018-07-31)
 
 =head1 SEE ALSO
 

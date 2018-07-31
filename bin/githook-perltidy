@@ -1,9 +1,9 @@
 #!perl
 use strict;
-use App::githook_perltidy;
+use App::githook::perltidy;
 use OptArgs2 qw/class_optargs/;
 
-my ( $class, $opts ) = class_optargs('App::githook_perltidy');
+my ( $class, $opts ) = class_optargs('App::githook::perltidy');
 eval "require $class" or die $@;
 $class->new($opts)->run;
 
@@ -16,7 +16,7 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
-0.11.11_3 (2018-07-31)
+0.11.11_4 (2018-07-31)
 
 =head1 SYNOPSIS
 
@@ -47,6 +47,11 @@ options:
     $ echo '^\.podtidy-ops' >> MANIFEST.SKIP
     $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
     $ git commit -m 'githook-perltidy support' && git push
+
+You should also add L<App::githook::perltidy> as an explicit "develop"
+dependency in your F<cpanfile>, F<Makefile.PL> or F<Build.PL>, so that
+B<githook-perltidy> gets installed when developers install the rest of
+your project's dependencies.
 
 =head3 Sweeter Tidying
 
@@ -113,14 +118,8 @@ like a Perl or Pod file it:
 =item * Updates the Git index with the tidied file.
 
 =item * Creates a new F<README> file using L<Pod::Text> if the tidied
-file matches F<.readme_from>.
-
-=over
-
-=item * Adds the new F<README> file to the Git index if it is being
-tracked in the repository.
-
-=back
+file matches F<.readme_from>. The F<README> file gets committed if it
+is already being tracked by Git.
 
 =item * Runs L<perltidy> and/or L<podtidy> on your working
 tree file. This prevents C<git diff> from displaying an eroneous diff.
@@ -223,4 +222,5 @@ This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the
 Free Software Foundation; either version 3 of the License, or (at your
 option) any later version.
+
 

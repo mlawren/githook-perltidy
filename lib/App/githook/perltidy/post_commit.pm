@@ -1,9 +1,9 @@
-package App::githook_perltidy::post_commit;
+package App::githook::perltidy::post_commit;
 use strict;
 use warnings;
-use parent 'App::githook_perltidy';
+use parent 'App::githook::perltidy';
 
-our $VERSION = '0.11.11_3';
+our $VERSION = '0.11.11_4';
 
 sub run {
 
@@ -15,11 +15,11 @@ __END__
 
 =head1 NAME
 
-App::githook_perltidy::post_commit - git post-commit hook
+App::githook::perltidy::post_commit - git post-commit hook
 
 =head1 VERSION
 
-0.11.11_3 (2018-07-31)
+0.11.11_4 (2018-07-31)
 
 =head1 DESCRIPTION
 

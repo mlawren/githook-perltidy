@@ -8,7 +8,13 @@ requires 'Perl::Tidy'     => 0;
 requires 'Pod::Text'      => 0;
 requires 'Pod::Tidy'      => 0;
 
-recommends 'Pod::Tidy::Sweetened' => 0;
+suggests 'Pod::Tidy::Sweetened' => 0;
+suggests 'Perl::Critic'         => 0;
+
+on 'develop' => sub {
+    requires 'Pod::Tidy::Sweetened' => 0;
+    requires 'Perl::Critic'         => 0;
+};
 
 on 'test' => sub {
     test_requires 'FindBin'             => 0;

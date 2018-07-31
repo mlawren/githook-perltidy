@@ -5,9 +5,6 @@ Things to do:
 
 - Check that current branch is not (no branch)
 
-- Also tidy up on renames, as they show up only as renames even if the
-  file got modified as well.
-
 - Detect modified .perltidyrc or .podtidy-opts files and error out
 
 - Investigate use of git attribute filters

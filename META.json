@@ -19,9 +19,9 @@
          "inc"
       ],
       "package" : [
-         "App::githook_perltidy::install",
-         "App::githook_perltidy::pre_commit",
-         "App::githook_perltidy::post_commit"
+         "App::githook::perltidy::install",
+         "App::githook::perltidy::pre_commit",
+         "App::githook::perltidy::post_commit"
       ]
    },
    "prereqs" : {
@@ -36,9 +36,6 @@
          }
       },
       "runtime" : {
-         "recommends" : {
-            "Pod::Tidy::Sweetened" : "0"
-         },
          "requires" : {
             "Carp" : "0",
             "File::Basename" : "0",
@@ -47,6 +44,10 @@
             "Perl::Tidy" : "0",
             "Pod::Text" : "0",
             "Pod::Tidy" : "0"
+         },
+         "suggests" : {
+            "Perl::Critic" : "0",
+            "Pod::Tidy::Sweetened" : "0"
          }
       },
       "test" : {
@@ -68,6 +69,6 @@
          "url" : "ssh://git@github.com/mlawren/githook-perltidy.git"
       }
    },
-   "version" : "v0.11.11_3",
+   "version" : "v0.11.11_4",
    "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

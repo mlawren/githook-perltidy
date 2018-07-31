@@ -194,6 +194,11 @@ in_tempdir $test => sub {
     add_commit('5');
     is_file( '5', '5.perltidy', 'detect #!perl' );
 
+    run(qw!git mv 5 5.5!);
+    copy_src( 'untidy_perl', '5.5' );
+    add_commit('5.5');
+    is_file( '5.5', '5.5.perltidy', 'tidy on move' );
+
     copy_src( 'perltidyrc', '.perltidyrc.sweetened' );
     like exception { run( $githook_perltidy, qw!install! ) },
       qr/\.perltidyrc/, '.perltidyrc.sweetened uncommitted';

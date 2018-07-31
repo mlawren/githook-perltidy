@@ -216,10 +216,10 @@ sub run {
 
         }
 
-        # Copy the tidied file back to the real working directory
-        print "  $self->{me}: copy $tmp_file $file\n"
+        # Move the tidied file back to the real working directory
+        print "  $self->{me}: move $tmp_file $file\n"
           if $self->{opts}->{verbose};
-        copy $tmp_file, $file;
+        move $tmp_file, $file;
     }
 
     $self->lprint("githook-perltidy: ($total)\n");

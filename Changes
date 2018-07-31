@@ -8,6 +8,8 @@
 
     Enhancements:
         - Documentation updates
+        - Performance improvements:
+            - Move instead of copy tidied files back to working tree
 
     Bug Fixes:
         - None.

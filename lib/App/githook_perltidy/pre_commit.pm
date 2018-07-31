@@ -6,7 +6,7 @@ use parent 'App::githook_perltidy';
 use File::Copy;
 use Path::Tiny;
 
-our $VERSION = '0.11.11_2';
+our $VERSION = '0.11.11_3';
 
 my $temp_dir;
 
@@ -18,14 +18,14 @@ sub tmp_sys {
 
 sub perl_tidy {
     my $self     = shift;
-    my $file     = shift;
-    my $tmp_file = shift;
+    my $tmp_file = shift || die 'perl_tidy($TMP_FILE, $file)';
+    my $file     = shift || die 'perl_tidy($tmp_file, $FILE)';
 
     die ".perltidyrc not in repository.\n" unless $self->{perltidyrc};
 
     print "  $self->{me}: perltidy INDEX/$file\n" if $self->{opts}->{verbose};
 
-    if ( !$self->{perltidy} ) {
+    state $junk = do {
         if ( $self->{sweetened} ) {
             require Perl::Tidy::Sweetened;
             $self->{perltidy} = \&Perl::Tidy::Sweetened::perltidy;
@@ -34,7 +34,8 @@ sub perl_tidy {
             require Perl::Tidy;
             $self->{perltidy} = \&Perl::Tidy::perltidy;
         }
-    }
+        undef;
+    };
 
     my $errormsg;
 
@@ -50,7 +51,8 @@ sub perl_tidy {
     }
     elsif ($error) {
         $self->lprint('');
-        die $self->{me} . ': An unknown perltidy error occurred.';
+        die $self->{me} . ': ' . $file . ":\n"
+          . "An unknown perltidy error occurred.";
     }
 }
 
@@ -75,8 +77,8 @@ sub pod_tidy {
 
 sub perl_critic {
     my $self     = shift;
-    my $file     = shift || die 'perl_critic($FILE, $tmp_file)';
-    my $tmp_file = shift || die 'perl_critic($file, $TMP_FILE)';
+    my $tmp_file = shift || die 'perl_critic($TMP_FILE, $file)';
+    my $file     = shift || die 'perl_critic($tmp_file, $FILE)';
 
     die ".perlcriticrc not in repository.\n" unless $self->{perlcriticrc};
 
@@ -102,6 +104,8 @@ sub run {
     return if $ENV{NO_GITHOOK_PERLTIDY};
     $temp_dir = Path::Tiny->tempdir('githook-perltidy-XXXXXXXX');
 
+    my @index;
+
     # Use the -z flag to get clean filenames with no escaping or quoting
     # "lines" are separated with NUL, so set input record separator
     # appropriately
@@ -114,25 +118,27 @@ sub run {
             next unless $line =~ m/^[AM](.) (.*)/;
             my ( $wtree, $file ) = ( $1, $2 );
 
-            $self->tmp_sys( qw/git checkout-index/, $file );
-
-            if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
-                my $tmp_file = $temp_dir->child($file);
-
-              # reset line separator to newline when checking first line of file
-                local $/ = "\n";
-                open( my $fh2, '<', $tmp_file ) || die "open $tmp_file: $!";
-                my $possible = <$fh2> || next;
-
-                #        warn $possible;
-                next
-                  unless $possible =~ m/^#!.*perl/
-                  or $possible =~ m/^#!.*\.plenv/;
-            }
-
-            push( @perlfiles, $file );
+            push( @index, $file );
             $partial{$file} = $wtree eq 'M';
         }
+    }
+
+    unless (@index) {
+        $self->lprint("$self->{me}: (0)\n");
+        exit 0;
+    }
+
+    $self->tmp_sys( qw/git checkout-index/, @index );
+
+    foreach my $file (@index) {
+        if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
+            my ($first) = $temp_dir->child($file)->lines( { count => 1 } );
+            next
+              unless $first =~ m/^#!.*perl/
+              or $first =~ m/^#!.*\.plenv/;
+        }
+
+        push( @perlfiles, $file );
     }
 
     unless (@perlfiles) {
@@ -156,7 +162,7 @@ sub run {
             print "  $self->{me}: perlcritic INDEX/$file\n"
               if $self->{opts}->{verbose};
 
-            $self->perl_critic( $file, $tmp_file );
+            $self->perl_critic( $tmp_file, $file );
         }
 
         if ( $self->{podtidyrc} ) {
@@ -170,10 +176,15 @@ sub run {
             print "  $self->{me}: perltidy INDEX/$file\n"
               if $self->{opts}->{verbose};
 
-            $self->perl_tidy( $file, $tmp_file );
+            $self->perl_tidy( $tmp_file, $file );
         }
 
-        $self->tmp_sys( qw/git add /, $file );
+    }
+
+    $self->tmp_sys( qw/git add /, @perlfiles );
+
+    foreach my $file (@perlfiles) {
+        my $tmp_file = $temp_dir->child($file);
 
         if ( $file eq $self->{readme_from} ) {
             require Pod::Text;
@@ -189,8 +200,8 @@ sub run {
                 $self->tmp_sys(qw/git add README/);
             }
 
-            print "  $self->{me}: copy README\n" if $self->{opts}->{verbose};
-            copy $tmp_readme, 'README';
+            print "  $self->{me}: move README\n" if $self->{opts}->{verbose};
+            move $tmp_readme, 'README';
         }
 
         # Redo the whole thing again for partially modified files
@@ -210,15 +221,15 @@ sub run {
                 print "  $self->{me}: perltidy WORK_TREE/$file $tmp_file\n"
                   if $self->{opts}->{verbose};
 
-                $self->perl_tidy( $file, $tmp_file );
+                $self->perl_tidy( $tmp_file, $file );
             }
 
         }
 
-        # Copy the tidied file back to the real working directory
-        print "  $self->{me}: copy $tmp_file $file\n"
+        # Move the tidied file back to the real working directory
+        print "  $self->{me}: move $tmp_file $file\n"
           if $self->{opts}->{verbose};
-        copy $tmp_file, $file;
+        move $tmp_file, $file;
     }
 
     $self->lprint("githook-perltidy: ($total)\n");
@@ -257,7 +268,7 @@ App::githook_perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.11.11_2 (2018-07-27)
+0.11.11_3 (2018-07-31)
 
 =head1 SEE ALSO
 

@@ -5,7 +5,7 @@ use parent 'App::githook_perltidy';
 use File::Basename;
 use Path::Tiny;
 
-our $VERSION = '0.11.11_2';
+our $VERSION = '0.11.11_3';
 
 sub run {
     my $self = shift;
@@ -38,7 +38,7 @@ App::githook_perltidy::install - install git hooks
 
 =head1 VERSION
 
-0.11.11_2 (2018-07-27)
+0.11.11_3 (2018-07-31)
 
 =head1 SEE ALSO
 

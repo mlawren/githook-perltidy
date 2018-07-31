@@ -1,3 +1,14 @@
+0.11.11_3 (2018-07-31)
+
+    Enhancements:
+        - Documentation updates
+        - Performance improvements:
+            - Move instead of copy tidied files back to working tree.
+            - Only call git-checkout-index once per commit instead of
+              once per committed file.
+            - Only call git-add once per commit instead of once per
+              committed file.
+
 0.11.11_2 (2018-07-27)
 
     New Features:

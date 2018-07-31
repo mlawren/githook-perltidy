@@ -26,9 +26,9 @@ WriteMakefile(
         no_index    => {
             package => [
                 qw(
-                  App::githook_perltidy::install
-                  App::githook_perltidy::pre_commit
-                  App::githook_perltidy::post_commit
+                  App::githook::perltidy::install
+                  App::githook::perltidy::pre_commit
+                  App::githook::perltidy::post_commit
                   )
             ],
         },
@@ -57,10 +57,10 @@ use FindBin qw/\$Bin/;
 use lib "\$Bin/../lib";
 
 use strict;
-use App::githook_perltidy;
+use App::githook::perltidy;
 use OptArgs2 qw/class_optargs/;
 
-my ( \$class, \$opts ) = class_optargs('App::githook_perltidy');
+my ( \$class, \$opts ) = class_optargs('App::githook::perltidy');
 eval "require \$class" or die \$@;
 \$class->new(\$opts)->run;
 

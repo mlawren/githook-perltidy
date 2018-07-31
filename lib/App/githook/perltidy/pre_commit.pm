@@ -1,8 +1,8 @@
-package App::githook_perltidy::pre_commit;
+package App::githook::perltidy::pre_commit;
 use strict;
 use warnings;
 use feature 'state';
-use parent 'App::githook_perltidy';
+use parent 'App::githook::perltidy';
 use File::Copy;
 use Path::Tiny;
 
@@ -264,7 +264,7 @@ __END__
 
 =head1 NAME
 
-App::githook_perltidy::pre_commit - git pre-commit hook
+App::githook::perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 

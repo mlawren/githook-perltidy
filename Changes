@@ -19,6 +19,8 @@
         - Instead of recommending Perl::Tidy::Sweetened make it a
           suggestion and also suggest Perl::Critic.
         - Require Perl::Tidy::Sweetened and Perl::Critic on "develop".
+        - Transition to App::githook::perltidy away from
+          App::githook_perltidy to match the distribution name.
 
 0.11.11_3 (2018-07-31)
 

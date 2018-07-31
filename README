@@ -28,6 +28,11 @@ DESCRIPTION
         $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
         $ git commit -m 'githook-perltidy support' && git push
 
+    You should also add App::githook::perltidy as an explicit "develop"
+    dependency in your cpanfile, Makefile.PL or Build.PL, so that
+    githook-perltidy gets installed when developers install the rest of your
+    project's dependencies.
+
    Sweeter Tidying
     You may prefer to tidy with Perl::Tidy::Sweetened instead of plain
     Perl::Tidy. To enable that you commit a .perltidyrc.sweetened file instead

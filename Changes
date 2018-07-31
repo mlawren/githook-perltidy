@@ -10,7 +10,8 @@
         - Make --verbose messages useful
 
     Bug Fixes:
-        - None.
+        - Remove debug usleep() call introduced in 0.11.5_2. Do I get
+          to call that a performance improvement? :-/
 
     Dependencies:
         - None.

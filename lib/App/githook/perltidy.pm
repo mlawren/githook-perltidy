@@ -170,8 +170,6 @@ sub lprint {
 
     $old = $msg =~ m/\n/ ? '' : $msg;
 
-    use Time::HiRes 'usleep';
-    usleep(300000);
     return $chars;
 }
 

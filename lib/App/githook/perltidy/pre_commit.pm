@@ -20,10 +20,12 @@ sub perl_tidy {
     my $self     = shift;
     my $tmp_file = shift || die 'perl_tidy($TMP_FILE, $file)';
     my $file     = shift || die 'perl_tidy($tmp_file, $FILE)';
+    my $where    = shift;
 
     die ".perltidyrc not in repository.\n" unless $self->{perltidyrc};
 
-    print "  $self->{me}: perltidy INDEX/$file\n" if $self->{opts}->{verbose};
+    print "  $self->{me}: perltidy $file ($where)\n"
+      if $self->{opts}->{verbose};
 
     state $junk = do {
         if ( $self->{sweetened} ) {
@@ -58,11 +60,15 @@ sub perl_tidy {
 
 sub pod_tidy {
     my $self     = shift;
-    my $tmp_file = shift;
+    my $tmp_file = shift || die 'pod_tidy($TMP_FILE, $file)';
+    my $file     = shift || die 'pod_tidy($tmp_file, $FILE)';
+    my $where    = shift;
 
     die ".podtidy-opts not in repository.\n" unless $self->{podtidyrc};
 
     state $junk = require Pod::Tidy;
+
+    print "  $self->{me}: podtidy $file ($where)\n" if $self->{opts}->{verbose};
 
     Pod::Tidy::tidy_files(
         files     => [$tmp_file],
@@ -79,12 +85,14 @@ sub perl_critic {
     my $self     = shift;
     my $tmp_file = shift || die 'perl_critic($TMP_FILE, $file)';
     my $file     = shift || die 'perl_critic($tmp_file, $FILE)';
+    my $where    = shift;
 
     die ".perlcriticrc not in repository.\n" unless $self->{perlcriticrc};
 
     state $junk = require Perl::Critic;
 
-    print "  $self->{me}: perlcritic INDEX/$file\n" if $self->{opts}->{verbose};
+    print "  $self->{me}: perlcritic $file ($where)\n"
+      if $self->{opts}->{verbose};
 
     my @violations =
       Perl::Critic::critique( { -profile => $self->{perlcriticrc}->stringify },
@@ -103,6 +111,8 @@ sub run {
 
     return if $ENV{NO_GITHOOK_PERLTIDY};
     $temp_dir = Path::Tiny->tempdir('githook-perltidy-XXXXXXXX');
+
+    print "  $self->{me}: TMP=$temp_dir\n" if $self->{opts}->{verbose};
 
     my @index;
 
@@ -159,24 +169,15 @@ sub run {
 
         # Critique first to avoid unecessary tidying
         if ( $self->{perlcriticrc} ) {
-            print "  $self->{me}: perlcritic INDEX/$file\n"
-              if $self->{opts}->{verbose};
-
-            $self->perl_critic( $tmp_file, $file );
+            $self->perl_critic( $tmp_file, $file, 'INDEX' );
         }
 
         if ( $self->{podtidyrc} ) {
-            print "  $self->{me}: podtidy INDEX/$file\n"
-              if $self->{opts}->{verbose};
-
-            $self->pod_tidy($tmp_file);
+            $self->pod_tidy( $tmp_file, $file, 'INDEX' );
         }
 
         unless ( $file =~ m/\.pod$/i ) {
-            print "  $self->{me}: perltidy INDEX/$file\n"
-              if $self->{opts}->{verbose};
-
-            $self->perl_tidy( $tmp_file, $file );
+            $self->perl_tidy( $tmp_file, $file, 'INDEX' );
         }
 
     }
@@ -200,34 +201,29 @@ sub run {
                 $self->tmp_sys(qw/git add README/);
             }
 
-            print "  $self->{me}: move README\n" if $self->{opts}->{verbose};
+            print "  $self->{me}: move TMP/README .\n"
+              if $self->{opts}->{verbose};
             move $tmp_readme, 'README';
         }
 
         # Redo the whole thing again for partially modified files
         if ( $partial{$file} ) {
-            print "  $self->{me}: copy $file $tmp_file\n"
+            print "  $self->{me}: copy $file TMP\n"
               if $self->{opts}->{verbose};
             copy $file, $tmp_file;
 
             if ( $self->{podtidyrc} ) {
-                print "  $self->{me}: podtidy WORK_TREE/$file\n"
-                  if $self->{opts}->{verbose};
-
-                $self->pod_tidy($tmp_file);
+                $self->pod_tidy( $tmp_file, $file, 'WORK_TREE' );
             }
 
             unless ( $file =~ m/\.pod$/i ) {
-                print "  $self->{me}: perltidy WORK_TREE/$file $tmp_file\n"
-                  if $self->{opts}->{verbose};
-
-                $self->perl_tidy( $tmp_file, $file );
+                $self->perl_tidy( $tmp_file, $file, 'WORK_TREE' );
             }
 
         }
 
         # Move the tidied file back to the real working directory
-        print "  $self->{me}: move $tmp_file $file\n"
+        print "  $self->{me}: move TMP/$file .\n"
           if $self->{opts}->{verbose};
         move $tmp_file, $file;
     }

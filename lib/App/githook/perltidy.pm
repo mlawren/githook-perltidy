@@ -177,7 +177,9 @@ sub lprint {
 
 sub sys {
     my $self = shift;
-    print '  ' . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n"
+    print '  '
+      . $self->{me} . ': '
+      . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n"
       if $self->{opts}->{verbose};
     system("@_") == 0 or Carp::croak "@_ failed: $?";
 }

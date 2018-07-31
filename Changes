@@ -7,7 +7,7 @@
         - Tidy files which are copied or moved
 
     Enhancements:
-        - None.
+        - Make --verbose messages useful
 
     Bug Fixes:
         - None.

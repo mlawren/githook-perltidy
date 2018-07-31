@@ -103,6 +103,8 @@ sub run {
     return if $ENV{NO_GITHOOK_PERLTIDY};
     $temp_dir = Path::Tiny->tempdir('githook-perltidy-XXXXXXXX');
 
+    my @index;
+
     # Use the -z flag to get clean filenames with no escaping or quoting
     # "lines" are separated with NUL, so set input record separator
     # appropriately
@@ -115,25 +117,27 @@ sub run {
             next unless $line =~ m/^[AM](.) (.*)/;
             my ( $wtree, $file ) = ( $1, $2 );
 
-            $self->tmp_sys( qw/git checkout-index/, $file );
-
-            if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
-                my $tmp_file = $temp_dir->child($file);
-
-              # reset line separator to newline when checking first line of file
-                local $/ = "\n";
-                open( my $fh2, '<', $tmp_file ) || die "open $tmp_file: $!";
-                my $possible = <$fh2> || next;
-
-                #        warn $possible;
-                next
-                  unless $possible =~ m/^#!.*perl/
-                  or $possible =~ m/^#!.*\.plenv/;
-            }
-
-            push( @perlfiles, $file );
+            push( @index, $file );
             $partial{$file} = $wtree eq 'M';
         }
+    }
+
+    unless (@index) {
+        $self->lprint("$self->{me}: (0)\n");
+        exit 0;
+    }
+
+    $self->tmp_sys( qw/git checkout-index/, @index );
+
+    foreach my $file (@index) {
+        if ( $file !~ m/\.(pl|pod|pm|t)$/i ) {
+            my ($first) = $temp_dir->child($file)->lines( { count => 1 } );
+            next
+              unless $first =~ m/^#!.*perl/
+              or $first =~ m/^#!.*\.plenv/;
+        }
+
+        push( @perlfiles, $file );
     }
 
     unless (@perlfiles) {

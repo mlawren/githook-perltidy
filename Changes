@@ -9,7 +9,9 @@
     Enhancements:
         - Documentation updates
         - Performance improvements:
-            - Move instead of copy tidied files back to working tree
+            - Move instead of copy tidied files back to working tree.
+            - Only call git-checkout-index once per commit instead of
+              once per committed file.
 
     Bug Fixes:
         - None.

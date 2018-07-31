@@ -25,7 +25,7 @@ sub perl_tidy {
 
     print "  $self->{me}: perltidy INDEX/$file\n" if $self->{opts}->{verbose};
 
-    if ( !$self->{perltidy} ) {
+    state $junk = do {
         if ( $self->{sweetened} ) {
             require Perl::Tidy::Sweetened;
             $self->{perltidy} = \&Perl::Tidy::Sweetened::perltidy;
@@ -34,7 +34,8 @@ sub perl_tidy {
             require Perl::Tidy;
             $self->{perltidy} = \&Perl::Tidy::perltidy;
         }
-    }
+        undef;
+    };
 
     my $errormsg;
 

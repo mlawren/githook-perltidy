@@ -11,7 +11,6 @@ use strict;
 use warnings;
 use 5.006;
 use ExtUtils::MakeMaker::CPANfile;
-use Pod::Text;
 
 WriteMakefile(
     NAME       => 'App::githook::perltidy',
@@ -41,13 +40,6 @@ WriteMakefile(
         },
     },
 );
-
-if ( -e '.git' ) {
-    my $parser = Pod::Text->new( sentence => 0 );
-
-    # Read POD from file.pod and write to file.txt.
-    $parser->parse_from_file( 'bin/githook-perltidy', 'README' );
-}
 
 # Create the test script
 open( FH, '>', 't/githook-perltidy' ) or die "open: $!";

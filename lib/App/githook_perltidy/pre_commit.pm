@@ -51,7 +51,9 @@ sub perl_tidy {
     }
     elsif ($error) {
         $self->lprint('');
-        die $self->{me} . ': An unknown perltidy error occurred.';
+        die $self->{me} . ': '
+          . $file . ":\n"
+          . "An unknown perltidy error occurred.";
     }
 }
 

@@ -51,8 +51,7 @@ sub perl_tidy {
     }
     elsif ($error) {
         $self->lprint('');
-        die $self->{me} . ': '
-          . $file . ":\n"
+        die $self->{me} . ': ' . $file . ":\n"
           . "An unknown perltidy error occurred.";
     }
 }
@@ -180,7 +179,12 @@ sub run {
             $self->perl_tidy( $tmp_file, $file );
         }
 
-        $self->tmp_sys( qw/git add /, $file );
+    }
+
+    $self->tmp_sys( qw/git add /, @perlfiles );
+
+    foreach my $file (@perlfiles) {
+        my $tmp_file = $temp_dir->child($file);
 
         if ( $file eq $self->{readme_from} ) {
             require Pod::Text;
@@ -196,8 +200,8 @@ sub run {
                 $self->tmp_sys(qw/git add README/);
             }
 
-            print "  $self->{me}: copy README\n" if $self->{opts}->{verbose};
-            copy $tmp_readme, 'README';
+            print "  $self->{me}: move README\n" if $self->{opts}->{verbose};
+            move $tmp_readme, 'README';
         }
 
         # Redo the whole thing again for partially modified files

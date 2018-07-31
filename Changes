@@ -16,7 +16,9 @@
         - None.
 
     Packaging:
-        - None.
+        - Instead of recommending Perl::Tidy::Sweetened make it a
+          suggestion and also suggest Perl::Critic.
+        - Require Perl::Tidy::Sweetened and Perl::Critic on "develop".
 
 0.11.11_3 (2018-07-31)
 

@@ -115,7 +115,7 @@ sub run {
 
         while ( my $line = <$fh> ) {
             chomp $line;
-            next unless $line =~ m/^[AM](.) (.*)/;
+            next unless $line =~ m/^[ACMR](.) (.*)/;
             my ( $wtree, $file ) = ( $1, $2 );
 
             push( @index, $file );

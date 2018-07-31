@@ -18,8 +18,8 @@ sub tmp_sys {
 
 sub perl_tidy {
     my $self     = shift;
-    my $file     = shift;
-    my $tmp_file = shift;
+    my $tmp_file = shift || die 'perl_tidy($TMP_FILE, $file)';
+    my $file     = shift || die 'perl_tidy($tmp_file, $FILE)';
 
     die ".perltidyrc not in repository.\n" unless $self->{perltidyrc};
 
@@ -76,8 +76,8 @@ sub pod_tidy {
 
 sub perl_critic {
     my $self     = shift;
-    my $file     = shift || die 'perl_critic($FILE, $tmp_file)';
-    my $tmp_file = shift || die 'perl_critic($file, $TMP_FILE)';
+    my $tmp_file = shift || die 'perl_critic($TMP_FILE, $file)';
+    my $file     = shift || die 'perl_critic($tmp_file, $FILE)';
 
     die ".perlcriticrc not in repository.\n" unless $self->{perlcriticrc};
 
@@ -161,7 +161,7 @@ sub run {
             print "  $self->{me}: perlcritic INDEX/$file\n"
               if $self->{opts}->{verbose};
 
-            $self->perl_critic( $file, $tmp_file );
+            $self->perl_critic( $tmp_file, $file );
         }
 
         if ( $self->{podtidyrc} ) {
@@ -175,7 +175,7 @@ sub run {
             print "  $self->{me}: perltidy INDEX/$file\n"
               if $self->{opts}->{verbose};
 
-            $self->perl_tidy( $file, $tmp_file );
+            $self->perl_tidy( $tmp_file, $file );
         }
 
         $self->tmp_sys( qw/git add /, $file );
@@ -215,7 +215,7 @@ sub run {
                 print "  $self->{me}: perltidy WORK_TREE/$file $tmp_file\n"
                   if $self->{opts}->{verbose};
 
-                $self->perl_tidy( $file, $tmp_file );
+                $self->perl_tidy( $tmp_file, $file );
             }
 
         }

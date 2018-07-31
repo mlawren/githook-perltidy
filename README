@@ -89,10 +89,8 @@ DESCRIPTION
     *   Updates the Git index with the tidied file.
 
     *   Creates a new README file using Pod::Text if the tidied file matches
-        .readme_from.
-
-        *   Adds the new README file to the Git index if it is being tracked
-            in the repository.
+        .readme_from. The README file gets committed if it is already being
+        tracked by Git.
 
     *   Runs perltidy and/or podtidy on your working tree file. This prevents
         "git diff" from displaying an eroneous diff.

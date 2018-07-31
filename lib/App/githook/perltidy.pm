@@ -192,7 +192,7 @@ App::githook::perltidy - OptArgs2 module for githook-perltidy.
 
 =head1 VERSION
 
-0.11.11_4 (yyyy-mm-dd)
+0.11.11_4 (2018-07-31)
 
 =head1 SEE ALSO
 

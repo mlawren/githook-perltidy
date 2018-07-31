@@ -1,7 +1,4 @@
-0.11.11_4 (yyyy-mm-dd)
-
-    API / Behaviour Changes:
-        - None.
+0.11.11_4 (2018-07-31)
 
     New Features:
         - Tidy files which are copied or moved
@@ -14,12 +11,11 @@
           to call that a performance improvement? :-/
 
     Dependencies:
-        - None.
-
-    Packaging:
         - Instead of recommending Perl::Tidy::Sweetened make it a
           suggestion and also suggest Perl::Critic.
         - Require Perl::Tidy::Sweetened and Perl::Critic on "develop".
+
+    Packaging:
         - Transition to App::githook::perltidy away from
           App::githook_perltidy to match the distribution name.
 

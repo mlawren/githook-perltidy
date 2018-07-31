@@ -16,7 +16,7 @@
         - None.
 
     Packaging:
-        - None.
+        - Generate t/githook-perltidy with generic subroutine
 
 0.11.11_4 (2018-07-31)
 

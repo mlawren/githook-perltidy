@@ -162,6 +162,11 @@ files on disk and in the index.
 
 =back
 
+Previous versions of B<githook-perltidy> make use of a Git post-commit
+hook. If that is still in place you may receive usage messages after
+you commit. The post-comit call to B<githook-perltidy> (or possibly
+even the entire hook) can be removed.
+
 =head1 FILES
 
 =over

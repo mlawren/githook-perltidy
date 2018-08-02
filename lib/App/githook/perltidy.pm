@@ -40,11 +40,6 @@ subcmd 'App::githook::perltidy::install' => (
 subcmd 'App::githook::perltidy::pre_commit' =>
   ( comment => 'run perltidy|podtidy on indexed files', );
 
-subcmd 'App::githook::perltidy::post_commit' => (
-    comment => '(depreciated)',
-    hidden  => 1,
-);
-
 sub have_committed {
     my $file = shift;
 

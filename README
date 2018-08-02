@@ -119,16 +119,16 @@ CAVEATS
         in the pre-commit hook will still result in changed (tidied) files on
         disk and in the index.
 
-    Previous versions of githook-perltidy make use of a Git post-commit hook.
-    If that is still in place you may receive usage messages after you commit.
-    The post-comit call to githook-perltidy (or possibly even the entire hook)
-    can be removed.
+    Previous versions of githook-perltidy made use of a Git post-commit hook.
+    If that hook is still in place you will receive an usage error message
+    after you commit. The post-comit call to githook-perltidy (or possibly
+    even the entire hook) can be removed.
 
 FILES
     .perltidyrc
         Perl::Tidy options file.
 
-    .perltidyrc.sweetend
+    .perltidyrc.sweetened
         Perl::Tidy::Sweetened options file. Conflicts with .perltidyrc.
 
     .podtidy-opts

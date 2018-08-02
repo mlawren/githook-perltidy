@@ -11,6 +11,10 @@ requires 'Pod::Tidy'      => 0;
 suggests 'Pod::Tidy::Sweetened' => 0;
 suggests 'Perl::Critic'         => 0;
 
+on 'configure' => sub {
+    requires => 'Path::Tiny';
+};
+
 on 'develop' => sub {
     requires 'Pod::Tidy::Sweetened' => 0;
     requires 'Perl::Critic'         => 0;

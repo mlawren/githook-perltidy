@@ -16,7 +16,7 @@ WriteMakefile(
     NAME       => 'App::githook::perltidy',
     ABSTRACT   => 'run perltidy and podtidy before Git commits',
     AUTHOR     => 'Mark Lawrence <nomad@null.net>',
-    VERSION    => '0.11.11_4',
+    VERSION    => '0.12.0',
     LICENSE    => 'gpl_3',
     EXE_FILES  => ['bin/githook-perltidy'],
     test       => { RECURSIVE_TEST_FILES => 1, },
@@ -42,21 +42,40 @@ WriteMakefile(
 );
 
 # Create the test script
-open( FH, '>', 't/githook-perltidy' ) or die "open: $!";
+sub create_t_scripts {
+    use Path::Tiny;
 
-print FH qq{#!$^X
-use FindBin qw/\$Bin/;
-use lib "\$Bin/../lib";
+    my $perl = -x $^X           ? $^X : "/usr/bin/env $^X";
+    my $sep  = $^O eq 'MSWin32' ? ';' : ':';
 
-use strict;
-use App::githook::perltidy;
-use OptArgs2 qw/class_optargs/;
+    my $root = path('.')->absolute;
 
-my ( \$class, \$opts ) = class_optargs('App::githook::perltidy');
-eval "require \$class" or die \$@;
-\$class->new(\$opts)->run;
+    my $bin   = $root->child('bin');
+    my $lib   = $root->child('lib');
+    my $share = $root->child('share');
+    my $t     = $root->child('t');
 
-};
+    my @scripts = @_ ? @_ : $bin->children;
 
-close FH;
-chmod 0755, 't/githook-perltidy' or warn "chmod: $!";
+    foreach my $script (@scripts) {
+        my $t_script = $t->child( $script->basename );
+
+        $t_script->spew_utf8(<<"EOF");
+#!$perl
+
+### Test script specific setup ###
+BEGIN {
+    \$ENV{PATH} = "$t" .'$sep'.\$ENV{PATH};
+    \$ENV{SHARE_DIR} //= "$share";
+}
+use lib "$lib";
+### Original file continues from here ###
+
+EOF
+
+        $t_script->append_utf8( $script->slurp_utf8 );
+        $t_script->chmod('a+x');
+    }
+}
+
+create_t_scripts();

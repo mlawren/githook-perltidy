@@ -16,12 +16,28 @@ cmd 'App::githook::perltidy' => (
             required => 1,
         );
 
-        opt verbose => (
-            isa => 'Flag',
+        opt help => (
+            isa     => 'Flag',
+            alias   => 'h',
+            comment => 'print help message and exit',
+            trigger => sub {
+                my ( $cmd, $value ) = @_;
+                die $cmd->usage(OptArgs2::STYLE_FULL);
+            }
+        );
 
+        opt verbose => (
+            isa     => 'Flag',
             comment => 'be explicit about underlying actions',
             alias   => 'v',
             default => sub { $ENV{GITHOOK_PERLTIDY_VERBOSE} },
+        );
+
+        opt version => (
+            isa     => 'Flag',
+            comment => 'print version and exit',
+            alias   => 'V',
+            trigger => sub { die basename($0) . ' version ' . $VERSION . "\n" },
         );
     },
 );

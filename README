@@ -103,8 +103,14 @@ DESCRIPTION
     file in the repository.
 
 GLOBAL OPTIONS
+    --help, -h
+        Print the full usage message and exit.
+
     --verbose, -v
         Print underlying Git commands or filesystem actions as they are run.
+
+    --version, -V
+        Print the version and exit.
 
 CAVEATS
     There are two ways in which githook-perltidy behaviour may affect your

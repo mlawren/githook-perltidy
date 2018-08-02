@@ -137,9 +137,17 @@ F<.perltidyrc.sweetened> file in the repository.
 
 =over
 
+=item --help, -h
+
+Print the full usage message and exit.
+
 =item --verbose, -v
 
 Print underlying Git commands or filesystem actions as they are run.
+
+=item --version, -V
+
+Print the version and exit.
 
 =back
 

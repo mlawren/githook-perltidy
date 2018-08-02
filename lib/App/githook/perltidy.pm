@@ -8,6 +8,7 @@ use Path::Tiny;
 our $VERSION = '0.12.1_1';
 
 cmd 'App::githook::perltidy' => (
+    name    => 'githook-perltidy',
     comment => 'tidy perl and pod files before Git commits',
     optargs => sub {
         arg command => (
@@ -43,7 +44,7 @@ cmd 'App::githook::perltidy' => (
 );
 
 subcmd 'App::githook::perltidy::install' => (
-    comment => 'Install githook-perltidy Git hooks',
+    comment => 'install a Git pre-commit hook',
     optargs => sub {
         opt force => (
             isa     => 'Bool',
@@ -54,7 +55,7 @@ subcmd 'App::githook::perltidy::install' => (
 );
 
 subcmd 'App::githook::perltidy::pre_commit' =>
-  ( comment => 'run perltidy|podtidy on indexed files', );
+  ( comment => 'tidy Perl and POD files in the Git index', );
 
 sub have_committed {
     my $file = shift;

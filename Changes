@@ -10,9 +10,12 @@
     Enhancements:
         - Add global --help and --version options
         - Show what type of tidy is taking place on the status lines.
+        - Clearer usage message
 
     Bug Fixes:
-        - None.
+        - Restore the usage: message name back to "githook-perltidy"
+          which was broken (showed as just perltidy") by the move to
+          App::githook::perltidy.
 
     Dependencies:
         - None.

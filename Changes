@@ -17,7 +17,7 @@
         - None.
 
     Packaging:
-        - None.
+        - Add Github issues url to meta data
 
 0.12.0 (2018-08-02)
 

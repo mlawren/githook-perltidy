@@ -32,6 +32,9 @@ WriteMakefile(
             ],
         },
         resources => {
+            bugtracker =>
+              { web => 'https//github.com/mlawren/githook-perltidy/issues', },
+            homepage   => 'https//github.com/mlawren/githook-perltidy',
             repository => {
                 type => 'git',
                 url  => 'ssh://git@github.com/mlawren/githook-perltidy.git',

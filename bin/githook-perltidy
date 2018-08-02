@@ -200,8 +200,8 @@ B<githook-perltidy> specific.
 
 =item NO_GITHOOK_PERLTIDY
 
-Setting this to 1 makes B<githook-perltidy> a no-op. Useful if you want
-to make a non-tidy commit.
+Setting this to 1 makes the C<githook-perltidy pre-commit> command a
+no-op. Useful if you want to make a non-tidy commit.
 
 =back
 

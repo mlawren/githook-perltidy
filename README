@@ -143,8 +143,8 @@ FILES
 
 ENVIRONMENT
     NO_GITHOOK_PERLTIDY
-        Setting this to 1 makes githook-perltidy a no-op. Useful if you want
-        to make a non-tidy commit.
+        Setting this to 1 makes the "githook-perltidy pre-commit" command a
+        no-op. Useful if you want to make a non-tidy commit.
 
 SUPPORT
     This tool is managed via github:

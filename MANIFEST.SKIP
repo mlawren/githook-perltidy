@@ -11,4 +11,5 @@ Makefile$
 Makefile.old
 ^App-githook_perltidy-*
 t/githook-perltidy$
+tmp/
 xt/

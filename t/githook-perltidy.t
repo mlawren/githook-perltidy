@@ -244,48 +244,6 @@ in_tempdir $test => sub {
         like exception { add_commit('8.pl'); }, qr/strictures/, 'perlcritic';
         run(qw!git reset!);
     }
-
-  SKIP: {
-        skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };
-
-        $pre_commit->remove;
-
-        path('Makefile.PL')->spew_utf8( "
-use strict;
-use warnings;
-use ExtUtils::MakeMaker;
-
-WriteMakefile(
-   NAME            => 'Your::Module',
-);
-"
-        );
-
-        like run( $githook_perltidy, qw!install test ATTRIBUTE=1! ),
-          qr/pre-commit/s, 'install make args output';
-
-        like path($pre_commit)->slurp_utf8, qr/pre-commit test ATTRIBUTE=1/,
-          'pre content make args ';
-
-        run(qw!git add Makefile.PL!);
-        like run( qw!git commit -m!, 'add Makefile.PL' ),
-          qr/add Makefile.PL/sm,
-          'make run';
-        ok -e 'Makefile', 'perl Makefile.PL';
-
-        unlink 'Makefile';
-        run(qw!git reset HEAD^!);
-        run(qw!git add Makefile.PL!);
-        like run(
-            qw!git commit -m!,
-            { env => { PERLTIDY_MAKE => '' } },
-            'add Makefile.PL'
-          ),
-          qr/add Makefile.PL/sm,
-          'no make run';
-        ok !-e 'Makefile', 'no perl Makefile.PL';
-    }
-
 };
 done_testing();
 

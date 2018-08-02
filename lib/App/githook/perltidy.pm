@@ -29,13 +29,6 @@ cmd 'App::githook::perltidy' => (
 subcmd 'App::githook::perltidy::install' => (
     comment => 'Install githook-perltidy Git hooks',
     optargs => sub {
-        arg make_args => (
-            isa     => 'Str',
-            comment => 'arguments to pass to a make call after tidying',
-            default => '',
-            greedy  => 1,
-        );
-
         opt force => (
             isa     => 'Bool',
             comment => 'Overwrite existing git commit hooks',
@@ -44,17 +37,8 @@ subcmd 'App::githook::perltidy::install' => (
     },
 );
 
-subcmd 'App::githook::perltidy::pre_commit' => (
-    comment => 'run perltidy|podtidy on indexed files',
-    optargs => sub {
-        arg make_args => (
-            isa     => 'Str',
-            comment => 'arguments to pass to a make call after tidying',
-            default => '',
-            greedy  => 1,
-        );
-    },
-);
+subcmd 'App::githook::perltidy::pre_commit' =>
+  ( comment => 'run perltidy|podtidy on indexed files', );
 
 subcmd 'App::githook::perltidy::post_commit' => (
     comment => '(depreciated)',

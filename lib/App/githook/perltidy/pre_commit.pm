@@ -229,30 +229,6 @@ sub run {
     }
 
     $self->lprint("githook-perltidy: ($total)\n");
-
-    $self->{opts}->{make_args} = $ENV{PERLTIDY_MAKE}
-      if exists $ENV{PERLTIDY_MAKE};
-
-    if ( $self->{opts}->{make_args} ) {
-
-        # Stop the git that is calling this pre-commit script from
-        # interfering with any possible git calls in Makefile.PL or any
-        # test code
-        local %ENV = %ENV;
-        delete $ENV{$_} for grep( /^GIT_/, keys %ENV );
-
-        if ( -e 'Makefile.PL' ) {
-            $self->sys(qw/perl Makefile.PL/)
-              if grep( /^Makefile.PL$/i, @perlfiles );
-            $self->sys(qw/perl Makefile.PL/) unless -f 'Makefile';
-        }
-        elsif ( -e 'Build.PL' ) {
-            $self->sys(qw/perl Build.PL/) if grep( /^Build.PL$/i, @perlfiles );
-            $self->sys(qw/perl Build.PL/) unless -f 'Makefile';
-        }
-
-        $self->sys("make $self->{opts}->{make_args}");
-    }
 }
 
 1;

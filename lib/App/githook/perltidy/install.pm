@@ -22,7 +22,7 @@ sub run {
         die "File/link exists: $pre_file\n" unless $self->{opts}->{force};
     }
 
-    $pre_file->spew("#!/bin/sh\n$0 pre-commit $self->{opts}->{make_args}\n");
+    $pre_file->spew("#!/bin/sh\n$0 pre-commit\n");
     chmod 0755, $pre_file || warn "chmod: $!";
     print "$self->{me}: $pre_file";
     print " (forced)" if $self->{opts}->{force};

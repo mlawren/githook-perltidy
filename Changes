@@ -1,7 +1,7 @@
 0.12.1_1 (yyyy-mm-dd)
 
     API / Behaviour Changes:
-        - None.
+        - Remove implementation of the depreciated MAKE ARGS feature
 
     New Features:
         - None.

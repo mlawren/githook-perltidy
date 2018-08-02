@@ -9,6 +9,7 @@
 
     Enhancements:
         - Add global --help and --version options
+        - Show what type of tidy is taking place on the status lines.
 
     Bug Fixes:
         - None.

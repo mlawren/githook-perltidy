@@ -162,24 +162,38 @@ sub run {
     my $i     = 1;
     my $total = scalar @perlfiles;
     foreach my $file (@perlfiles) {
-        $self->lprint(
-            $self->{me} . ': (' . $i++ . '/' . $total . ') ' . $file );
-
         my $tmp_file = $temp_dir->child($file);
 
         # Critique first to avoid unecessary tidying
         if ( $self->{perlcriticrc} ) {
+            $self->lprint( $self->{me} . ': ('
+                  . $i . '/'
+                  . $total . ') '
+                  . $file
+                  . ' (perlcritic)' );
+
             $self->perl_critic( $tmp_file, $file, 'INDEX' );
         }
 
-        if ( $self->{podtidyrc} ) {
-            $self->pod_tidy( $tmp_file, $file, 'INDEX' );
-        }
-
         unless ( $file =~ m/\.pod$/i ) {
+            $self->lprint( $self->{me} . ': ('
+                  . $i . '/'
+                  . $total . ') '
+                  . $file
+                  . ' (perltidy)' );
             $self->perl_tidy( $tmp_file, $file, 'INDEX' );
         }
 
+        if ( $self->{podtidyrc} ) {
+            $self->lprint( $self->{me} . ': ('
+                  . $i . '/'
+                  . $total . ') '
+                  . $file
+                  . ' (podtidy)' );
+            $self->pod_tidy( $tmp_file, $file, 'INDEX' );
+        }
+
+        $i++;
     }
 
     $self->tmp_sys( qw/git add /, @perlfiles );
@@ -212,19 +226,22 @@ sub run {
               if $self->{opts}->{verbose};
             copy $file, $tmp_file;
 
-            if ( $self->{podtidyrc} ) {
-                $self->pod_tidy( $tmp_file, $file, 'WORK_TREE' );
-            }
-
             unless ( $file =~ m/\.pod$/i ) {
+                $self->lprint( $self->{me} . ': ' . $file . ' (perltidy)' );
                 $self->perl_tidy( $tmp_file, $file, 'WORK_TREE' );
             }
 
+            if ( $self->{podtidyrc} ) {
+                $self->lprint( $self->{me} . ': ' . $file . ' (podtidy)' );
+                $self->pod_tidy( $tmp_file, $file, 'INDEX' );
+                $self->pod_tidy( $tmp_file, $file, 'WORK_TREE' );
+            }
         }
 
         # Move the tidied file back to the real working directory
         print "  $self->{me}: move TMP/$file .\n"
           if $self->{opts}->{verbose};
+        $self->lprint( $self->{me} . ': ' . $file . ' (mv)' );
         move $tmp_file, $file;
     }
 

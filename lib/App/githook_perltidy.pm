@@ -12,7 +12,7 @@ App::githook_perltidy - legacy package for dependencies
 
 =head1 VERSION
 
-0.12.0 (yyyy-mm-dd)
+0.12.0 (2018-08-02)
 
 =head1 DESCRIPTION
 

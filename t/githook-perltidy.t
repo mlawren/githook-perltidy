@@ -183,9 +183,13 @@ in_tempdir $test => sub {
     add_commit('3.pm');
     is_file( '3.pm', '3.pm.perltidy', 'detect .pm' );
 
-    copy_src( 'junk', '4.pm' );
+    copy_src( 'junk_perl', '4.pm' );
     ok exception { add_commit('4.pm') }, 'commit stopped on bad syntax';
-    is_file( '4.pm', $srcdir->child('junk'), 'bad commit keeps working file' );
+    is_file(
+        '4.pm',
+        $srcdir->child('junk_perl'),
+        'bad commit keeps working file'
+    );
 
     like run(qw!git status --porcelain!), qr/^A\s+4.pm$/sm, 'kept index status';
     run(qw!git reset!);

@@ -16,6 +16,8 @@
         - Restore the usage: message name back to "githook-perltidy"
           which was broken (showed as just perltidy") by the move to
           App::githook::perltidy.
+        - Correctly deal with spaces in the filesystem path to
+          the .perltidyrc and other config files.
 
     Dependencies:
         - None.

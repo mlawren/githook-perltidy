@@ -63,8 +63,8 @@ sub have_committed {
     if ( -e $file ) {
         die $file->basename . " is not committed.\n"
           unless system(
-            'git ls-files --error-unmatch ' . $file . ' > /dev/null 2>&1' ) ==
-          0;
+            'git ls-files --error-unmatch "' . $file . '" > /dev/null 2>&1' )
+          == 0;
 
         return 1;
     }

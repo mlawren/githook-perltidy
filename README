@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.12.0 (2018-08-02)
+    0.12.1_1 (2018-08-19)
 
 SYNOPSIS
         githook-perltidy COMMAND [OPTIONS...]
@@ -103,8 +103,14 @@ DESCRIPTION
     file in the repository.
 
 GLOBAL OPTIONS
+    --help, -h
+        Print the full usage message and exit.
+
     --verbose, -v
         Print underlying Git commands or filesystem actions as they are run.
+
+    --version, -V
+        Print the version and exit.
 
 CAVEATS
     There are two ways in which githook-perltidy behaviour may affect your
@@ -119,11 +125,16 @@ CAVEATS
         in the pre-commit hook will still result in changed (tidied) files on
         disk and in the index.
 
+    Previous versions of githook-perltidy made use of a Git post-commit hook.
+    If that hook is still in place you will receive an usage error message
+    after you commit. The post-comit call to githook-perltidy (or possibly
+    even the entire hook) can be removed.
+
 FILES
     .perltidyrc
         Perl::Tidy options file.
 
-    .perltidyrc.sweetend
+    .perltidyrc.sweetened
         Perl::Tidy::Sweetened options file. Conflicts with .perltidyrc.
 
     .podtidy-opts
@@ -138,8 +149,8 @@ FILES
 
 ENVIRONMENT
     NO_GITHOOK_PERLTIDY
-        Setting this to 1 makes githook-perltidy a no-op. Useful if you want
-        to make a non-tidy commit.
+        Setting this to 1 makes the "githook-perltidy pre-commit" command a
+        no-op. Useful if you want to make a non-tidy commit.
 
 SUPPORT
     This tool is managed via github:

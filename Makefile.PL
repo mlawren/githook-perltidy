@@ -16,7 +16,7 @@ WriteMakefile(
     NAME       => 'App::githook::perltidy',
     ABSTRACT   => 'run perltidy and podtidy before Git commits',
     AUTHOR     => 'Mark Lawrence <nomad@null.net>',
-    VERSION    => '0.12.0',
+    VERSION    => '0.12.1_1',
     LICENSE    => 'gpl_3',
     EXE_FILES  => ['bin/githook-perltidy'],
     test       => { RECURSIVE_TEST_FILES => 1, },
@@ -32,6 +32,9 @@ WriteMakefile(
             ],
         },
         resources => {
+            bugtracker =>
+              { web => 'https//github.com/mlawren/githook-perltidy/issues', },
+            homepage   => 'https//github.com/mlawren/githook-perltidy',
             repository => {
                 type => 'git',
                 url  => 'ssh://git@github.com/mlawren/githook-perltidy.git',

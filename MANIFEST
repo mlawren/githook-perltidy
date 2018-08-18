@@ -3,14 +3,14 @@ Changes
 cpanfile
 lib/App/githook/perltidy.pm
 lib/App/githook/perltidy/install.pm
-lib/App/githook/perltidy/post_commit.pm
 lib/App/githook/perltidy/pre_commit.pm
 lib/App/githook_perltidy.pm
 Makefile.PL
 MANIFEST			This list of files
 README
 t/githook-perltidy.t
-t/src/junk
+t/src/junk_perl
+t/src/junk_pod
 t/src/perlcriticrc
 t/src/perltidyrc
 t/src/podtidy-opts

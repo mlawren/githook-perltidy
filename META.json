@@ -62,13 +62,14 @@
          }
       }
    },
-   "release_status" : "stable",
+   "release_status" : "unstable",
    "resources" : {
+      "bugtracker" : {},
       "repository" : {
          "type" : "git",
          "url" : "ssh://git@github.com/mlawren/githook-perltidy.git"
       }
    },
-   "version" : "v0.12.0",
+   "version" : "v0.12.1_1",
    "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

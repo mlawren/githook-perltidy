@@ -1,3 +1,26 @@
+0.12.1_1 (2018-08-19)
+
+    API / Behaviour Changes:
+        - Remove implementation of the depreciated MAKE ARGS feature
+        - Remove implementation of legacy post-commit command
+
+    Enhancements:
+        - Add global --help and --version options
+        - Show what type of tidy is taking place on the status lines.
+        - Clearer usage message
+        - Force README file generation when .readme_from is added to
+          the repository.
+
+    Bug Fixes:
+        - Restore the usage: message name back to "githook-perltidy"
+          which was broken (showed as just perltidy") by the move to
+          App::githook::perltidy.
+        - Correctly deal with spaces in the filesystem path to
+          the .perltidyrc and other config files.
+
+    Packaging:
+        - Add Github issues url to meta data
+
 0.12.0 (2018-08-02)
 
     Packaging:

@@ -6,7 +6,7 @@ use parent 'App::githook::perltidy';
 use File::Copy;
 use Path::Tiny;
 
-our $VERSION = '0.12.0';
+our $VERSION = '0.12.1_1';
 
 my $temp_dir;
 
@@ -104,6 +104,22 @@ sub perl_critic {
     }
 }
 
+sub readme_from {
+    my $self = shift;
+    my $file = shift || die 'readme_from($FILE)';
+
+    print "  $self->{me}: $file -> README\n"
+      if $self->{opts}->{verbose};
+
+    require Pod::Text;
+    Pod::Text->new( sentence => 0, width => 78 )
+      ->parse_from_file( "$file", 'README' );
+
+    if ( system("git ls-files --error-unmatch README > /dev/null 2>&1") == 0 ) {
+        $self->sys(qw/git add README/);
+    }
+}
+
 sub run {
     my $self      = shift;
     my @perlfiles = ();
@@ -115,6 +131,7 @@ sub run {
     print "  $self->{me}: TMP=$temp_dir\n" if $self->{opts}->{verbose};
 
     my @index;
+    my $force_readme = 0;
 
     # Use the -z flag to get clean filenames with no escaping or quoting
     # "lines" are separated with NUL, so set input record separator
@@ -130,7 +147,16 @@ sub run {
 
             push( @index, $file );
             $partial{$file} = $wtree eq 'M';
+
+            $force_readme++ if $file eq '.readme_from';
+            $force_readme-- if $file eq $self->{readme_from};
         }
+    }
+
+    if ( $force_readme > 0 ) {
+        print "  $self->{me}: force .readme_from $self->{readme_from}\n"
+          if $self->{opts}->{verbose};
+        push( @index, $self->{readme_from} );
     }
 
     unless (@index) {
@@ -162,49 +188,58 @@ sub run {
     my $i     = 1;
     my $total = scalar @perlfiles;
     foreach my $file (@perlfiles) {
-        $self->lprint(
-            $self->{me} . ': (' . $i++ . '/' . $total . ') ' . $file );
-
         my $tmp_file = $temp_dir->child($file);
+
+        # If the README conversion is forced then we don't need to tidy
+        # the source file
+        if ( $file eq $self->{readme_from} and $force_readme-- ) {
+            $self->readme_from($tmp_file);
+            next;
+        }
 
         # Critique first to avoid unecessary tidying
         if ( $self->{perlcriticrc} ) {
+            $self->lprint( $self->{me} . ': ('
+                  . $i . '/'
+                  . $total . ') '
+                  . $file
+                  . ' (perlcritic)' );
+
             $self->perl_critic( $tmp_file, $file, 'INDEX' );
         }
 
-        if ( $self->{podtidyrc} ) {
-            $self->pod_tidy( $tmp_file, $file, 'INDEX' );
-        }
-
         unless ( $file =~ m/\.pod$/i ) {
+            $self->lprint( $self->{me} . ': ('
+                  . $i . '/'
+                  . $total . ') '
+                  . $file
+                  . ' (perltidy)' );
             $self->perl_tidy( $tmp_file, $file, 'INDEX' );
         }
 
+        if ( $self->{podtidyrc} ) {
+            $self->lprint( $self->{me} . ': ('
+                  . $i . '/'
+                  . $total . ') '
+                  . $file
+                  . ' (podtidy)' );
+            $self->pod_tidy( $tmp_file, $file, 'INDEX' );
+        }
+
+        if ( $file eq $self->{readme_from} ) {
+            $self->readme_from($tmp_file);
+        }
+
+        $i++;
     }
+
+    warn "Failed to convert to README: $self->{force_readme}\n"
+      unless $force_readme <= 0;
 
     $self->tmp_sys( qw/git add /, @perlfiles );
 
     foreach my $file (@perlfiles) {
         my $tmp_file = $temp_dir->child($file);
-
-        if ( $file eq $self->{readme_from} ) {
-            require Pod::Text;
-            my $parser = Pod::Text->new( sentence => 0, width => 78 );
-            my $tmp_readme = $temp_dir->child('README');
-
-            $parser->parse_from_file( $file, $tmp_readme->stringify );
-
-            if (
-                system("git ls-files --error-unmatch README > /dev/null 2>&1")
-                == 0 )
-            {
-                $self->tmp_sys(qw/git add README/);
-            }
-
-            print "  $self->{me}: move TMP/README .\n"
-              if $self->{opts}->{verbose};
-            move $tmp_readme, 'README';
-        }
 
         # Redo the whole thing again for partially modified files
         if ( $partial{$file} ) {
@@ -212,47 +247,26 @@ sub run {
               if $self->{opts}->{verbose};
             copy $file, $tmp_file;
 
-            if ( $self->{podtidyrc} ) {
-                $self->pod_tidy( $tmp_file, $file, 'WORK_TREE' );
-            }
-
             unless ( $file =~ m/\.pod$/i ) {
+                $self->lprint( $self->{me} . ': ' . $file . ' (perltidy)' );
                 $self->perl_tidy( $tmp_file, $file, 'WORK_TREE' );
             }
 
+            if ( $self->{podtidyrc} ) {
+                $self->lprint( $self->{me} . ': ' . $file . ' (podtidy)' );
+                $self->pod_tidy( $tmp_file, $file, 'INDEX' );
+                $self->pod_tidy( $tmp_file, $file, 'WORK_TREE' );
+            }
         }
 
         # Move the tidied file back to the real working directory
         print "  $self->{me}: move TMP/$file .\n"
           if $self->{opts}->{verbose};
+        $self->lprint( $self->{me} . ': ' . $file . ' (mv)' );
         move $tmp_file, $file;
     }
 
     $self->lprint("githook-perltidy: ($total)\n");
-
-    $self->{opts}->{make_args} = $ENV{PERLTIDY_MAKE}
-      if exists $ENV{PERLTIDY_MAKE};
-
-    if ( $self->{opts}->{make_args} ) {
-
-        # Stop the git that is calling this pre-commit script from
-        # interfering with any possible git calls in Makefile.PL or any
-        # test code
-        local %ENV = %ENV;
-        delete $ENV{$_} for grep( /^GIT_/, keys %ENV );
-
-        if ( -e 'Makefile.PL' ) {
-            $self->sys(qw/perl Makefile.PL/)
-              if grep( /^Makefile.PL$/i, @perlfiles );
-            $self->sys(qw/perl Makefile.PL/) unless -f 'Makefile';
-        }
-        elsif ( -e 'Build.PL' ) {
-            $self->sys(qw/perl Build.PL/) if grep( /^Build.PL$/i, @perlfiles );
-            $self->sys(qw/perl Build.PL/) unless -f 'Makefile';
-        }
-
-        $self->sys("make $self->{opts}->{make_args}");
-    }
 }
 
 1;
@@ -264,7 +278,7 @@ App::githook::perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.12.0 (2018-08-02)
+0.12.1_1 (2018-08-19)
 
 =head1 SEE ALSO
 

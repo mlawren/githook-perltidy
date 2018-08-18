@@ -5,9 +5,10 @@ use File::Basename;
 use OptArgs2;
 use Path::Tiny;
 
-our $VERSION = '0.12.0';
+our $VERSION = '0.12.1_1';
 
 cmd 'App::githook::perltidy' => (
+    name    => 'githook-perltidy',
     comment => 'tidy perl and pod files before Git commits',
     optargs => sub {
         arg command => (
@@ -16,26 +17,35 @@ cmd 'App::githook::perltidy' => (
             required => 1,
         );
 
-        opt verbose => (
-            isa => 'Flag',
+        opt help => (
+            isa     => 'Flag',
+            alias   => 'h',
+            comment => 'print help message and exit',
+            trigger => sub {
+                my ( $cmd, $value ) = @_;
+                die $cmd->usage(OptArgs2::STYLE_FULL);
+            }
+        );
 
+        opt verbose => (
+            isa     => 'Flag',
             comment => 'be explicit about underlying actions',
             alias   => 'v',
             default => sub { $ENV{GITHOOK_PERLTIDY_VERBOSE} },
+        );
+
+        opt version => (
+            isa     => 'Flag',
+            comment => 'print version and exit',
+            alias   => 'V',
+            trigger => sub { die basename($0) . ' version ' . $VERSION . "\n" },
         );
     },
 );
 
 subcmd 'App::githook::perltidy::install' => (
-    comment => 'Install githook-perltidy Git hooks',
+    comment => 'install a Git pre-commit hook',
     optargs => sub {
-        arg make_args => (
-            isa     => 'Str',
-            comment => 'arguments to pass to a make call after tidying',
-            default => '',
-            greedy  => 1,
-        );
-
         opt force => (
             isa     => 'Bool',
             comment => 'Overwrite existing git commit hooks',
@@ -44,22 +54,8 @@ subcmd 'App::githook::perltidy::install' => (
     },
 );
 
-subcmd 'App::githook::perltidy::pre_commit' => (
-    comment => 'run perltidy|podtidy on indexed files',
-    optargs => sub {
-        arg make_args => (
-            isa     => 'Str',
-            comment => 'arguments to pass to a make call after tidying',
-            default => '',
-            greedy  => 1,
-        );
-    },
-);
-
-subcmd 'App::githook::perltidy::post_commit' => (
-    comment => '(depreciated)',
-    hidden  => 1,
-);
+subcmd 'App::githook::perltidy::pre_commit' =>
+  ( comment => 'tidy Perl and POD files in the Git index', );
 
 sub have_committed {
     my $file = shift;
@@ -67,8 +63,8 @@ sub have_committed {
     if ( -e $file ) {
         die $file->basename . " is not committed.\n"
           unless system(
-            'git ls-files --error-unmatch ' . $file . ' > /dev/null 2>&1' ) ==
-          0;
+            'git ls-files --error-unmatch "' . $file . '" > /dev/null 2>&1' )
+          == 0;
 
         return 1;
     }
@@ -192,7 +188,7 @@ App::githook::perltidy - OptArgs2 module for githook-perltidy.
 
 =head1 VERSION
 
-0.12.0 (2018-08-02)
+0.12.1_1 (2018-08-19)
 
 =head1 SEE ALSO
 

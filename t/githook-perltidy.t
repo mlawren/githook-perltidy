@@ -183,9 +183,13 @@ in_tempdir $test => sub {
     add_commit('3.pm');
     is_file( '3.pm', '3.pm.perltidy', 'detect .pm' );
 
-    copy_src( 'junk', '4.pm' );
+    copy_src( 'junk_perl', '4.pm' );
     ok exception { add_commit('4.pm') }, 'commit stopped on bad syntax';
-    is_file( '4.pm', $srcdir->child('junk'), 'bad commit keeps working file' );
+    is_file(
+        '4.pm',
+        $srcdir->child('junk_perl'),
+        'bad commit keeps working file'
+    );
 
     like run(qw!git status --porcelain!), qr/^A\s+4.pm$/sm, 'kept index status';
     run(qw!git reset!);
@@ -221,6 +225,12 @@ in_tempdir $test => sub {
     add_commit('6.pod');
     is_file( '6.pod', '6.pod.podtidy', 'detect .pod' );
 
+    # readme_from
+    ok !-e 'README', 'No README yet';
+    path('.readme_from')->spew('6.pod');
+    add_commit('.readme_from');
+    ok -e 'README', 'README from something';
+
     # Sweetened
     if ($sweetened) {
         run(qw!git mv .perltidyrc .perltidyrc.sweetened!);
@@ -244,48 +254,6 @@ in_tempdir $test => sub {
         like exception { add_commit('8.pl'); }, qr/strictures/, 'perlcritic';
         run(qw!git reset!);
     }
-
-  SKIP: {
-        skip 'No make found', 7 unless eval { run(qw/make --version/); 1; };
-
-        $pre_commit->remove;
-
-        path('Makefile.PL')->spew_utf8( "
-use strict;
-use warnings;
-use ExtUtils::MakeMaker;
-
-WriteMakefile(
-   NAME            => 'Your::Module',
-);
-"
-        );
-
-        like run( $githook_perltidy, qw!install test ATTRIBUTE=1! ),
-          qr/pre-commit/s, 'install make args output';
-
-        like path($pre_commit)->slurp_utf8, qr/pre-commit test ATTRIBUTE=1/,
-          'pre content make args ';
-
-        run(qw!git add Makefile.PL!);
-        like run( qw!git commit -m!, 'add Makefile.PL' ),
-          qr/add Makefile.PL/sm,
-          'make run';
-        ok -e 'Makefile', 'perl Makefile.PL';
-
-        unlink 'Makefile';
-        run(qw!git reset HEAD^!);
-        run(qw!git add Makefile.PL!);
-        like run(
-            qw!git commit -m!,
-            { env => { PERLTIDY_MAKE => '' } },
-            'add Makefile.PL'
-          ),
-          qr/add Makefile.PL/sm,
-          'no make run';
-        ok !-e 'Makefile', 'no perl Makefile.PL';
-    }
-
 };
 done_testing();
 

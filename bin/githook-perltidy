@@ -16,7 +16,7 @@ githook-perltidy - run perltidy and podtidy before Git commits
 
 =head1 VERSION
 
-0.12.0 (2018-08-02)
+0.12.1_1 (2018-08-19)
 
 =head1 SYNOPSIS
 
@@ -137,9 +137,17 @@ F<.perltidyrc.sweetened> file in the repository.
 
 =over
 
+=item --help, -h
+
+Print the full usage message and exit.
+
 =item --verbose, -v
 
 Print underlying Git commands or filesystem actions as they are run.
+
+=item --version, -V
+
+Print the version and exit.
 
 =back
 
@@ -162,6 +170,11 @@ files on disk and in the index.
 
 =back
 
+Previous versions of B<githook-perltidy> made use of a Git post-commit
+hook. If that hook is still in place you will receive an usage error
+message after you commit. The post-comit call to B<githook-perltidy>
+(or possibly even the entire hook) can be removed.
+
 =head1 FILES
 
 =over
@@ -170,7 +183,7 @@ files on disk and in the index.
 
 L<Perl::Tidy> options file.
 
-=item F<.perltidyrc.sweetend>
+=item F<.perltidyrc.sweetened>
 
 L<Perl::Tidy::Sweetened> options file. Conflicts with F<.perltidyrc>.
 
@@ -195,8 +208,8 @@ B<githook-perltidy> specific.
 
 =item NO_GITHOOK_PERLTIDY
 
-Setting this to 1 makes B<githook-perltidy> a no-op. Useful if you want
-to make a non-tidy commit.
+Setting this to 1 makes the C<githook-perltidy pre-commit> command a
+no-op. Useful if you want to make a non-tidy commit.
 
 =back
 

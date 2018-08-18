@@ -5,7 +5,7 @@ use parent 'App::githook::perltidy';
 use File::Basename;
 use Path::Tiny;
 
-our $VERSION = '0.12.0';
+our $VERSION = '0.12.1_1';
 
 sub run {
     my $self = shift;
@@ -22,7 +22,7 @@ sub run {
         die "File/link exists: $pre_file\n" unless $self->{opts}->{force};
     }
 
-    $pre_file->spew("#!/bin/sh\n$0 pre-commit $self->{opts}->{make_args}\n");
+    $pre_file->spew("#!/bin/sh\n$0 pre-commit\n");
     chmod 0755, $pre_file || warn "chmod: $!";
     print "$self->{me}: $pre_file";
     print " (forced)" if $self->{opts}->{force};
@@ -38,7 +38,7 @@ App::githook::perltidy::install - install git hooks
 
 =head1 VERSION
 
-0.12.0 (2018-08-02)
+0.12.1_1 (2018-08-19)
 
 =head1 SEE ALSO
 

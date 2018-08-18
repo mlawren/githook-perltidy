@@ -11,6 +11,8 @@
         - Add global --help and --version options
         - Show what type of tidy is taking place on the status lines.
         - Clearer usage message
+        - Force README file generation when .readme_from is added to
+          the repository.
 
     Bug Fixes:
         - Restore the usage: message name back to "githook-perltidy"

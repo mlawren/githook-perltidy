@@ -225,6 +225,12 @@ in_tempdir $test => sub {
     add_commit('6.pod');
     is_file( '6.pod', '6.pod.podtidy', 'detect .pod' );
 
+    # readme_from
+    ok !-e 'README', 'No README yet';
+    path('.readme_from')->spew('6.pod');
+    add_commit('.readme_from');
+    ok -e 'README', 'README from something';
+
     # Sweetened
     if ($sweetened) {
         run(qw!git mv .perltidyrc .perltidyrc.sweetened!);

@@ -1,11 +1,8 @@
-0.12.1_1 (yyyy-mm-dd)
+0.12.1_1 (2018-08-19)
 
     API / Behaviour Changes:
         - Remove implementation of the depreciated MAKE ARGS feature
         - Remove implementation of legacy post-commit command
-
-    New Features:
-        - None.
 
     Enhancements:
         - Add global --help and --version options
@@ -20,9 +17,6 @@
           App::githook::perltidy.
         - Correctly deal with spaces in the filesystem path to
           the .perltidyrc and other config files.
-
-    Dependencies:
-        - None.
 
     Packaging:
         - Add Github issues url to meta data

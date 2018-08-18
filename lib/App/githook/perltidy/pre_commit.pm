@@ -6,7 +6,7 @@ use parent 'App::githook::perltidy';
 use File::Copy;
 use Path::Tiny;
 
-our $VERSION = '0.12.1_1';
+our $VERSION = '0.12.1_2';
 
 my $temp_dir;
 
@@ -278,7 +278,7 @@ App::githook::perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.12.1_1 (2018-08-19)
+0.12.1_2 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

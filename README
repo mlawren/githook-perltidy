@@ -2,24 +2,27 @@ NAME
     githook-perltidy - run perltidy and podtidy before Git commits
 
 VERSION
-    0.12.1_1 (2018-08-19)
+    0.12.1 (2018-09-22)
 
 SYNOPSIS
         githook-perltidy COMMAND [OPTIONS...]
 
 DESCRIPTION
-    githook-perltidy is a script designed to run from a Git pre-commit hook.
-    It ensures that your Perl and POD files are always cleanly commited by
-    running Perl::Tidy, and optionally Pod::Tidy and Perl::Critic on them.
+    githook-perltidy is a script designed to run from a Git pre-commit
+    hook. It ensures that your Perl and POD files are always cleanly
+    commited by running Perl::Tidy, and optionally Pod::Tidy and
+    Perl::Critic on them.
 
     This script is is efficient: it only modifies files that are being
-    committed and not every file in your repository. It also tries its hardest
-    to be safe: tidying is performed in a temporary location so that your own
-    working files are not left in a bad state in the event of failure.
+    committed and not every file in your repository. It also tries its
+    hardest to be safe: tidying is performed in a temporary location so
+    that your own working files are not left in a bad state in the event
+    of failure.
 
   Repository Setup
-    Before you can use githook-perltidy you need to make sure everyone working
-    on your code uses the the same Perl::Tidy and Pod::Tidy options:
+    Before you can use githook-perltidy you need to make sure everyone
+    working on your code uses the the same Perl::Tidy and Pod::Tidy
+    options:
 
         $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
         $ echo '--columns 72' > .podtidy-opts
@@ -30,55 +33,57 @@ DESCRIPTION
 
     You should also add App::githook::perltidy as an explicit "develop"
     dependency in your cpanfile, Makefile.PL or Build.PL, so that
-    githook-perltidy gets installed when developers install the rest of your
-    project's dependencies.
+    githook-perltidy gets installed when developers install the rest of
+    your project's dependencies.
 
    Sweeter Tidying
     You may prefer to tidy with Perl::Tidy::Sweetened instead of plain
-    Perl::Tidy. To enable that you commit a .perltidyrc.sweetened file instead
-    of .perltidyrc. If you use this feature you will want to add
+    Perl::Tidy. To enable that you commit a .perltidyrc.sweetened file
+    instead of .perltidyrc. If you use this feature you will want to add
     Perl::Tidy::Sweetened as an explicit "develop" dependency in your
     cpanfile, Makefile.PL or Build.PL.
 
    Critical Checks
-    You may additionally wish to have Perl::Critic run against your commits.
-    To enable that you simply commit a .perlcriticrc file to the repository.
-    If you use this feature you will want to add Perl::Critic as an explicit
-    "develop" dependency in your cpanfile, Makefile.PL or Build.PL.
+    You may additionally wish to have Perl::Critic run against your
+    commits. To enable that you simply commit a .perlcriticrc file to
+    the repository. If you use this feature you will want to add
+    Perl::Critic as an explicit "develop" dependency in your cpanfile,
+    Makefile.PL or Build.PL.
 
    README from POD
-    githook-perltidy also has an automatic README-from-POD feature. To enable
-    it you create and commit a file called .readme_from containing the name of
-    the POD source file:
+    githook-perltidy also has an automatic README-from-POD feature. To
+    enable it you create and commit a file called .readme_from
+    containing the name of the POD source file:
 
         $ echo 'lib/Your/App.pm' > .readme_from
         $ echo '^\.readme_from' >> MANIFEST.SKIP
         $ git add .readme_from MANIFEST.SKIP
         $ git commit -m 'githook-perltidy readme_from' && git push
 
-    With the above in place the README file will be updated (and potentially
-    committed) whenever lib/Your/App.pm is committed.
+    With the above in place the README file will be updated (and
+    potentially committed) whenever lib/Your/App.pm is committed.
 
   githook-perltidy install [--force, -f]
     Anyone making commits in your repository should ensure that
     githook-perltidy runs before the Git commit completes. The "install"
     command is used to create a pre-commit file in the $GIT_DIR/hooks/
-    directory. It must be run from the top-level directory of your repository.
+    directory. It must be run from the top-level directory of your
+    repository.
 
         $ githook-perltidy install
         $ cat .git/hooks/pre-commit
         #!/bin/sh
         /usr/local/bin/githook-perltidy pre-commit
 
-    This command fails if there is no .perltidyrc or .perltidyrc.sweetened
-    file in the repository or if the hooks directory isn't found. It will also
-    fail if the Git pre-commit already file exists, unless "--force" is used
-    to replace it.
+    This command fails if there is no .perltidyrc or
+    .perltidyrc.sweetened file in the repository or if the hooks
+    directory isn't found. It will also fail if the Git pre-commit
+    already file exists, unless "--force" is used to replace it.
 
   githook-perltidy pre-commit
-    The "pre-commit" command loops through the Git index, checking out files
-    to a temporary working directory. Then on each file that looks like a Perl
-    or Pod file it:
+    The "pre-commit" command loops through the Git index, checking out
+    files to a temporary working directory. Then on each file that looks
+    like a Perl or Pod file it:
 
     *   Runs perlcritic if .perlcriticrc exists (for a Perl file)
 
@@ -88,47 +93,49 @@ DESCRIPTION
 
     *   Updates the Git index with the tidied file.
 
-    *   Creates a new README file using Pod::Text if the tidied file matches
-        .readme_from. The README file gets committed if it is already being
-        tracked by Git.
+    *   Creates a new README file using Pod::Text if the tidied file
+        matches .readme_from. The README file gets committed if it is
+        already being tracked by Git.
 
-    *   Runs perltidy and/or podtidy on your working tree file. This prevents
-        "git diff" from displaying an eroneous diff.
+    *   Runs perltidy and/or podtidy on your working tree file. This
+        prevents "git diff" from displaying an eroneous diff.
 
-    Any error stops the script (and therefore the commit) immediately. Any
-    successful cleanups to the index and working tree up until that point
-    remain in place.
+    Any error stops the script (and therefore the commit) immediately.
+    Any successful cleanups to the index and working tree up until that
+    point remain in place.
 
-    This command fails if there is no .perltidyrc or .perltidyrc.sweetened
-    file in the repository.
+    This command fails if there is no .perltidyrc or
+    .perltidyrc.sweetened file in the repository.
 
 GLOBAL OPTIONS
     --help, -h
         Print the full usage message and exit.
 
     --verbose, -v
-        Print underlying Git commands or filesystem actions as they are run.
+        Print underlying Git commands or filesystem actions as they are
+        run.
 
     --version, -V
         Print the version and exit.
 
 CAVEATS
-    There are two ways in which githook-perltidy behaviour may affect your
-    existing workflow.
+    There are two ways in which githook-perltidy behaviour may affect
+    your existing workflow.
 
-    *   If you are accustomed to commiting changes to files which are still
-        open in your editor, your editor may complain that the underlying file
-        has changed on disk. Possibily your editor doesn't even detect the
-        change and your next write will not be 'tidy'.
+    *   If you are accustomed to commiting changes to files which are
+        still open in your editor, your editor may complain that the
+        underlying file has changed on disk. Possibily your editor
+        doesn't even detect the change and your next write will not be
+        'tidy'.
 
-    *   Aborting a commit with an empty commit message or via a later command
-        in the pre-commit hook will still result in changed (tidied) files on
-        disk and in the index.
+    *   Aborting a commit with an empty commit message or via a later
+        command in the pre-commit hook will still result in changed
+        (tidied) files on disk and in the index.
 
-    Previous versions of githook-perltidy made use of a Git post-commit hook.
-    If that hook is still in place you will receive an usage error message
-    after you commit. The post-comit call to githook-perltidy (or possibly
-    even the entire hook) can be removed.
+    Previous versions of githook-perltidy made use of a Git post-commit
+    hook. If that hook is still in place you will receive an usage error
+    message after you commit. The post-comit call to githook-perltidy
+    (or possibly even the entire hook) can be removed.
 
 FILES
     .perltidyrc
@@ -144,13 +151,13 @@ FILES
         Perl::Critic options file.
 
     .readme_from
-        Contains name of POD file to convert to a text README file. This is
-        githook-perltidy specific.
+        Contains name of POD file to convert to a text README file. This
+        is githook-perltidy specific.
 
 ENVIRONMENT
     NO_GITHOOK_PERLTIDY
-        Setting this to 1 makes the "githook-perltidy pre-commit" command a
-        no-op. Useful if you want to make a non-tidy commit.
+        Setting this to 1 makes the "githook-perltidy pre-commit"
+        command a no-op. Useful if you want to make a non-tidy commit.
 
 SUPPORT
     This tool is managed via github:
@@ -166,8 +173,8 @@ AUTHOR
 COPYRIGHT AND LICENSE
     Copyright 2011-2018 Mark Lawrence <nomad@null.net>
 
-    This program is free software; you can redistribute it and/or modify it
-    under the terms of the GNU General Public License as published by the Free
-    Software Foundation; either version 3 of the License, or (at your option)
-    any later version.
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 3 of the License, or
+    (at your option) any later version.
 

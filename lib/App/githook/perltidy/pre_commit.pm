@@ -6,7 +6,7 @@ use parent 'App::githook::perltidy';
 use File::Copy;
 use Path::Tiny;
 
-our $VERSION = '0.12.1_1';
+our $VERSION = '0.12.1';
 
 my $temp_dir;
 
@@ -111,8 +111,13 @@ sub readme_from {
     print "  $self->{me}: $file -> README\n"
       if $self->{opts}->{verbose};
 
+    my $width =
+      exists $self->{podtidy_opts}->{columns}
+      ? $self->{podtidy_opts}->{columns}
+      : 72;
+
     require Pod::Text;
-    Pod::Text->new( sentence => 0, width => 78 )
+    Pod::Text->new( sentence => 0, width => $width )
       ->parse_from_file( "$file", 'README' );
 
     if ( system("git ls-files --error-unmatch README > /dev/null 2>&1") == 0 ) {
@@ -192,8 +197,9 @@ sub run {
 
         # If the README conversion is forced then we don't need to tidy
         # the source file
-        if ( $file eq $self->{readme_from} and $force_readme-- ) {
+        if ( $file eq $self->{readme_from} and $force_readme > 0 ) {
             $self->readme_from($tmp_file);
+            $force_readme--;
             next;
         }
 
@@ -278,7 +284,7 @@ App::githook::perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-0.12.1_1 (2018-08-19)
+0.12.1 (2018-09-22)
 
 =head1 SEE ALSO
 

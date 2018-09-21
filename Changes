@@ -1,3 +1,11 @@
+0.12.1 (2018-09-22)
+
+    API / Behaviour Changes:
+        - Set README width from .podtidy-opts --column
+
+    Bug Fixes:
+        - Always tidy file in .readme_from when it changes
+
 0.12.1_1 (2018-08-19)
 
     API / Behaviour Changes:

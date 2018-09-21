@@ -1,7 +1,7 @@
 0.12.1_2 (yyyy-mm-dd)
 
     API / Behaviour Changes:
-        - None.
+        - Set README width from .podtidy-opts --column
 
     New Features:
         - None.

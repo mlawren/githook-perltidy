@@ -111,8 +111,13 @@ sub readme_from {
     print "  $self->{me}: $file -> README\n"
       if $self->{opts}->{verbose};
 
+    my $width =
+      exists $self->{podtidy_opts}->{columns}
+      ? $self->{podtidy_opts}->{columns}
+      : 72;
+
     require Pod::Text;
-    Pod::Text->new( sentence => 0, width => 78 )
+    Pod::Text->new( sentence => 0, width => $width )
       ->parse_from_file( "$file", 'README' );
 
     if ( system("git ls-files --error-unmatch README > /dev/null 2>&1") == 0 ) {

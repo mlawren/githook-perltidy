@@ -1,22 +1,10 @@
-0.12.1_2 (yyyy-mm-dd)
+0.12.1 (yyyy-mm-dd)
 
     API / Behaviour Changes:
         - Set README width from .podtidy-opts --column
 
-    New Features:
-        - None.
-
-    Enhancements:
-        - None.
-
     Bug Fixes:
         - Always tidy file in .readme_from when it changes
-
-    Dependencies:
-        - None.
-
-    Packaging:
-        - None.
 
 0.12.1_1 (2018-08-19)
 

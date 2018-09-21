@@ -10,7 +10,7 @@
         - None.
 
     Bug Fixes:
-        - None.
+        - Always tidy file in .readme_from when it changes
 
     Dependencies:
         - None.

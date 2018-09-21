@@ -197,8 +197,9 @@ sub run {
 
         # If the README conversion is forced then we don't need to tidy
         # the source file
-        if ( $file eq $self->{readme_from} and $force_readme-- ) {
+        if ( $file eq $self->{readme_from} and $force_readme > 0 ) {
             $self->readme_from($tmp_file);
+            $force_readme--;
             next;
         }
 

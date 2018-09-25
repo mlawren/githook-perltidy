@@ -1,3 +1,9 @@
+0.12.2 (2018-09-25)
+
+    Enhancements:
+        - Warn when githook-perltidy related .dotfiles are not covered
+          by MANIFEST.SKIP.
+
 0.12.1 (2018-09-22)
 
     API / Behaviour Changes:

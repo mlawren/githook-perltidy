@@ -5,7 +5,7 @@ use File::Basename;
 use OptArgs2;
 use Path::Tiny;
 
-our $VERSION = '0.12.1';
+our $VERSION = '0.12.2';
 
 cmd 'App::githook::perltidy' => (
     name    => 'githook-perltidy',
@@ -57,20 +57,6 @@ subcmd 'App::githook::perltidy::install' => (
 subcmd 'App::githook::perltidy::pre_commit' =>
   ( comment => 'tidy Perl and POD files in the Git index', );
 
-sub have_committed {
-    my $file = shift;
-
-    if ( -e $file ) {
-        die $file->basename . " is not committed.\n"
-          unless system(
-            'git ls-files --error-unmatch "' . $file . '" > /dev/null 2>&1' )
-          == 0;
-
-        return 1;
-    }
-    return 0;
-}
-
 sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;
@@ -88,25 +74,29 @@ sub new {
     $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify
       if $ENV{GIT_INDEX_FILE};
 
-    my $repo         = path( $ENV{GIT_DIR} )->parent;
-    my $perltidyrc   = $repo->child('.perltidyrc');
-    my $perltidyrc_s = $repo->child('.perltidyrc.sweetened');
-    my $podtidyrc    = $repo->child('.podtidy-opts');
-    my $perlcriticrc = $repo->child('.perlcriticrc');
-    my $readme_from  = $repo->child('.readme_from');
+    my $repo          = path( $ENV{GIT_DIR} )->parent;
+    my $manifest_skip = $repo->child('MANIFEST.SKIP');
+    my $perltidyrc    = $repo->child('.perltidyrc');
+    my $perltidyrc_s  = $repo->child('.perltidyrc.sweetened');
+    my $podtidyrc     = $repo->child('.podtidy-opts');
+    my $perlcriticrc  = $repo->child('.perlcriticrc');
+    my $readme_from   = $repo->child('.readme_from');
 
-    if ( have_committed($perltidyrc) ) {
+    $self->{manifest_skip} =
+      [ map { chomp; $_ } $manifest_skip->exists ? $manifest_skip->lines : () ];
+
+    if ( $self->have_committed($perltidyrc) ) {
         $self->{perltidyrc} = $perltidyrc;
 
         die ".perltidyrc and .perltidyrc.sweetened are incompatible\n"
-          if have_committed($perltidyrc_s);
+          if $self->have_committed($perltidyrc_s);
     }
-    elsif ( have_committed($perltidyrc_s) ) {
+    elsif ( $self->have_committed($perltidyrc_s) ) {
         $self->{perltidyrc} = $perltidyrc_s;
         $self->{sweetened}  = 1;
     }
 
-    if ( have_committed($podtidyrc) ) {
+    if ( $self->have_committed($podtidyrc) ) {
         $self->{podtidyrc} = $podtidyrc;
         my $pod_opts = {};
 
@@ -121,17 +111,40 @@ sub new {
     }
 
     $self->{readme_from} = '';
-    if ( have_committed($readme_from) ) {
+    if ( $self->have_committed($readme_from) ) {
 
         ( $self->{readme_from} ) =
           path($readme_from)->lines( { chomp => 1, count => 1 } );
     }
 
-    if ( have_committed($perlcriticrc) ) {
+    if ( $self->have_committed($perlcriticrc) ) {
         $self->{perlcriticrc} = $perlcriticrc;
     }
 
     $self;
+}
+
+sub have_committed {
+    my $self = shift;
+    my $file = shift;
+
+    if ( -e $file ) {
+        my $basename = $file->basename;
+        die $basename . " is not committed.\n"
+          unless system(
+            'git ls-files --error-unmatch "' . $file . '" > /dev/null 2>&1' )
+          == 0;
+
+        if ( my @manifest_skip = @{ $self->{manifest_skip} } ) {
+            $self->lprint(
+                "githook-perltidy: MANIFEST.SKIP does not cover $basename\n")
+              unless grep { $basename =~ m/$_/ } @manifest_skip;
+        }
+
+        return 1;
+    }
+
+    return 0;
 }
 
 my $old = '';
@@ -188,7 +201,7 @@ App::githook::perltidy - OptArgs2 module for githook-perltidy.
 
 =head1 VERSION
 
-0.12.1 (2018-09-22)
+0.12.2 (2018-09-25)
 
 =head1 SEE ALSO
 

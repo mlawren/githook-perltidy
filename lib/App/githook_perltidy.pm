@@ -1,7 +1,7 @@
 package App::githook_perltidy;
 use strict;
 
-our $VERSION = '0.12.1';
+our $VERSION = '0.12.2';
 
 1;
 
@@ -13,7 +13,7 @@ App::githook_perltidy - legacy package for dependencies
 
 =head1 VERSION
 
-0.12.1 (2018-09-22)
+0.12.2 (2018-09-25)
 
 =head1 DESCRIPTION
 

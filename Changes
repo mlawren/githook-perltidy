@@ -1,4 +1,4 @@
-0.12.2 (yyyy-mm-dd)
+0.12.2 (2018-09-25)
 
     Enhancements:
         - Warn when githook-perltidy related .dotfiles are not covered

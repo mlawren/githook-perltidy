@@ -1,23 +1,8 @@
-0.12.2_1 (yyyy-mm-dd)
-
-    API / Behaviour Changes:
-        - None.
-
-    New Features:
-        - None.
+0.12.2 (yyyy-mm-dd)
 
     Enhancements:
         - Warn when githook-perltidy related .dotfiles are not covered
           by MANIFEST.SKIP.
-
-    Bug Fixes:
-        - None.
-
-    Dependencies:
-        - None.
-
-    Packaging:
-        - None.
 
 0.12.1 (2018-09-22)
 

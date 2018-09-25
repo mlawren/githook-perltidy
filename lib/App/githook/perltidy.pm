@@ -193,15 +193,33 @@ sub sys {
 
 1;
 
+package App::githook_perltidy;
+
+our $VERSION = '0.12.3_1';
+
+1;
+
 __END__
 
 =head1 NAME
 
-App::githook::perltidy - OptArgs2 module for githook-perltidy.
+App::githook::perltidy - implementation guts of githook-perltidy.
+
+App::githook_perltidy - legacy package for dependencies
 
 =head1 VERSION
 
 0.12.3_1 (yyyy-mm-dd)
+
+=head1 DESCRIPTION
+
+The B<App::githook::perltidy> module contains the implementation of the
+L<githook-perltidy> script.
+
+The B<App::githook_perltidy> module only exists for backwards
+compatibility so that authors who have 'recommended' or 'required' it
+in a cpanfile or Makefile.PL or Build.PL get the new
+B<App::githook::perltidy> version.
 
 =head1 SEE ALSO
 

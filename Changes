@@ -16,7 +16,7 @@
         - None.
 
     Packaging:
-        - None.
+        - Fold App/githook_perltidy.pm into lib/App/githook/perltidy.pm.
 
 0.12.2 (2018-09-25)
 

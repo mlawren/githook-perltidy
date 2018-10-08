@@ -188,7 +188,7 @@ sub sys {
       . $self->{me} . ': '
       . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n"
       if $self->{opts}->{verbose};
-    system("@_") == 0 or Carp::croak "@_ failed: $?";
+    system(@_) == 0 or Carp::croak "@_ failed: $?";
 }
 
 1;

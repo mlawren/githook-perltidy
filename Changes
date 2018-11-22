@@ -11,6 +11,7 @@
 
     Bug Fixes:
         - Support filenames with spaces
+        - Fix broken "configures" Path::Tiny dependency
 
     Dependencies:
         - None.

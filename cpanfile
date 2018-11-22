@@ -1,7 +1,7 @@
 #!perl
 
 on configure => sub {
-    requires => 'Path::Tiny';
+    requires 'Path::Tiny' => 0;
 };
 
 on runtime => sub {

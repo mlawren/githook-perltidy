@@ -5,7 +5,7 @@ use File::Basename;
 use OptArgs2;
 use Path::Tiny;
 
-our $VERSION = '0.12.3_1';
+our $VERSION = '0.12.3';
 
 cmd 'App::githook::perltidy' => (
     name    => 'githook-perltidy',
@@ -195,7 +195,7 @@ sub sys {
 
 package App::githook_perltidy;
 
-our $VERSION = '0.12.3_1';
+our $VERSION = '0.12.3';
 
 1;
 
@@ -209,7 +209,7 @@ App::githook_perltidy - legacy package for dependencies
 
 =head1 VERSION
 
-0.12.3_1 (yyyy-mm-dd)
+0.12.3 (yyyy-mm-dd)
 
 =head1 DESCRIPTION
 

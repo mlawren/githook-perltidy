@@ -1,20 +1,8 @@
-0.12.3_1 (yyyy-mm-dd)
-
-    API / Behaviour Changes:
-        - None.
-
-    New Features:
-        - None.
-
-    Enhancements:
-        - None.
+0.12.3 (yyyy-mm-dd)
 
     Bug Fixes:
         - Support filenames with spaces
         - Fix broken "configures" Path::Tiny dependency
-
-    Dependencies:
-        - None.
 
     Packaging:
         - Fold App/githook_perltidy.pm into lib/App/githook/perltidy.pm.

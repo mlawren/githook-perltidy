@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy before Git commits
 
 VERSION
-    0.12.3 (2018-11-22)
+    0.12.4_1 (yyyy-mm-dd)
 
 SYNOPSIS
         githook-perltidy COMMAND [OPTIONS...]

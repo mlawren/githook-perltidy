@@ -175,9 +175,9 @@ in_tempdir $test => sub {
     add_commit('1');
     is_file( '1', $srcdir->child('untidy'), 'no #!perl | .pl | .pm: no tidy' );
 
-    copy_src( 'untidy', '2.pl' );
-    add_commit('2.pl');
-    is_file( '2.pl', '2.pl.perltidy', 'detect .pl' );
+    copy_src( 'untidy', '2 with spaces.pl' );
+    add_commit('2 with spaces.pl');
+    is_file( '2 with spaces.pl', '2 with spaces.pl.perltidy', 'detect .pl' );
 
     copy_src( 'untidy', '3.pm' );
     add_commit('3.pm');

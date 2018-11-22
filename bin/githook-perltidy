@@ -12,11 +12,11 @@ __END__
 
 =head1 NAME
 
-githook-perltidy - run perltidy and podtidy before Git commits
+githook-perltidy - run perltidy before Git commits
 
 =head1 VERSION
 
-0.12.2 (2018-09-25)
+0.12.3 (2018-11-22)
 
 =head1 SYNOPSIS
 
@@ -25,9 +25,9 @@ githook-perltidy - run perltidy and podtidy before Git commits
 =head1 DESCRIPTION
 
 B<githook-perltidy> is a script designed to run from a Git pre-commit
-hook. It ensures that your Perl and POD files are always cleanly
-commited by running L<Perl::Tidy>, and optionally L<Pod::Tidy> and
-L<Perl::Critic> on them.
+hook. It ensures that your Perl files are always cleanly commited with
+L<Perl::Tidy> (or L<Perl::Tidy::Sweetened>). The script can also call
+L<Perl::Critic> and L<Pod::Tidy> if you want.
 
 This script is is efficient: it only modifies files that are being
 committed and not every file in your repository. It also tries its
@@ -38,8 +38,8 @@ failure.
 =head2 Repository Setup
 
 Before you can use B<githook-perltidy> you need to make sure everyone
-working on your code uses the the same L<Perl::Tidy> and L<Pod::Tidy>
-options:
+working on your code uses the the same L<Perl::Tidy> and (probably)
+L<Pod::Tidy> options:
 
     $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
     $ echo '--columns 72' > .podtidy-opts

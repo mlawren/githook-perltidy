@@ -1,3 +1,12 @@
+0.12.3 (2018-11-22)
+
+    Bug Fixes:
+        - Support filenames with spaces
+        - Fix broken "configures" Path::Tiny dependency
+
+    Packaging:
+        - Fold App/githook_perltidy.pm into lib/App/githook/perltidy.pm.
+
 0.12.2 (2018-09-25)
 
     Enhancements:

@@ -13,6 +13,7 @@ build_requires:
   Time::Piece: '0'
 configure_requires:
   ExtUtils::MakeMaker::CPANfile: '0.08'
+  Path::Tiny: '0'
 dynamic_config: 0
 generated_by: 'ExtUtils::MakeMaker version 7.34, CPAN::Meta::Converter version 2.150010'
 license: gpl
@@ -38,5 +39,5 @@ requires:
   Pod::Tidy: '0'
 resources:
   repository: ssh://git@github.com/mlawren/githook-perltidy.git
-version: v0.12.2
+version: v0.12.3
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

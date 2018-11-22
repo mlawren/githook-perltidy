@@ -32,7 +32,8 @@
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker::CPANfile" : "0.08"
+            "ExtUtils::MakeMaker::CPANfile" : "0.08",
+            "Path::Tiny" : "0"
          }
       },
       "runtime" : {
@@ -70,6 +71,6 @@
          "url" : "ssh://git@github.com/mlawren/githook-perltidy.git"
       }
    },
-   "version" : "v0.12.2",
+   "version" : "v0.12.3",
    "x_serialization_backend" : "JSON::PP version 2.27400_02"
 }

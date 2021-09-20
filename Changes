@@ -18,6 +18,8 @@
     Packaging:
         - Restore App/githook_perltidy.pm as App::githook_perltidy
           doesn't seem to be indexed from lib/App/githook/perltidy.pm.
+        - Add missing 'configure' dependency on
+          ExtUtils::MakeMaker::CPANfile.
 
 0.12.3 (2018-11-22)
 

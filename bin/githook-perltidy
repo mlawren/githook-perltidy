@@ -98,8 +98,8 @@ directory of your repository.
 
 This command fails if there is no F<.perltidyrc> or
 F<.perltidyrc.sweetened> file in the repository or if the hooks
-directory isn't found. It will also fail if the Git F<pre-commit>
-already file exists, unless C<--force> is used to replace it.
+directory isn't found. It will also fail if the Git F<pre-commit> file
+already exists, unless C<--force> is used to replace it.
 
 =head2 githook-perltidy pre-commit
 

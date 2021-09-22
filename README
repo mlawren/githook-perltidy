@@ -77,8 +77,8 @@ DESCRIPTION
 
     This command fails if there is no .perltidyrc or
     .perltidyrc.sweetened file in the repository or if the hooks
-    directory isn't found. It will also fail if the Git pre-commit
-    already file exists, unless "--force" is used to replace it.
+    directory isn't found. It will also fail if the Git pre-commit file
+    already exists, unless "--force" is used to replace it.
 
   githook-perltidy pre-commit
     The "pre-commit" command loops through the Git index, checking out

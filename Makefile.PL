@@ -10,7 +10,13 @@ BEGIN {
 use strict;
 use warnings;
 use 5.006;
+use Data::Dumper;
 use ExtUtils::MakeMaker::CPANfile;
+
+$Data::Dumper::Indent = 0;
+my $newinc = Dumper( \@INC );
+$newinc =~ s/\$VAR1/\@INC/;
+$newinc =~ s/=\s*\[(.*)\];/= ($1);/;
 
 WriteMakefile(
     NAME       => 'App::githook::perltidy',
@@ -20,6 +26,7 @@ WriteMakefile(
     LICENSE    => 'gpl_3',
     EXE_FILES  => ['bin/githook-perltidy'],
     test       => { RECURSIVE_TEST_FILES => 1, },
+    PM_FILTER  => qq{perl -pe "s!\@INC = \@INC!$newinc!"},
     META_MERGE => {
         'meta-spec' => { version => 2 },
         no_index    => {
@@ -72,11 +79,10 @@ BEGIN {
     \$ENV{SHARE_DIR} //= "$share";
 }
 use lib "$lib";
-### Original file continues from here ###
-
+my \$ret = do "$script";
+die \$@ if \$@;
+\$ret;
 EOF
-
-        $t_script->append_utf8( $script->slurp_utf8 );
         $t_script->chmod('a+x');
     }
 }

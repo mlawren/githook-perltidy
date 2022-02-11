@@ -44,7 +44,7 @@ L<Pod::Tidy> options:
     $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
     $ echo '--columns 72' > .podtidy-opts
     $ echo '^\.perltidyrc' >> MANIFEST.SKIP
-    $ echo '^\.podtidy-ops' >> MANIFEST.SKIP
+    $ echo '^\.podtidy-opts' >> MANIFEST.SKIP
     $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
     $ git commit -m 'githook-perltidy support' && git push
 

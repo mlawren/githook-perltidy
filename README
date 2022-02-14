@@ -27,7 +27,7 @@ DESCRIPTION
         $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
         $ echo '--columns 72' > .podtidy-opts
         $ echo '^\.perltidyrc' >> MANIFEST.SKIP
-        $ echo '^\.podtidy-ops' >> MANIFEST.SKIP
+        $ echo '^\.podtidy-opts' >> MANIFEST.SKIP
         $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
         $ git commit -m 'githook-perltidy support' && git push
 
@@ -35,6 +35,11 @@ DESCRIPTION
     dependency in your cpanfile, Makefile.PL or Build.PL, so that
     githook-perltidy gets installed when developers install the rest of
     your project's dependencies.
+
+            # For example in your cpanfile:
+            on develop => sub {
+                    requires 'App::githook::perltidy' => 0;
+            };
 
    Sweeter Tidying
     You may prefer to tidy with Perl::Tidy::Sweetened instead of plain

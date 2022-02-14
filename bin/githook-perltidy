@@ -53,6 +53,11 @@ dependency in your F<cpanfile>, F<Makefile.PL> or F<Build.PL>, so that
 B<githook-perltidy> gets installed when developers install the rest of
 your project's dependencies.
 
+	# For example in your cpanfile:
+	on develop => sub {
+		requires 'App::githook::perltidy' => 0;
+	};
+
 =head3 Sweeter Tidying
 
 You may prefer to tidy with L<Perl::Tidy::Sweetened> instead of plain

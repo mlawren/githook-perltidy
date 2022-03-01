@@ -20,6 +20,7 @@
           doesn't seem to be indexed from lib/App/githook/perltidy.pm.
         - Add missing 'configure' dependency on
           ExtUtils::MakeMaker::CPANfile.
+        - Depend on OptArgs2 version 2.0.0.
 
 0.12.3 (2018-11-22)
 

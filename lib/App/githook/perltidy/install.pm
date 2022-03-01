@@ -2,7 +2,6 @@ package App::githook::perltidy::install;
 use strict;
 use warnings;
 use parent 'App::githook::perltidy';
-use File::Basename;
 use Path::Tiny;
 
 our $VERSION = '0.12.4_1';
@@ -24,7 +23,7 @@ sub run {
 
     $pre_file->spew("#!/bin/sh\n$0 pre-commit\n");
     chmod 0755, $pre_file || warn "chmod: $!";
-    print "$self->{me}: $pre_file";
+    print $pre_file;
     print " (forced)" if $self->{opts}->{force};
     print "\n";
 }

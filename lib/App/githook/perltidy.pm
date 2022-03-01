@@ -17,15 +17,7 @@ cmd 'App::githook::perltidy' => (
             required => 1,
         );
 
-        opt help => (
-            isa     => 'Flag',
-            alias   => 'h',
-            comment => 'print help message and exit',
-            trigger => sub {
-                my ( $cmd, $value ) = @_;
-                die $cmd->usage(OptArgs2::STYLE_FULL);
-            }
-        );
+        opt help => ( ishelp => 1, );
 
         opt verbose => (
             isa     => 'Flag',
@@ -66,11 +58,9 @@ sub new {
     my $opts = shift || die "usage: $class->new(\$opts)";
     my $self = bless { opts => $opts }, $class;
 
-    $self->{me} //= basename($0);
-
     # Both of these start out as relative which breaks when we want to
     # modify the repo and index from a different working tree
-    $ENV{GIT_DIR} = path( $ENV{GIT_DIR} || '.git' )->absolute;
+    $ENV{GIT_DIR}        = path( $ENV{GIT_DIR} || '.git' )->absolute;
     $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify
       if $ENV{GIT_INDEX_FILE};
 
@@ -136,8 +126,7 @@ sub have_committed {
           == 0;
 
         if ( my @manifest_skip = @{ $self->{manifest_skip} } ) {
-            $self->lprint(
-                "githook-perltidy: MANIFEST.SKIP does not cover $basename\n")
+            warn "githook-perltidy: MANIFEST.SKIP does not cover $basename\n"
               unless grep { $basename =~ m/$_/ } @manifest_skip;
         }
 
@@ -145,50 +134,6 @@ sub have_committed {
     }
 
     return 0;
-}
-
-my $old = '';
-
-sub lprint {
-    my $self = shift;
-    my $msg  = shift;
-
-    if ( $self->{opts}->{verbose} or !-t select ) {
-        if ( $msg eq "\n" ) {
-            print $old, "\n";
-            $old = '';
-            return;
-        }
-        elsif ( $msg =~ m/\n/ ) {
-            $old = '';
-            return print $msg;
-        }
-        $old = $msg;
-        return;
-    }
-
-    local $| ||= 1;
-
-    my $chars;
-    if ( $msg eq "\n" ) {
-        $chars = print $old, "\n";
-    }
-    else {
-        $chars = print ' ' x length($old), "\b" x length($old), $msg, "\r";
-    }
-
-    $old = $msg =~ m/\n/ ? '' : $msg;
-
-    return $chars;
-}
-
-sub sys {
-    my $self = shift;
-    print '  '
-      . $self->{me} . ': '
-      . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n"
-      if $self->{opts}->{verbose};
-    system(@_) == 0 or Carp::croak "@_ failed: $?";
 }
 
 1;

@@ -7,7 +7,7 @@
         - None.
 
     Enhancements:
-        - None.
+        - Simplify output code with OptArgs2::StatusLine.
 
     Bug Fixes:
         - None.

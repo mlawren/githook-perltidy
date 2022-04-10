@@ -21,10 +21,19 @@ sub run {
         die "File/link exists: $pre_file\n" unless $self->{opts}->{force};
     }
 
-    $pre_file->spew("#!/bin/sh\n$0 pre-commit\n");
+    my $gp = path($0);
+    if ( $self->{opts}->{absolute} ) {
+        $gp = $gp->realpath;
+    }
+    else {
+        $gp = $gp->basename;
+    }
+
+    $pre_file->spew(qq{#!/bin/sh\nPERL5LIB="" $gp pre-commit\n});
     chmod 0755, $pre_file || warn "chmod: $!";
     print $pre_file;
-    print " (forced)" if $self->{opts}->{force};
+    print " (forced)"   if $self->{opts}->{force};
+    print " (absolute)" if $self->{opts}->{absolute};
     print "\n";
 }
 

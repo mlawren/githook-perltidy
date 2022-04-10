@@ -1,10 +1,10 @@
 0.12.4_1 (yyyy-mm-dd)
 
     API / Behaviour Changes:
-        - None.
+        - Use $PATH to find githook-perltidy in pre-commit hook
 
     New Features:
-        - None.
+        - Add "--absolute" flag to restore full-path call in hook.
 
     Enhancements:
         - Simplify output code with OptArgs2::StatusLine.

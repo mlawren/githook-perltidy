@@ -88,7 +88,7 @@ containing the name of the POD source file:
 With the above in place the F<README> file will be updated (and
 potentially committed) whenever F<lib/Your/App.pm> is committed.
 
-=head2 githook-perltidy install [--force, -f]
+=head2 githook-perltidy install [--force, -f] [--absolute, -a]
 
 Anyone making commits in your repository should ensure that
 B<githook-perltidy> runs before the Git commit completes.  The
@@ -99,12 +99,21 @@ directory of your repository.
     $ githook-perltidy install
     $ cat .git/hooks/pre-commit
     #!/bin/sh
-    /usr/local/bin/githook-perltidy pre-commit
+    PERL5LIB="" githook-perltidy pre-commit
 
-This command fails if there is no F<.perltidyrc> or
+The install command fails if there is no F<.perltidyrc> or
 F<.perltidyrc.sweetened> file in the repository or if the hooks
 directory isn't found. It will also fail if the Git F<pre-commit> file
 already exists, unless C<--force> is used to replace it.
+
+By default the hook finds B<githook-perltidy> via C<$PATH>. If regular
+changes to your PATH (e.g. due to perlbrew, local::lib, etc) break
+that, you I<may> wish to do an C<--absolute> install instead to use the
+full path. However, be aware that upgrading your system perl and/or
+B<githook-perltidy> might invalidate that, requiring you to reinstall
+the hook to make it work again. Ideally you would install
+B<githook-perltidy> in a system-wide location (e.g. /usr/local/bin)
+that won't change.
 
 =head2 githook-perltidy pre-commit
 

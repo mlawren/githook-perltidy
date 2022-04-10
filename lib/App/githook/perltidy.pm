@@ -39,9 +39,15 @@ subcmd 'App::githook::perltidy::install' => (
     comment => 'install a Git pre-commit hook',
     optargs => sub {
         opt force => (
-            isa     => 'Bool',
+            isa     => 'Flag',
             comment => 'Overwrite existing git commit hooks',
             alias   => 'f',
+        );
+
+        opt absolute => (
+            isa     => 'Flag',
+            comment => 'Use full path to script in hook',
+            alias   => 'a',
         );
     },
 );

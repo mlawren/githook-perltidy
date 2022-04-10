@@ -65,6 +65,8 @@ sub create_t_scripts {
     my $share = $root->child('share');
     my $t     = $root->child('t');
 
+    mkdir $t;
+
     my @scripts = @_ ? @_ : $bin->children;
 
     foreach my $script (@scripts) {

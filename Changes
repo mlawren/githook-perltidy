@@ -21,7 +21,8 @@
 1.0.0_1 (2022-04-10)
 
     API / Behaviour Changes:
-        - Use $PATH to find githook-perltidy in pre-commit hook
+        - Use $PATH to find githook-perltidy in pre-commit hook, fixing
+          https://rt.cpan.org/Ticket/Display.html?id=139159.
 
     New Features:
         - Add "--absolute" flag to restore full-path call in hook.

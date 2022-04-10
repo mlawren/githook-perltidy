@@ -12,10 +12,10 @@ build_requires:
   Test::TempDir::Tiny: '0'
   Time::Piece: '0'
 configure_requires:
-  ExtUtils::MakeMaker::CPANfile: '0.08'
+  ExtUtils::MakeMaker::CPANfile: '0.09'
   Path::Tiny: '0'
 dynamic_config: 0
-generated_by: 'ExtUtils::MakeMaker version 7.34, CPAN::Meta::Converter version 2.150010'
+generated_by: 'ExtUtils::MakeMaker version 7.64, CPAN::Meta::Converter version 2.150010'
 license: gpl
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.4.html
@@ -32,12 +32,12 @@ no_index:
 requires:
   Carp: '0'
   File::Basename: '0'
-  OptArgs2: v0.0.10
+  OptArgs2: v2.0.0
   Path::Tiny: '0'
   Perl::Tidy: '0'
   Pod::Text: '0'
   Pod::Tidy: '0'
 resources:
   repository: ssh://git@github.com/mlawren/githook-perltidy.git
-version: v0.12.3
+version: v1.0.0_1
 x_serialization_backend: 'CPAN::Meta::YAML version 0.018'

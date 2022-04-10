@@ -1,3 +1,22 @@
+1.0.0_1 (2022-04-10)
+
+    API / Behaviour Changes:
+        - Use $PATH to find githook-perltidy in pre-commit hook
+
+    New Features:
+        - Add "--absolute" flag to restore full-path call in hook.
+
+    Enhancements:
+        - Simplify output code with OptArgs2::StatusLine.
+
+    Dependencies:
+        - Add missing 'configure' dependency on ExtUtils::MakeMaker::CPANfile.
+        - Depend on OptArgs2 version 2.0.0.
+
+    Packaging:
+        - Restore App/githook_perltidy.pm as App::githook_perltidy
+          doesn't seem to be indexed from lib/App/githook/perltidy.pm.
+
 0.12.3 (2018-11-22)
 
     Bug Fixes:

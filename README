@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy before Git commits
 
 VERSION
-    0.12.3 (2018-11-22)
+    1.0.0_1 (2022-04-10)
 
 SYNOPSIS
         githook-perltidy COMMAND [OPTIONS...]
@@ -27,7 +27,7 @@ DESCRIPTION
         $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
         $ echo '--columns 72' > .podtidy-opts
         $ echo '^\.perltidyrc' >> MANIFEST.SKIP
-        $ echo '^\.podtidy-ops' >> MANIFEST.SKIP
+        $ echo '^\.podtidy-opts' >> MANIFEST.SKIP
         $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
         $ git commit -m 'githook-perltidy support' && git push
 
@@ -35,6 +35,11 @@ DESCRIPTION
     dependency in your cpanfile, Makefile.PL or Build.PL, so that
     githook-perltidy gets installed when developers install the rest of
     your project's dependencies.
+
+            # For example in your cpanfile:
+            on develop => sub {
+                    requires 'App::githook::perltidy' => 0;
+            };
 
    Sweeter Tidying
     You may prefer to tidy with Perl::Tidy::Sweetened instead of plain
@@ -63,7 +68,7 @@ DESCRIPTION
     With the above in place the README file will be updated (and
     potentially committed) whenever lib/Your/App.pm is committed.
 
-  githook-perltidy install [--force, -f]
+  githook-perltidy install [--force, -f] [--absolute, -a]
     Anyone making commits in your repository should ensure that
     githook-perltidy runs before the Git commit completes. The "install"
     command is used to create a pre-commit file in the $GIT_DIR/hooks/
@@ -73,12 +78,21 @@ DESCRIPTION
         $ githook-perltidy install
         $ cat .git/hooks/pre-commit
         #!/bin/sh
-        /usr/local/bin/githook-perltidy pre-commit
+        PERL5LIB="" githook-perltidy pre-commit
 
-    This command fails if there is no .perltidyrc or
+    The install command fails if there is no .perltidyrc or
     .perltidyrc.sweetened file in the repository or if the hooks
-    directory isn't found. It will also fail if the Git pre-commit
-    already file exists, unless "--force" is used to replace it.
+    directory isn't found. It will also fail if the Git pre-commit file
+    already exists, unless "--force" is used to replace it.
+
+    By default the hook finds githook-perltidy via $PATH. If regular
+    changes to your PATH (e.g. due to perlbrew, local::lib, etc) break
+    that, you *may* wish to do an "--absolute" install instead to use
+    the full path. However, be aware that upgrading your system perl
+    and/or githook-perltidy might invalidate that, requiring you to
+    reinstall the hook to make it work again. Ideally you would install
+    githook-perltidy in a system-wide location (e.g. /usr/local/bin)
+    that won't change.
 
   githook-perltidy pre-commit
     The "pre-commit" command loops through the Git index, checking out
@@ -171,7 +185,7 @@ AUTHOR
     Mark Lawrence <nomad@null.net>
 
 COPYRIGHT AND LICENSE
-    Copyright 2011-2018 Mark Lawrence <nomad@null.net>
+    Copyright 2011-2022 Mark Lawrence <nomad@null.net>
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

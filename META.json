@@ -4,13 +4,13 @@
       "Mark Lawrence <nomad@null.net>"
    ],
    "dynamic_config" : 0,
-   "generated_by" : "ExtUtils::MakeMaker version 7.34, CPAN::Meta::Converter version 2.150010",
+   "generated_by" : "ExtUtils::MakeMaker version 7.64, CPAN::Meta::Converter version 2.150010",
    "license" : [
       "gpl_3"
    ],
    "meta-spec" : {
       "url" : "http://search.cpan.org/perldoc?CPAN::Meta::Spec",
-      "version" : "2"
+      "version" : 2
    },
    "name" : "App-githook-perltidy",
    "no_index" : {
@@ -32,7 +32,7 @@
       },
       "configure" : {
          "requires" : {
-            "ExtUtils::MakeMaker::CPANfile" : "0.08",
+            "ExtUtils::MakeMaker::CPANfile" : "0.09",
             "Path::Tiny" : "0"
          }
       },
@@ -40,7 +40,7 @@
          "requires" : {
             "Carp" : "0",
             "File::Basename" : "0",
-            "OptArgs2" : "v0.0.10",
+            "OptArgs2" : "v2.0.0",
             "Path::Tiny" : "0",
             "Perl::Tidy" : "0",
             "Pod::Text" : "0",
@@ -63,7 +63,7 @@
          }
       }
    },
-   "release_status" : "stable",
+   "release_status" : "unstable",
    "resources" : {
       "bugtracker" : {},
       "repository" : {
@@ -71,6 +71,6 @@
          "url" : "ssh://git@github.com/mlawren/githook-perltidy.git"
       }
    },
-   "version" : "v0.12.3",
-   "x_serialization_backend" : "JSON::PP version 2.27400_02"
+   "version" : "v1.0.0_1",
+   "x_serialization_backend" : "JSON::PP version 4.02"
 }

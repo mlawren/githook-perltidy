@@ -171,6 +171,12 @@ in_tempdir $test => sub {
     like run( $githook_perltidy, qw!install -f! ),
       qr/pre-commit \(forced\)/s, 'install -f';
 
+    like run( $githook_perltidy, qw!install -f --absolute! ),
+      qr/pre-commit \(forced\) \(absolute\)/s, 'install -f --absolute';
+
+    like run( $githook_perltidy, qw!install -f --a! ),
+      qr/pre-commit \(forced\) \(absolute\)/s, 'install -f -a';
+
     copy_src( 'untidy', '1' );
     add_commit('1');
     is_file( '1', $srcdir->child('untidy'), 'no #!perl | .pl | .pm: no tidy' );

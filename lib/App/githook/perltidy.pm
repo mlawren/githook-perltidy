@@ -5,7 +5,7 @@ use File::Basename;
 use OptArgs2;
 use Path::Tiny;
 
-our $VERSION = '0.12.3';
+our $VERSION = '1.0.0_1';
 
 cmd 'App::githook::perltidy' => (
     name    => 'githook-perltidy',
@@ -17,15 +17,7 @@ cmd 'App::githook::perltidy' => (
             required => 1,
         );
 
-        opt help => (
-            isa     => 'Flag',
-            alias   => 'h',
-            comment => 'print help message and exit',
-            trigger => sub {
-                my ( $cmd, $value ) = @_;
-                die $cmd->usage(OptArgs2::STYLE_FULL);
-            }
-        );
+        opt help => ( ishelp => 1, );
 
         opt verbose => (
             isa     => 'Flag',
@@ -47,9 +39,15 @@ subcmd 'App::githook::perltidy::install' => (
     comment => 'install a Git pre-commit hook',
     optargs => sub {
         opt force => (
-            isa     => 'Bool',
+            isa     => 'Flag',
             comment => 'Overwrite existing git commit hooks',
             alias   => 'f',
+        );
+
+        opt absolute => (
+            isa     => 'Flag',
+            comment => 'Use full path to script in hook',
+            alias   => 'a',
         );
     },
 );
@@ -66,11 +64,9 @@ sub new {
     my $opts = shift || die "usage: $class->new(\$opts)";
     my $self = bless { opts => $opts }, $class;
 
-    $self->{me} //= basename($0);
-
     # Both of these start out as relative which breaks when we want to
     # modify the repo and index from a different working tree
-    $ENV{GIT_DIR} = path( $ENV{GIT_DIR} || '.git' )->absolute;
+    $ENV{GIT_DIR}        = path( $ENV{GIT_DIR} || '.git' )->absolute;
     $ENV{GIT_INDEX_FILE} = path( $ENV{GIT_INDEX_FILE} )->absolute->stringify
       if $ENV{GIT_INDEX_FILE};
 
@@ -136,8 +132,7 @@ sub have_committed {
           == 0;
 
         if ( my @manifest_skip = @{ $self->{manifest_skip} } ) {
-            $self->lprint(
-                "githook-perltidy: MANIFEST.SKIP does not cover $basename\n")
+            warn "githook-perltidy: MANIFEST.SKIP does not cover $basename\n"
               unless grep { $basename =~ m/$_/ } @manifest_skip;
         }
 
@@ -147,79 +142,22 @@ sub have_committed {
     return 0;
 }
 
-my $old = '';
-
-sub lprint {
-    my $self = shift;
-    my $msg  = shift;
-
-    if ( $self->{opts}->{verbose} or !-t select ) {
-        if ( $msg eq "\n" ) {
-            print $old, "\n";
-            $old = '';
-            return;
-        }
-        elsif ( $msg =~ m/\n/ ) {
-            $old = '';
-            return print $msg;
-        }
-        $old = $msg;
-        return;
-    }
-
-    local $| ||= 1;
-
-    my $chars;
-    if ( $msg eq "\n" ) {
-        $chars = print $old, "\n";
-    }
-    else {
-        $chars = print ' ' x length($old), "\b" x length($old), $msg, "\r";
-    }
-
-    $old = $msg =~ m/\n/ ? '' : $msg;
-
-    return $chars;
-}
-
-sub sys {
-    my $self = shift;
-    print '  '
-      . $self->{me} . ': '
-      . join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n"
-      if $self->{opts}->{verbose};
-    system(@_) == 0 or Carp::croak "@_ failed: $?";
-}
-
-1;
-
-package App::githook_perltidy;
-
-our $VERSION = '0.12.3';
-
 1;
 
 __END__
 
 =head1 NAME
 
-App::githook::perltidy - implementation guts of githook-perltidy.
-
-App::githook_perltidy - legacy package for dependencies
+App::githook::perltidy - core implementation of githook-perltidy.
 
 =head1 VERSION
 
-0.12.3 (2018-11-22)
+1.0.0_1 (2022-04-10)
 
 =head1 DESCRIPTION
 
 The B<App::githook::perltidy> module contains the implementation of the
 L<githook-perltidy> script.
-
-The B<App::githook_perltidy> module only exists for backwards
-compatibility so that authors who have 'recommended' or 'required' it
-in a cpanfile or Makefile.PL or Build.PL get the new
-B<App::githook::perltidy> version.
 
 =head1 SEE ALSO
 
@@ -231,7 +169,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2018 Mark Lawrence <nomad@null.net>
+Copyright 2011-2022 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

@@ -16,7 +16,7 @@ githook-perltidy - run perltidy before Git commits
 
 =head1 VERSION
 
-0.12.3 (2018-11-22)
+1.0.0_1 (2022-04-10)
 
 =head1 SYNOPSIS
 
@@ -44,7 +44,7 @@ L<Pod::Tidy> options:
     $ perltidy -b -w -dop | grep -v dump-options > .perltidyrc
     $ echo '--columns 72' > .podtidy-opts
     $ echo '^\.perltidyrc' >> MANIFEST.SKIP
-    $ echo '^\.podtidy-ops' >> MANIFEST.SKIP
+    $ echo '^\.podtidy-opts' >> MANIFEST.SKIP
     $ git add .perltidyrc .podtidy-opts MANIFEST.SKIP
     $ git commit -m 'githook-perltidy support' && git push
 
@@ -52,6 +52,11 @@ You should also add L<App::githook::perltidy> as an explicit "develop"
 dependency in your F<cpanfile>, F<Makefile.PL> or F<Build.PL>, so that
 B<githook-perltidy> gets installed when developers install the rest of
 your project's dependencies.
+
+	# For example in your cpanfile:
+	on develop => sub {
+		requires 'App::githook::perltidy' => 0;
+	};
 
 =head3 Sweeter Tidying
 
@@ -83,7 +88,7 @@ containing the name of the POD source file:
 With the above in place the F<README> file will be updated (and
 potentially committed) whenever F<lib/Your/App.pm> is committed.
 
-=head2 githook-perltidy install [--force, -f]
+=head2 githook-perltidy install [--force, -f] [--absolute, -a]
 
 Anyone making commits in your repository should ensure that
 B<githook-perltidy> runs before the Git commit completes.  The
@@ -94,12 +99,21 @@ directory of your repository.
     $ githook-perltidy install
     $ cat .git/hooks/pre-commit
     #!/bin/sh
-    /usr/local/bin/githook-perltidy pre-commit
+    PERL5LIB="" githook-perltidy pre-commit
 
-This command fails if there is no F<.perltidyrc> or
+The install command fails if there is no F<.perltidyrc> or
 F<.perltidyrc.sweetened> file in the repository or if the hooks
-directory isn't found. It will also fail if the Git F<pre-commit>
-already file exists, unless C<--force> is used to replace it.
+directory isn't found. It will also fail if the Git F<pre-commit> file
+already exists, unless C<--force> is used to replace it.
+
+By default the hook finds B<githook-perltidy> via C<$PATH>. If regular
+changes to your PATH (e.g. due to perlbrew, local::lib, etc) break
+that, you I<may> wish to do an C<--absolute> install instead to use the
+full path. However, be aware that upgrading your system perl and/or
+B<githook-perltidy> might invalidate that, requiring you to reinstall
+the hook to make it work again. Ideally you would install
+B<githook-perltidy> in a system-wide location (e.g. /usr/local/bin)
+that won't change.
 
 =head2 githook-perltidy pre-commit
 
@@ -229,7 +243,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2018 Mark Lawrence <nomad@null.net>
+Copyright 2011-2022 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

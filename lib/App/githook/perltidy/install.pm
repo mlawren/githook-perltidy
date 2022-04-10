@@ -2,10 +2,9 @@ package App::githook::perltidy::install;
 use strict;
 use warnings;
 use parent 'App::githook::perltidy';
-use File::Basename;
 use Path::Tiny;
 
-our $VERSION = '0.12.3';
+our $VERSION = '1.0.0_1';
 
 sub run {
     my $self = shift;
@@ -22,10 +21,19 @@ sub run {
         die "File/link exists: $pre_file\n" unless $self->{opts}->{force};
     }
 
-    $pre_file->spew("#!/bin/sh\n$0 pre-commit\n");
+    my $gp = path($0);
+    if ( $self->{opts}->{absolute} ) {
+        $gp = $gp->realpath;
+    }
+    else {
+        $gp = $gp->basename;
+    }
+
+    $pre_file->spew(qq{#!/bin/sh\nPERL5LIB="" $gp pre-commit\n});
     chmod 0755, $pre_file || warn "chmod: $!";
-    print "$self->{me}: $pre_file";
-    print " (forced)" if $self->{opts}->{force};
+    print $pre_file;
+    print " (forced)"   if $self->{opts}->{force};
+    print " (absolute)" if $self->{opts}->{absolute};
     print "\n";
 }
 
@@ -38,7 +46,7 @@ App::githook::perltidy::install - install git hooks
 
 =head1 VERSION
 
-0.12.3 (2018-11-22)
+1.0.0_1 (2022-04-10)
 
 =head1 SEE ALSO
 
@@ -50,7 +58,7 @@ Mark Lawrence E<lt>nomad@null.netE<gt>
 
 =head1 COPYRIGHT AND LICENSE
 
-Copyright 2011-2018 Mark Lawrence <nomad@null.net>
+Copyright 2011-2022 Mark Lawrence <nomad@null.net>
 
 This program is free software; you can redistribute it and/or modify it
 under the terms of the GNU General Public License as published by the

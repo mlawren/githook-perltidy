@@ -1,13 +1,14 @@
 #!perl
 
 on configure => sub {
-    requires 'Path::Tiny' => 0;
+    requires 'Path::Tiny'                    => 0;
+    requires 'ExtUtils::MakeMaker::CPANfile' => 0;
 };
 
 on runtime => sub {
     requires 'File::Basename' => 0;
     requires 'Carp'           => 0;
-    requires 'OptArgs2'       => '0.0.10';
+    requires 'OptArgs2'       => '2.0.0';
     requires 'Path::Tiny'     => 0;
     requires 'Perl::Tidy'     => 0;
     requires 'Pod::Text'      => 0;

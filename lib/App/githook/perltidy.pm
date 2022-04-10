@@ -152,7 +152,7 @@ App::githook::perltidy - core implementation of githook-perltidy.
 
 =head1 VERSION
 
-1.0.0_1 (yyyy-mm-dd)
+1.0.0_1 (2022-04-10)
 
 =head1 DESCRIPTION
 

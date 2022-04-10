@@ -1,4 +1,4 @@
-1.0.0_1 (yyyy-mm-dd)
+1.0.0_1 (2022-04-10)
 
     API / Behaviour Changes:
         - Use $PATH to find githook-perltidy in pre-commit hook

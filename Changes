@@ -1,4 +1,4 @@
-0.12.4_1 (yyyy-mm-dd)
+1.0.0_1 (yyyy-mm-dd)
 
     API / Behaviour Changes:
         - Use $PATH to find githook-perltidy in pre-commit hook
@@ -8,9 +8,6 @@
 
     Enhancements:
         - Simplify output code with OptArgs2::StatusLine.
-
-    Bug Fixes:
-        - None.
 
     Dependencies:
         - Add missing 'configure' dependency on ExtUtils::MakeMaker::CPANfile.

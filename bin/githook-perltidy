@@ -113,7 +113,7 @@ full path. However, be aware that upgrading your system perl and/or
 B<githook-perltidy> might invalidate that, requiring you to reinstall
 the hook to make it work again. Ideally you would install
 B<githook-perltidy> in a system-wide location (e.g. /usr/local/bin)
-that won't change.
+that doesn't change and does not depend on particular PERL5LIB.
 
 =head2 githook-perltidy pre-commit
 

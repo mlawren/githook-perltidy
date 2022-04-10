@@ -92,7 +92,7 @@ DESCRIPTION
     and/or githook-perltidy might invalidate that, requiring you to
     reinstall the hook to make it work again. Ideally you would install
     githook-perltidy in a system-wide location (e.g. /usr/local/bin)
-    that won't change.
+    that doesn't change and does not depend on particular PERL5LIB.
 
   githook-perltidy pre-commit
     The "pre-commit" command loops through the Git index, checking out

@@ -8,7 +8,7 @@ use File::Copy;
 use OptArgs2::StatusLine;
 use Path::Tiny;
 
-our $VERSION = '1.0.0_1';
+our $VERSION = '1.0.0_2';
 
 our ( $line, $prefix, $verbose, $prefix2, $temp_dir );
 
@@ -286,7 +286,7 @@ App::githook::perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-1.0.0_1 (2022-04-10)
+1.0.0_2 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

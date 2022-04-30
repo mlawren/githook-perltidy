@@ -142,7 +142,7 @@ in_tempdir $test => sub {
     like exception { run($githook_perltidy) }, qr/^usage:/,
       'usage needs an argument';
 
-    run(qw!git init!);
+    run(qw!git init --initial-branch=main!);
     run( qw!git config user.email!, 'you@example.com' );
     run( qw!git config user.name!,  'Your Name' );
 

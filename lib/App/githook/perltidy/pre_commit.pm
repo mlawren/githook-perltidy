@@ -4,7 +4,6 @@ use warnings;
 use feature 'state';
 use parent 'App::githook::perltidy';
 use File::Basename;
-use File::Copy;
 use OptArgs2::StatusLine;
 use Path::Tiny;
 
@@ -189,7 +188,7 @@ sub run {
               or $first =~ m/^#!.*\.plenv/;
         }
 
-        push( @perlfiles, $file );
+        push( @perlfiles, path($file) );
     }
 
     unless (@perlfiles) {
@@ -255,7 +254,7 @@ sub run {
         if ( $partial{$file} ) {
             $verbose = "copy $file TMP\n"
               if $self->{opts}->{verbose};
-            copy $file, $tmp_file;
+            $file->copy($tmp_file);
 
             unless ( $file =~ m/\.pod$/i ) {
                 $line = $file . ' (perltidy cleanup)';
@@ -271,7 +270,9 @@ sub run {
 
         # Move the tidied file back to the real working directory
         $line = $file . ' (mv)';
-        move $tmp_file, $file;
+        my $mtime = $file->stat->mtime;
+        $tmp_file->move($file);
+        utime $file->stat->atime, $mtime, $file;
     }
 
     $line = "files touched: $total\n";

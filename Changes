@@ -7,7 +7,7 @@
         - None.
 
     Enhancements:
-        - None.
+        - Restore file modification time after tidying.
 
     Bug Fixes:
         - None.

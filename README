@@ -148,7 +148,7 @@ CAVEATS
 
     Previous versions of githook-perltidy made use of a Git post-commit
     hook. If that hook is still in place you will receive an usage error
-    message after you commit. The post-comit call to githook-perltidy
+    message after you commit. The post-commit call to githook-perltidy
     (or possibly even the entire hook) can be removed.
 
 FILES

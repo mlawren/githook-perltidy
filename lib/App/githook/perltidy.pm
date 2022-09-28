@@ -7,54 +7,6 @@ use Path::Tiny;
 
 our $VERSION = '1.0.0_2';
 
-cmd 'App::githook::perltidy' => (
-    name    => 'githook-perltidy',
-    comment => 'tidy perl and pod files before Git commits',
-    optargs => sub {
-        arg command => (
-            isa      => 'SubCmd',
-            comment  => '',
-            required => 1,
-        );
-
-        opt help => ( ishelp => 1, );
-
-        opt verbose => (
-            isa     => 'Flag',
-            comment => 'be explicit about underlying actions',
-            alias   => 'v',
-            default => sub { $ENV{GITHOOK_PERLTIDY_VERBOSE} },
-        );
-
-        opt version => (
-            isa     => 'Flag',
-            comment => 'print version and exit',
-            alias   => 'V',
-            trigger => sub { die basename($0) . ' version ' . $VERSION . "\n" },
-        );
-    },
-);
-
-subcmd 'App::githook::perltidy::install' => (
-    comment => 'install a Git pre-commit hook',
-    optargs => sub {
-        opt force => (
-            isa     => 'Flag',
-            comment => 'Overwrite existing git commit hooks',
-            alias   => 'f',
-        );
-
-        opt absolute => (
-            isa     => 'Flag',
-            comment => 'Use full path to script in hook',
-            alias   => 'a',
-        );
-    },
-);
-
-subcmd 'App::githook::perltidy::pre_commit' =>
-  ( comment => 'tidy Perl and POD files in the Git index', );
-
 sub new {
     my $proto = shift;
     my $class = ref $proto || $proto;

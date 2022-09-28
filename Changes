@@ -9,6 +9,9 @@
     Enhancements:
         - Restore file modification time after tidying.
 
+    Code Maintenance:
+        - Adjust to the new OptArgs2 version 2.0.0 syntax.
+
     Bug Fixes:
         - None.
 

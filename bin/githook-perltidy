@@ -1,10 +1,60 @@
 #!perl
 use strict;
-use App::githook::perltidy;
-use OptArgs2 qw/class_optargs/;
+use warnings;
+use OptArgs2;
 
-my ( $class, $opts ) = class_optargs('App::githook::perltidy');
-eval "require $class" or die $@;
+our $VERSION = '1.0.0_2';
+
+cmd 'App::githook::perltidy' => (
+    name    => 'githook-perltidy',
+    comment => 'tidy perl and pod files before Git commits',
+    optargs => [
+        command => {
+            isa      => 'SubCmd',
+            comment  => '',
+            required => 1,
+        },
+        verbose => {
+            isa     => '--Flag',
+            comment => 'be explicit about underlying actions',
+            alias   => 'v',
+            default => sub { $ENV{GITHOOK_PERLTIDY_VERBOSE} },
+        },
+        version => {
+            isa     => '--Flag',
+            comment => 'print version and exit',
+            alias   => 'V',
+            trigger => sub {
+                require File::Basename;
+                die File::Basename::basename($0)
+                  . ' version '
+                  . $VERSION . "\n";
+            },
+        },
+    ],
+);
+
+subcmd 'App::githook::perltidy::install' => (
+    comment => 'install a Git pre-commit hook',
+    optargs => [
+        absolute => {
+            isa     => '--Flag',
+            comment => 'Use full path to script in hook',
+            alias   => 'a',
+        },
+        force => {
+            isa     => '--Flag',
+            comment => 'Overwrite existing git commit hooks',
+            alias   => 'f',
+        },
+    ],
+);
+
+subcmd 'App::githook::perltidy::pre_commit' =>
+  ( comment => 'tidy Perl and POD files in the Git index', );
+
+my ( $class, $opts, $file ) = class_optargs('App::githook::perltidy');
+require $file;
 $class->new($opts)->run;
 
 1;

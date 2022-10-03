@@ -210,7 +210,7 @@ in_tempdir $test => sub {
     is_file( '5.5', '5.5.perltidy', 'tidy on move' );
 
     copy_src( 'perltidyrc', '.perltidyrc.sweetened' );
-    like exception { run( $githook_perltidy, qw!install! ) },
+    like exception { run( $githook_perltidy, qw!install --force! ) },
       qr/\.perltidyrc/, '.perltidyrc.sweetened uncommitted';
     like exception { add_commit('.perltidyrc.sweetened') },
       qr/incompatible/, '.perltidyrc[.sweetened] incompatible';
@@ -233,7 +233,7 @@ in_tempdir $test => sub {
 
     # readme_from
     ok !-e 'README', 'No README yet';
-    path('.readme_from')->spew('6.pod');
+    path('.readme_from')->spew("6.pod\n");
     add_commit('.readme_from');
     ok -e 'README', 'README from something';
 

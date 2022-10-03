@@ -29,7 +29,13 @@ sub run {
         $gp = $gp->basename;
     }
 
-    $pre_file->spew(qq{#!/bin/sh\nPERL5LIB="" $gp pre-commit\n});
+    $pre_file->spew(
+        qq{#!/bin/sh
+if [ "\$NO_GITHOOK_PERLTIDY" != "1" ]; then
+    PERL5LIB="" $gp pre-commit
+fi
+}
+    );
     chmod 0755, $pre_file || warn "chmod: $!";
     print $pre_file;
     print " (forced)"   if $self->{opts}->{force};

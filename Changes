@@ -8,6 +8,7 @@
 
     Enhancements:
         - Restore file modification time after tidying.
+        - Check for NO_GITHOOK_PERLTIDY in hooks/pre-commit directly
 
     Code Maintenance:
         - Adjust to the new OptArgs2 version 2.0.0 syntax.

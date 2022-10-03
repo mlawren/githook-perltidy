@@ -20,7 +20,7 @@
         - None.
 
     Packaging:
-        - None.
+        - cpanfile: fix wrong P̶o̶d̶Perl::Tidy::Sweetened references.
 
 1.0.0_1 (2022-04-10)
 

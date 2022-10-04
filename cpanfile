@@ -19,6 +19,7 @@ on runtime => sub {
 };
 
 on develop => sub {
+    requires 'Class::Inline'         => 0;
     requires 'Perl::Tidy::Sweetened' => 0;
     requires 'Perl::Critic'          => 0;
 };

@@ -1,28 +1,31 @@
 package App::githook::perltidy::install;
 use strict;
 use warnings;
-use parent 'App::githook::perltidy';
 use Path::Tiny;
+use App::githook::perltidy::install_CI
+  isa => 'App::githook::perltidy',
+  has => {
+    absolute => {},
+    force    => {},
+  };
 
 our $VERSION = '1.0.0_2';
 
 sub run {
     my $self = shift;
 
-    die ".perltidyrc not in repository.\n" unless $self->{perltidyrc};
-
-    my $hooks_dir = path( '.git', 'hooks' );
+    my $hooks_dir = $self->repo->child( '.git', 'hooks' );
     if ( !-d $hooks_dir ) {
         die "Directory not found: $hooks_dir\n";
     }
 
     my $pre_file = $hooks_dir->child('pre-commit');
     if ( -e $pre_file or -l $pre_file ) {
-        die "File/link exists: $pre_file\n" unless $self->{opts}->{force};
+        die "File/link exists: $pre_file\n" unless $self->force;
     }
 
     my $gp = path($0);
-    if ( $self->{opts}->{absolute} ) {
+    if ( $self->absolute ) {
         $gp = $gp->realpath;
     }
     else {
@@ -38,8 +41,8 @@ fi
     );
     chmod 0755, $pre_file || warn "chmod: $!";
     print $pre_file;
-    print " (forced)"   if $self->{opts}->{force};
-    print " (absolute)" if $self->{opts}->{absolute};
+    print " (forced)"   if $self->force;
+    print " (absolute)" if $self->absolute;
     print "\n";
 }
 

@@ -20,14 +20,18 @@ WriteMakefile(
     LICENSE    => 'gpl_3',
     EXE_FILES  => ['bin/githook-perltidy'],
     test       => { RECURSIVE_TEST_FILES => 1, },
+    PM_FILTER  => 'class-inline-filter',                              #CIFILTER#
+    dist       => { PREOP => 'class-inline-filter $(DISTVNAME)' },    #CIFILTER#
     META_MERGE => {
         'meta-spec' => { version => 2 },
         no_index    => {
             package => [
                 qw(
                   App::githook::perltidy::install
+                  App::githook::perltidy::install_CI
                   App::githook::perltidy::pre_commit
-                  App::githook::perltidy::post_commit
+                  App::githook::perltidy::pre_commit_CI
+                  App::githook::perltidy_CI
                   )
             ],
         },

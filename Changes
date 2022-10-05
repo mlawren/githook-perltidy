@@ -17,7 +17,8 @@
         - None.
 
     Dependencies:
-        - None.
+        - (development only) use Class::Inline instead of hand-written
+          object code.
 
     Packaging:
         - cpanfile: fix wrong P̶o̶d̶Perl::Tidy::Sweetened references.

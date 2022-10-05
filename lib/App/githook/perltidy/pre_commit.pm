@@ -9,7 +9,7 @@ use App::githook::perltidy::pre_commit_CI
   isa => 'App::githook::perltidy',
   has => {};
 
-our $VERSION = '1.0.0_2';
+our $VERSION = '1.0.0_3';
 
 our $temp_dir;
 
@@ -270,7 +270,7 @@ App::githook::perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-1.0.0_2 (2022-10-05)
+1.0.0_3 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

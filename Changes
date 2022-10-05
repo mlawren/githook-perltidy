@@ -1,7 +1,24 @@
+1.0.0_2 (2022-10-05)
+
+    Enhancements:
+        - Restore file modification time after tidying.
+        - Check for NO_GITHOOK_PERLTIDY in hooks/pre-commit directly
+
+    Code Maintenance:
+        - Adjust to the new OptArgs2 version 2.0.0 syntax.
+
+    Dependencies:
+        - (development only) use Class::Inline instead of hand-written
+          object code.
+
+    Packaging:
+        - cpanfile: fix wrong P̶o̶d̶Perl::Tidy::Sweetened references.
+
 1.0.0_1 (2022-04-10)
 
     API / Behaviour Changes:
-        - Use $PATH to find githook-perltidy in pre-commit hook
+        - Use $PATH to find githook-perltidy in pre-commit hook, fixing
+          https://rt.cpan.org/Ticket/Display.html?id=139159.
 
     New Features:
         - Add "--absolute" flag to restore full-path call in hook.

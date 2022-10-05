@@ -1,10 +1,60 @@
 #!perl
 use strict;
-use App::githook::perltidy;
-use OptArgs2 qw/class_optargs/;
+use warnings;
+use OptArgs2;
 
-my ( $class, $opts ) = class_optargs('App::githook::perltidy');
-eval "require $class" or die $@;
+our $VERSION = '1.0.0_2';
+
+cmd 'App::githook::perltidy' => (
+    name    => 'githook-perltidy',
+    comment => 'tidy perl and pod files before Git commits',
+    optargs => [
+        command => {
+            isa      => 'SubCmd',
+            comment  => '',
+            required => 1,
+        },
+        verbose => {
+            isa     => '--Flag',
+            comment => 'be explicit about underlying actions',
+            alias   => 'v',
+            default => sub { $ENV{GITHOOK_PERLTIDY_VERBOSE} },
+        },
+        version => {
+            isa     => '--Flag',
+            comment => 'print version and exit',
+            alias   => 'V',
+            trigger => sub {
+                require File::Basename;
+                die File::Basename::basename($0)
+                  . ' version '
+                  . $VERSION . "\n";
+            },
+        },
+    ],
+);
+
+subcmd 'App::githook::perltidy::install' => (
+    comment => 'install a Git pre-commit hook',
+    optargs => [
+        absolute => {
+            isa     => '--Flag',
+            comment => 'Use full path to script in hook',
+            alias   => 'a',
+        },
+        force => {
+            isa     => '--Flag',
+            comment => 'Overwrite existing git commit hooks',
+            alias   => 'f',
+        },
+    ],
+);
+
+subcmd 'App::githook::perltidy::pre_commit' =>
+  ( comment => 'tidy Perl and POD files in the Git index', );
+
+my ( $class, $opts, $file ) = class_optargs('App::githook::perltidy');
+require $file;
 $class->new($opts)->run;
 
 1;
@@ -16,7 +66,7 @@ githook-perltidy - run perltidy before Git commits
 
 =head1 VERSION
 
-1.0.0_1 (2022-04-10)
+1.0.0_2 (2022-10-05)
 
 =head1 SYNOPSIS
 
@@ -113,7 +163,7 @@ full path. However, be aware that upgrading your system perl and/or
 B<githook-perltidy> might invalidate that, requiring you to reinstall
 the hook to make it work again. Ideally you would install
 B<githook-perltidy> in a system-wide location (e.g. /usr/local/bin)
-that won't change.
+that doesn't change and does not depend on particular PERL5LIB.
 
 =head2 githook-perltidy pre-commit
 
@@ -186,7 +236,7 @@ files on disk and in the index.
 
 Previous versions of B<githook-perltidy> made use of a Git post-commit
 hook. If that hook is still in place you will receive an usage error
-message after you commit. The post-comit call to B<githook-perltidy>
+message after you commit. The post-commit call to B<githook-perltidy>
 (or possibly even the entire hook) can be removed.
 
 =head1 FILES

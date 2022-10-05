@@ -43,7 +43,7 @@ sub tidy_perl {
         }
     };
 
-    $status = "$file (perltidy) ($where)";
+    $status = "(perltidy) ($where)";
 
     my $errormsg;
     my $error = perltidy(
@@ -69,7 +69,7 @@ sub tidy_pod {
     my $where    = shift;
 
     state $req = require Pod::Tidy;
-    $status = "$file (podtidy) ($where)";
+    $status = "(podtidy) ($where)";
 
     Pod::Tidy::tidy_files(
         files     => [$tmp_file],
@@ -89,7 +89,7 @@ sub critic_perl {
     my $where    = shift;
 
     state $req = require Perl::Critic;
-    $status = "$file (perlcritic) ($where)";
+    $status = "(perlcritic) ($where)";
 
     my @violations =
       Perl::Critic::critique( { -profile => $self->perlcriticrc->stringify },
@@ -105,7 +105,7 @@ sub convert_readme {
     my $self = shift;
     my $file = shift || die 'convert_readme($FILE)';
 
-    $status = $file->basename . " -> README";
+    $status = '-> README';
 
     my $width = $self->podtidyrc_opts->{columns} // 72;
 
@@ -189,9 +189,9 @@ sub run {
     my $i     = 1;
     my $total = scalar @perlfiles;
     foreach my $file (@perlfiles) {
+        my $base = $file->basename;
         $status = $v_status = '';
-        local $status = local $v_status =
-          $status . '(' . $i . '/' . $total . ') ' . RS;
+        local $status = local $v_status = "$status ($i/$total) $base " . RS;
 
         my $tmp_file = $temp_dir->child($file);
 
@@ -230,15 +230,15 @@ sub run {
 
     $i = 1;
     foreach my $file (@perlfiles) {
+        my $base = $file->basename;
         $status = $v_status = '';
-        local $status = local $v_status =
-          $status . '(cleanup ' . $i . '/' . $total . ') ' . RS;
+        local $status = local $v_status = "$status ($i/$total) $base " . RS;
 
         my $tmp_file = $temp_dir->child($file);
 
         # Redo the whole thing again for partially modified files
         if ( $partial{$file} ) {
-            $v_status = "copy $file TMP\n";
+            $v_status = "copy to TMP\n";
             $file->copy($tmp_file);
 
             unless ( $file =~ m/\.pod$/i ) {
@@ -252,7 +252,7 @@ sub run {
         }
 
         # Move the tidied file back to the real working directory
-        $status = $file . ' (mv)';
+        $status = 'move TMP to REPO';
         my $mtime = $file->stat->mtime;
         $tmp_file->move($file);
         utime $file->stat->atime, $mtime, $file;

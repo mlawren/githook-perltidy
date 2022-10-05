@@ -3,8 +3,7 @@ use strict;
 use warnings;
 use feature 'state';
 use parent 'App::githook::perltidy';
-use File::Basename;
-use OptArgs2::StatusLine;
+use OptArgs2::StatusLine '$status', '$v_status', 'RS';
 use Path::Tiny;
 use App::githook::perltidy::pre_commit_CI
   isa => 'App::githook::perltidy',
@@ -12,11 +11,11 @@ use App::githook::perltidy::pre_commit_CI
 
 our $VERSION = '1.0.0_2';
 
-our ( $status, $prefix, $verbose, $prefix2, $temp_dir );
+our $temp_dir;
 
 sub sys {
     my $self = shift;
-    $verbose = join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
+    $v_status = join( ' ', map { defined $_ ? $_ : '*UNDEF*' } @_ ) . "\n";
     system(@_) == 0 or Carp::croak "@_ failed: $?";
 }
 
@@ -44,7 +43,7 @@ sub tidy_perl {
         }
     };
 
-    $verbose = "perltidy $file ($where)\n" if $self->verbose;
+    $status = "$file (perltidy) ($where)";
 
     my $errormsg;
     my $error = perltidy(
@@ -70,7 +69,7 @@ sub tidy_pod {
     my $where    = shift;
 
     state $req = require Pod::Tidy;
-    $verbose = "podtidy $file ($where)\n" if $self->verbose;
+    $status = "$file (podtidy) ($where)";
 
     Pod::Tidy::tidy_files(
         files     => [$tmp_file],
@@ -90,7 +89,7 @@ sub critic_perl {
     my $where    = shift;
 
     state $req = require Perl::Critic;
-    $verbose = "perlcritic $file ($where)\n" if $self->verbose;
+    $status = "$file (perlcritic) ($where)";
 
     my @violations =
       Perl::Critic::critique( { -profile => $self->perlcriticrc->stringify },
@@ -106,7 +105,7 @@ sub convert_readme {
     my $self = shift;
     my $file = shift || die 'convert_readme($FILE)';
 
-    $verbose = $file->basename . " -> README\n" if $self->verbose;
+    $status = $file->basename . " -> README";
 
     my $width = $self->podtidyrc_opts->{columns} // 72;
 
@@ -124,16 +123,12 @@ sub run {
     my @perlfiles = ();
     my %partial   = ();
 
-    OptArgs2::StatusLine::make_line_prefix( $status,  $prefix );
-    OptArgs2::StatusLine::make_line_prefix( $verbose, $prefix2 )
-      if $self->verbose;
-
-    $prefix = $prefix2 = basename($0) . ': ';
+    untie $v_status unless $self->verbose;
 
     return if $ENV{NO_GITHOOK_PERLTIDY};
     $temp_dir = Path::Tiny->tempdir('githook-perltidy-XXXXXXXX');
 
-    $verbose = "TMP=$temp_dir\n";
+    $v_status = "TMP=$temp_dir\n";
 
     my @index;
     my $force_readme = 0;
@@ -160,7 +155,7 @@ sub run {
     }
 
     if ( $force_readme > 0 ) {
-        $verbose = "force .readme_from " . $self->readme_from . "\n"
+        $v_status = "force .readme_from " . $self->readme_from . "\n"
           if $self->verbose;
         push( @index, $self->readme_from );
     }
@@ -188,14 +183,15 @@ sub run {
         exit 0;
     }
 
-    $verbose = "no .podtidy-opts - skipping podtidy calls\n"
-      if $self->verbose and not $self->podtidyrc;
+    $v_status = "no .podtidy-opts - skipping podtidy calls\n"
+      if not $self->podtidyrc;
 
     my $i     = 1;
     my $total = scalar @perlfiles;
     foreach my $file (@perlfiles) {
-        local $prefix  = "$prefix" . '(' . $i . '/' . $total . ') ';
-        local $prefix2 = "$prefix2" . '(' . $i . '/' . $total . ') ';
+        $status = $v_status = '';
+        local $status = local $v_status =
+          $status . '(' . $i . '/' . $total . ') ' . RS;
 
         my $tmp_file = $temp_dir->child($file);
 
@@ -209,17 +205,14 @@ sub run {
 
         # Critique first to avoid unecessary tidying
         if ( $self->perlcriticrc ) {
-            $status = $file . ' (perlcritic)';
             $self->critic_perl( $tmp_file, $file, 'INDEX' );
         }
 
         unless ( $file =~ m/\.pod$/i ) {
-            $status = $file . ' (perltidy)';
             $self->tidy_perl( $tmp_file, $file, 'INDEX' );
         }
 
         if ( $self->podtidyrc ) {
-            $status = $file . ' (podtidy)';
             $self->tidy_pod( $tmp_file, $file, 'INDEX' );
         }
 
@@ -237,24 +230,22 @@ sub run {
 
     $i = 1;
     foreach my $file (@perlfiles) {
-        local $prefix  = "$prefix" . '(' . $i . '/' . $total . ') ';
-        local $prefix2 = "$prefix2" . '(' . $i . '/' . $total . ') ';
+        $status = $v_status = '';
+        local $status = local $v_status =
+          $status . '(cleanup ' . $i . '/' . $total . ') ' . RS;
 
         my $tmp_file = $temp_dir->child($file);
 
         # Redo the whole thing again for partially modified files
         if ( $partial{$file} ) {
-            $verbose = "copy $file TMP\n"
-              if $self->verbose;
+            $v_status = "copy $file TMP\n";
             $file->copy($tmp_file);
 
             unless ( $file =~ m/\.pod$/i ) {
-                $status = $file . ' (perltidy cleanup)';
                 $self->tidy_perl( $tmp_file, $file, 'WORK_TREE' );
             }
 
             if ( $self->podtidyrc ) {
-                $status = $file . ' (podtidy cleanup)';
                 $self->tidy_pod( $tmp_file, $file, 'INDEX' );
                 $self->tidy_pod( $tmp_file, $file, 'WORK_TREE' );
             }

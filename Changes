@@ -1,20 +1,11 @@
 1.0.0_2 (yyyy-mm-dd)
 
-    API / Behaviour Changes:
-        - None.
-
-    New Features:
-        - None.
-
     Enhancements:
         - Restore file modification time after tidying.
         - Check for NO_GITHOOK_PERLTIDY in hooks/pre-commit directly
 
     Code Maintenance:
         - Adjust to the new OptArgs2 version 2.0.0 syntax.
-
-    Bug Fixes:
-        - None.
 
     Dependencies:
         - (development only) use Class::Inline instead of hand-written

@@ -71,7 +71,7 @@ use App::githook::perltidy_CI
 
             die ".readme_from appears to be empty?\n" unless $rf;
 
-            $self->have_committed( path($rf) )
+            $self->have_committed( path($rf), 0 )
               // die ".readme_from points to a missing file: $rf\n";
         },
     },
@@ -107,8 +107,9 @@ sub BUILD {
 }
 
 sub have_committed {
-    my $self = shift;
-    my $file = shift;
+    my $self           = shift;
+    my $file           = shift;
+    my $manifest_check = shift // 1;
 
     if ( -e $file ) {
         my $basename = $file->basename;
@@ -117,7 +118,7 @@ sub have_committed {
             'git ls-files --error-unmatch "' . $file . '" > /dev/null 2>&1' )
           == 0;
 
-        if ( my @skip_list = @{ $self->skip_list } ) {
+        if ( $manifest_check and my @skip_list = @{ $self->skip_list } ) {
             warn "githook-perltidy: MANIFEST.SKIP does not cover $basename\n"
               unless grep { $basename =~ m/$_/ } @skip_list;
         }

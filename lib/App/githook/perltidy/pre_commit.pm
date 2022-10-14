@@ -8,7 +8,7 @@ use App::githook::perltidy::pre_commit_CI
 use OptArgs2::StatusLine '$status', '$v_status', 'RS';
 use Path::Tiny;
 
-our $VERSION = '1.0.0_4';
+our $VERSION = '1.0.1';
 
 sub BUILD {
     my $self = shift;
@@ -282,7 +282,7 @@ App::githook::perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-1.0.0_4 (yyyy-mm-dd)
+1.0.1 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

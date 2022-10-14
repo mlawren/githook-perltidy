@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use OptArgs2;
 
-our $VERSION = '1.0.0_4';
+our $VERSION = '1.0.1';
 
 cmd 'App::githook::perltidy' => (
     name    => 'githook-perltidy',
@@ -66,7 +66,7 @@ githook-perltidy - run perltidy before Git commits
 
 =head1 VERSION
 
-1.0.0_4 (yyyy-mm-dd)
+1.0.1 (yyyy-mm-dd)
 
 =head1 SYNOPSIS
 

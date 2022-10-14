@@ -10,6 +10,19 @@ use Path::Tiny;
 
 our $VERSION = '1.0.0_4';
 
+sub BUILD {
+    my $self = shift;
+    my @hook = $self->pre_commit->slurp;
+    unless (grep( /NO_GITHOOK_PERLTIDY/, @hook )
+        and grep( /PERL5LIB/, @hook ) )
+    {
+        my $loc = $self->pre_commit->relative( $self->repo );
+        warn qq{githook-perltidy: You have an old "$loc" hook.\n}
+          . qq{githook-perltidy: Consider using }
+          . qq{"githook-perltidy install --force" to rebuild\n};
+    }
+}
+
 our $temp_dir;
 
 sub sys {

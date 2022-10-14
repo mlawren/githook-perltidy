@@ -7,7 +7,7 @@
         - None.
 
     Enhancements:
-        - None.
+        - Warn on old hook installation.
 
     Bug Fixes:
         - None.

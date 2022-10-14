@@ -55,7 +55,7 @@ App::githook::perltidy::install - install git hooks
 
 =head1 VERSION
 
-1.0.0 (yyyy-mm-dd)
+1.0.0 (2022-10-14)
 
 =head1 SEE ALSO
 

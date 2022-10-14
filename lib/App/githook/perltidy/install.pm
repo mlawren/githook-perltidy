@@ -1,15 +1,15 @@
 package App::githook::perltidy::install;
 use strict;
 use warnings;
-use Path::Tiny;
 use App::githook::perltidy::install_CI
   isa => 'App::githook::perltidy',
   has => {
     absolute => {},
     force    => {},
   };
+use Path::Tiny;
 
-our $VERSION = '1.0.0_2';
+our $VERSION = '1.0.0';
 
 sub run {
     my $self = shift;
@@ -55,7 +55,7 @@ App::githook::perltidy::install - install git hooks
 
 =head1 VERSION
 
-1.0.0_2 (2022-10-05)
+1.0.0 (2022-10-14)
 
 =head1 SEE ALSO
 

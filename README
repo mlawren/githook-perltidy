@@ -2,7 +2,7 @@ NAME
     githook-perltidy - run perltidy before Git commits
 
 VERSION
-    1.0.0_2 (2022-10-05)
+    1.0.0 (2022-10-14)
 
 SYNOPSIS
         githook-perltidy COMMAND [OPTIONS...]
@@ -77,8 +77,10 @@ DESCRIPTION
 
         $ githook-perltidy install
         $ cat .git/hooks/pre-commit
-        #!/bin/sh
-        PERL5LIB="" githook-perltidy pre-commit
+            #!/bin/sh
+            if [ "$NO_GITHOOK_PERLTIDY" != "1" ]; then
+                    PERL5LIB="" githook-perltidy pre-commit
+            fi
 
     The install command fails if there is no .perltidyrc or
     .perltidyrc.sweetened file in the repository or if the hooks

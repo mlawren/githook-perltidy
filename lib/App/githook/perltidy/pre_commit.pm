@@ -2,14 +2,13 @@ package App::githook::perltidy::pre_commit;
 use strict;
 use warnings;
 use feature 'state';
-use parent 'App::githook::perltidy';
-use OptArgs2::StatusLine '$status', '$v_status', 'RS';
-use Path::Tiny;
 use App::githook::perltidy::pre_commit_CI
   isa => 'App::githook::perltidy',
   has => {};
+use OptArgs2::StatusLine '$status', '$v_status', 'RS';
+use Path::Tiny;
 
-our $VERSION = '1.0.0_2';
+our $VERSION = '1.0.0';
 
 our $temp_dir;
 
@@ -270,7 +269,7 @@ App::githook::perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-1.0.0_2 (2022-10-05)
+1.0.0 (2022-10-14)
 
 =head1 SEE ALSO
 

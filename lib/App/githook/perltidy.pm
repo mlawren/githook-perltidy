@@ -89,7 +89,7 @@ use App::githook::perltidy_CI
     verbose => {},
   };
 
-our $VERSION = '1.0.1';
+our $VERSION = '1.0.1_1';
 
 BEGIN {
     # Both of these start out as relative which breaks when we want to
@@ -143,7 +143,7 @@ App::githook::perltidy - core implementation of githook-perltidy.
 
 =head1 VERSION
 
-1.0.1 (2022-10-14)
+1.0.1_1 (yyyy-mm-dd)
 
 =head1 DESCRIPTION
 

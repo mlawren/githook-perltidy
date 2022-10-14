@@ -148,8 +148,10 @@ directory of your repository.
 
     $ githook-perltidy install
     $ cat .git/hooks/pre-commit
-    #!/bin/sh
-    PERL5LIB="" githook-perltidy pre-commit
+	#!/bin/sh
+	if [ "$NO_GITHOOK_PERLTIDY" != "1" ]; then
+		PERL5LIB="" githook-perltidy pre-commit
+	fi
 
 The install command fails if there is no F<.perltidyrc> or
 F<.perltidyrc.sweetened> file in the repository or if the hooks

@@ -1,25 +1,10 @@
 1.0.0_4 (yyyy-mm-dd)
 
-    API / Behaviour Changes:
-        - None.
-
-    New Features:
-        - None.
-
     Enhancements:
         - Warn on old hook installation.
 
-    Bug Fixes:
-        - None.
-
     Code Maintenance
         - Minor simplification of the install code.
-
-    Dependencies:
-        - None.
-
-    Packaging:
-        - None.
 
 1.0.0 (2022-10-14)
 

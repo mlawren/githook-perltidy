@@ -9,7 +9,7 @@ use App::githook::perltidy::install_CI
   };
 use Path::Tiny;
 
-our $VERSION = '1.0.0';
+our $VERSION = '1.0.0_4';
 
 sub run {
     my $self = shift;
@@ -55,7 +55,7 @@ App::githook::perltidy::install - install git hooks
 
 =head1 VERSION
 
-1.0.0 (2022-10-14)
+1.0.0_4 (yyyy-mm-dd)
 
 =head1 SEE ALSO
 

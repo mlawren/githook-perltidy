@@ -1,3 +1,11 @@
+1.0.1 (2022-10-14)
+
+    Enhancements:
+        - Warn on old hook installation.
+
+    Code Maintenance
+        - Minor simplification of the install code.
+
 1.0.0 (2022-10-14)
 
     Code Maintenance

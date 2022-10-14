@@ -9,19 +9,16 @@ use App::githook::perltidy::install_CI
   };
 use Path::Tiny;
 
-our $VERSION = '1.0.0';
+our $VERSION = '1.0.1';
 
 sub run {
-    my $self = shift;
-
-    my $hooks_dir = $self->repo->child( '.git', 'hooks' );
-    if ( !-d $hooks_dir ) {
-        die "Directory not found: $hooks_dir\n";
-    }
-
-    my $pre_file = $hooks_dir->child('pre-commit');
-    if ( -e $pre_file or -l $pre_file ) {
-        die "File/link exists: $pre_file\n" unless $self->force;
+    my $self       = shift;
+    my $pre_commit = $self->pre_commit;
+    if ( -e $pre_commit or -l $pre_commit ) {
+        my $loc = $pre_commit->relative( $self->repo );
+        die "githook-perltidy: path already exists: $loc\n"
+          . "  (use --force to overwrite)\n"
+          unless $self->force;
     }
 
     my $gp = path($0);
@@ -32,15 +29,16 @@ sub run {
         $gp = $gp->basename;
     }
 
-    $pre_file->spew(
+    $pre_commit->parent->mkpath;
+    $pre_commit->spew(
         qq{#!/bin/sh
 if [ "\$NO_GITHOOK_PERLTIDY" != "1" ]; then
     PERL5LIB="" $gp pre-commit
 fi
 }
     );
-    chmod 0755, $pre_file || warn "chmod: $!";
-    print $pre_file;
+    chmod 0755, $pre_commit || warn "chmod: $!";
+    print $pre_commit;
     print " (forced)"   if $self->force;
     print " (absolute)" if $self->absolute;
     print "\n";
@@ -55,7 +53,7 @@ App::githook::perltidy::install - install git hooks
 
 =head1 VERSION
 
-1.0.0 (2022-10-14)
+1.0.1 (2022-10-14)
 
 =head1 SEE ALSO
 

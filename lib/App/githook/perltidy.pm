@@ -8,6 +8,10 @@ use App::githook::perltidy_CI
         init_arg => undef,
         default  => sub { path( $ENV{GIT_DIR} )->absolute->parent },
     },
+    pre_commit => {
+        init_arg => undef,
+        default  => sub { $_[0]->repo->child( '.git', 'hooks', 'pre-commit' ) },
+    },
     skip_list => {
         init_arg => undef,
         default  => sub {
@@ -85,7 +89,7 @@ use App::githook::perltidy_CI
     verbose => {},
   };
 
-our $VERSION = '1.0.0';
+our $VERSION = '1.0.1';
 
 BEGIN {
     # Both of these start out as relative which breaks when we want to
@@ -139,7 +143,7 @@ App::githook::perltidy - core implementation of githook-perltidy.
 
 =head1 VERSION
 
-1.0.0 (2022-10-14)
+1.0.1 (2022-10-14)
 
 =head1 DESCRIPTION
 

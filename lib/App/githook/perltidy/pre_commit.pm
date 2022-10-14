@@ -8,7 +8,20 @@ use App::githook::perltidy::pre_commit_CI
 use OptArgs2::StatusLine '$status', '$v_status', 'RS';
 use Path::Tiny;
 
-our $VERSION = '1.0.0';
+our $VERSION = '1.0.1';
+
+sub BUILD {
+    my $self = shift;
+    my @hook = $self->pre_commit->slurp;
+    unless (grep( /NO_GITHOOK_PERLTIDY/, @hook )
+        and grep( /PERL5LIB/, @hook ) )
+    {
+        my $loc = $self->pre_commit->relative( $self->repo );
+        warn qq{githook-perltidy: You have an old "$loc" hook.\n}
+          . qq{githook-perltidy: Consider using }
+          . qq{"githook-perltidy install --force" to rebuild\n};
+    }
+}
 
 our $temp_dir;
 
@@ -269,7 +282,7 @@ App::githook::perltidy::pre_commit - git pre-commit hook
 
 =head1 VERSION
 
-1.0.0 (2022-10-14)
+1.0.1 (2022-10-14)
 
 =head1 SEE ALSO
 

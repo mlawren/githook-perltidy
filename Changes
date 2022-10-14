@@ -13,7 +13,7 @@
         - None.
 
     Code Maintenance
-        - None.
+        - Minor simplification of the install code.
 
     Dependencies:
         - None.

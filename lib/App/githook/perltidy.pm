@@ -8,6 +8,10 @@ use App::githook::perltidy_CI
         init_arg => undef,
         default  => sub { path( $ENV{GIT_DIR} )->absolute->parent },
     },
+    pre_commit => {
+        init_arg => undef,
+        default  => sub { $_[0]->repo->child( '.git', 'hooks', 'pre-commit' ) },
+    },
     skip_list => {
         init_arg => undef,
         default  => sub {

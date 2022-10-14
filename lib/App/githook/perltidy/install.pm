@@ -1,13 +1,13 @@
 package App::githook::perltidy::install;
 use strict;
 use warnings;
-use Path::Tiny;
 use App::githook::perltidy::install_CI
   isa => 'App::githook::perltidy',
   has => {
     absolute => {},
     force    => {},
   };
+use Path::Tiny;
 
 our $VERSION = '1.0.0_3';
 

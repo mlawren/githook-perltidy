@@ -2,12 +2,11 @@ package App::githook::perltidy::pre_commit;
 use strict;
 use warnings;
 use feature 'state';
-use parent 'App::githook::perltidy';
-use OptArgs2::StatusLine '$status', '$v_status', 'RS';
-use Path::Tiny;
 use App::githook::perltidy::pre_commit_CI
   isa => 'App::githook::perltidy',
   has => {};
+use OptArgs2::StatusLine '$status', '$v_status', 'RS';
+use Path::Tiny;
 
 our $VERSION = '1.0.0_3';
 
